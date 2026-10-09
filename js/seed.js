@@ -1,0 +1,47 @@
+/* Data contoh untuk MODE PRATINJAU (saat GAS_URL kosong).
+   Bentuknya sama dengan jawaban API getPublicData. Tidak dipakai saat GAS_URL terisi. */
+window.DEARORA_SEED = {
+  paket: [
+    { id: 'basic', nama: 'Basic', harga: 19000, masaAktifHari: 10, maksFoto: 3,
+      fitur: { tagline: 'Kartu ucapan singkat yang manis, jadi otomatis.', foto: '1–3 foto', pembuatan: 'Otomatis',
+        fitur: [
+          { t: 'Nama penerima, nama pengirim, dan pesan', ok: true },
+          { t: 'Tema dasar dengan animasi sederhana', ok: true },
+          { t: 'Link random, hanya yang diberi link bisa membuka', ok: true },
+          { t: 'Musik latar', ok: false },
+          { t: 'Timeline kenangan dan galeri foto', ok: false },
+          { t: 'Revisi', ok: false } ] } },
+    { id: 'premium', nama: 'Premium', harga: 39000, masaAktifHari: 30, maksFoto: 10,
+      fitur: { tagline: 'Lebih personal: musik, galeri, dan timeline kenangan.', foto: 'Hingga 10 foto', pembuatan: 'Otomatis',
+        badge: 'Paling Favorit', rekomendasi: true,
+        fitur: [
+          { t: 'Semua fitur Basic', ok: true },
+          { t: 'Template premium dengan animasi dan efek visual', ok: true },
+          { t: 'Musik latar dari daftar pilihan', ok: true },
+          { t: 'Timeline kenangan dan galeri foto', ok: true },
+          { t: 'Pesan personal dari pengirim', ok: true },
+          { t: 'Revisi', ok: false } ] } },
+    { id: 'special', nama: 'Special', harga: 79000, masaAktifHari: 365, maksFoto: 30,
+      fitur: { tagline: 'Desain eksklusif dibuat khusus oleh kami, penuh kejutan.', foto: 'Foto lebih banyak + video', pembuatan: 'Manual, estimasi 1–2 hari kerja',
+        fitur: [
+          { t: 'Semua fitur Premium', ok: true },
+          { t: 'Desain eksklusif dan layout kustom', ok: true },
+          { t: 'Foto lebih banyak dan video pendek', ok: true },
+          { t: 'Surprise interaktif: amplop digital dan pesan rahasia', ok: true },
+          { t: 'Password opsional untuk pesan rahasia', ok: true },
+          { t: 'Atur urutan cerita dan tampilan pembuka', ok: true },
+          { t: '1× revisi gratis', ok: true } ] } }
+  ],
+  desain: [
+    { id: 'DSN-001', nama: 'Eternal Blossom', kategori: 'Anniversary', paket: ['basic', 'premium'], thumbnail: 'tema:blossom', urlDemo: '' },
+    { id: 'DSN-002', nama: 'Joyful Birthday Bash', kategori: 'Ulang Tahun', paket: ['basic', 'premium'], thumbnail: 'tema:confetti', urlDemo: '' },
+    { id: 'DSN-003', nama: 'Cinematic Romantique', kategori: 'Anniversary', paket: ['special'], thumbnail: 'tema:cinema', urlDemo: '' },
+    { id: 'DSN-004', nama: 'Soft Apology', kategori: 'Maaf & Rindu', paket: ['basic', 'premium'], thumbnail: 'tema:dusk', urlDemo: '' },
+    { id: 'DSN-005', nama: 'Graduation Day', kategori: 'Wisuda', paket: ['basic', 'premium'], thumbnail: 'tema:grad', urlDemo: '' },
+    { id: 'DSN-006', nama: 'Thank You Bloom', kategori: 'Terima Kasih', paket: ['basic'], thumbnail: 'tema:sage', urlDemo: '' },
+    { id: 'DSN-007', nama: 'Mama Tersayang', kategori: 'Hari Spesial', paket: ['premium'], thumbnail: 'tema:rose', urlDemo: '' },
+    { id: 'DSN-008', nama: 'Level Up Birthday', kategori: 'Ulang Tahun', paket: ['special'], thumbnail: 'tema:arcade', urlDemo: '' }
+  ],
+  musik: [],
+  config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7 }
+};
