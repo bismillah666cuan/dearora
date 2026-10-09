@@ -64,13 +64,17 @@
     return '<div class="card status-card ok"><span class="icon-tile sage">' + ic('check') + '</span>' +
       '<h1 class="h2" id="stTitle" tabindex="-1">Pembayaran Berhasil</h1>' +
       '<p class="lead">Terima kasih! Pesanan <strong>' + esc(d.orderId) + '</strong> (Paket ' + esc(d.paket) + ') sudah kami terima.</p>' +
-      '<div class="code-box"><span class="code-label">Kode redeem kamu</span><output class="code" id="kodeRedeem">' + esc(d.kodeRedeem || 'Sedang disiapkan…') + '</output>' +
-      '<button type="button" class="btn btn-primary btn-sm" data-s="salin"' + (d.kodeRedeem ? '' : ' disabled') + '>Salin Kode</button></div>' +
-      '<p class="small muted">Kode juga dikirim ke <strong>' + esc(d.emailSamar || 'emailmu') + '</strong> bersama tanda terima. Simpan kode ini: dipakai untuk membuat password dan memantau progres di portal pembeli.</p>' +
-      '<div class="callout" style="text-align:left;margin-top:1.5rem"><span class="icon-tile">' + ic('clock') + '</span><div><p><strong>Selanjutnya</strong></p><p>' +
-      (special ? 'Ucapan Special dikerjakan manual dengan estimasi 1–2 hari kerja. Kami kirim email saat sudah jadi.' : 'Ucapanmu sedang disiapkan. Link ucapan akan dikirim ke emailmu setelah aktif.') +
-      '</p></div></div>' +
-      '<div class="hero-cta" style="justify-content:center"><a class="btn btn-secondary" href="#/">Kembali ke Home</a></div></div>';
+      (d.akunLama
+        ? '<div class="notice" style="width:100%;text-align:left">Pesanan ini sudah ditambahkan ke akunmu. Masuk ke portal dengan kode redeem dan password yang sudah kamu miliki.</div>'
+        : '<div class="code-box"><span class="code-label">Kode redeem kamu</span><output class="code" id="kodeRedeem">' + esc(d.kodeRedeem || 'Sedang disiapkan…') + '</output>' +
+          '<button type="button" class="btn btn-primary btn-sm" data-s="salin"' + (d.kodeRedeem ? '' : ' disabled') + '>Salin Kode</button></div>' +
+          '<p class="small muted">Kode juga dikirim ke <strong>' + esc(d.emailSamar || 'emailmu') + '</strong> bersama tanda terima. Simpan kode ini: dipakai untuk membuat password dan masuk ke portal pembeli.</p>') +
+      (d.linkHasil
+        ? '<div class="link-card" style="width:100%;text-align:left"><label class="small muted" for="lnkUcapan">Link ucapanmu sudah aktif</label><div class="link-row"><input class="input" id="lnkUcapan" readonly value="' + esc(d.linkHasil) + '"><button type="button" class="btn btn-primary btn-sm" data-s="salin-link">Salin</button><a class="btn btn-secondary btn-sm" href="' + esc(d.linkHasil) + '" target="_blank" rel="noopener">Buka</a></div>' +
+          (d.kedaluwarsa ? '<p class="small muted" style="margin-top:.5rem">Aktif sampai ' + esc(new Intl.DateTimeFormat('id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(d.kedaluwarsa))) + '.</p>' : '') + '</div>'
+        : '<div class="callout" style="text-align:left;margin-top:.5rem"><span class="icon-tile">' + ic('clock') + '</span><div><p><strong>Selanjutnya</strong></p><p>' +
+          (special ? 'Ucapan Special dikerjakan manual dengan estimasi 1–2 hari kerja. Kami kirim email saat sudah jadi.' : 'Link ucapanmu sedang diaktifkan. Halaman ini akan menampilkannya sebentar lagi, dan link juga dikirim ke emailmu.') + '</p></div></div>') +
+      '<div class="hero-cta" style="justify-content:center"><a class="btn btn-primary" href="#/masuk">Masuk ke Portal</a><a class="btn btn-secondary" href="#/">Kembali ke Home</a></div></div>';
   }
 
   async function cek(manual) {
@@ -80,10 +84,10 @@
       var r = await API.get('paymentStatus', p, { coba: 1, timeout: 20000 });
       if (my !== run) return;                                       // sudah pindah halaman
       if (!r.success) { tampilkan(null, 'tidak-ada'); return; }
-      var d = r.data, sama = terakhir && terakhir.status === d.status && terakhir.dibayar === d.dibayar && terakhir.kodeRedeem === d.kodeRedeem && terakhir.tinjau === d.tinjau;
+      var d = r.data, sama = terakhir && terakhir.status === d.status && terakhir.dibayar === d.dibayar && terakhir.kodeRedeem === d.kodeRedeem && terakhir.tinjau === d.tinjau && terakhir.linkHasil === d.linkHasil;
       if (!sama || manual) tampilkan(d);
       terakhir = Object.assign({}, d);
-      if (d.dibayar) { try { window.Form.bersihkan(); } catch (e) { /* abaikan */ } return; }
+      if (d.dibayar) { try { window.Form.bersihkan(); } catch (e) { /* abaikan */ } if (!d.menungguLink) return; }
       if (d.tinjau || d.status === 'Dibatalkan') return;
     } catch (err) { if (my === run && !terakhir) tampilkan(null, 'jaringan'); }
     if (my !== run) return;
@@ -107,7 +111,8 @@
       var b = ev.target.closest('[data-s]'); if (!b) return;
       var a = b.dataset.s;
       if (a === 'cek') { clearTimeout(timer); cek(true); }
-      else if (a === 'salin') salin();
+      else if (a === 'salin') salin($('kodeRedeem'));
+      else if (a === 'salin-link') salin($('lnkUcapan'), true);
       else if (a === 'sim') {
         b.disabled = true; b.textContent = 'Memproses…';
         try { var r = await API.post('simulasiBayar', { orderId: info.o, token: info.t }, { timeout: 30000 }); if (r && r.success) { clearTimeout(timer); terakhir = null; tampilkan(r.data); try { window.Form.bersihkan(); } catch (e) { /* abaikan */ } } else { b.disabled = false; b.textContent = 'Simulasikan Pembayaran Berhasil'; } }
@@ -117,11 +122,15 @@
     cek(false);
   }
 
-  function salin() {
-    var kode = ($('kodeRedeem') || {}).textContent || '';
-    function ok() { var t = document.getElementById('toast'); if (t) { t.textContent = 'Kode disalin'; t.classList.add('show'); setTimeout(function () { t.classList.remove('show'); }, 2000); } }
-    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(kode).then(ok, function () { fallback(); }); } else fallback();
-    function fallback() { var r = document.createRange(); r.selectNodeContents($('kodeRedeem')); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); ok(); } catch (e) { /* pengguna salin manual */ } }
+  function salin(el, adalahInput) {
+    if (!el) return;
+    var teks = adalahInput ? el.value : (el.textContent || '');
+    function ok() { var t = document.getElementById('toast'); if (t) { t.textContent = adalahInput ? 'Link disalin' : 'Kode disalin'; t.classList.add('show'); setTimeout(function () { t.classList.remove('show'); }, 2000); } }
+    function fallback() {
+      if (adalahInput) { el.select(); } else { var r = document.createRange(); r.selectNodeContents(el); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+      try { document.execCommand('copy'); ok(); } catch (e) { /* pengguna salin manual */ }
+    }
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(teks).then(ok, fallback); } else fallback();
   }
 
   function stop() { run++; clearTimeout(timer); timer = null; }

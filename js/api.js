@@ -43,7 +43,7 @@
     // POST tidak diulang otomatis di sini (hindari pesanan/pembayaran ganda).
     // Pengulangan aman dilakukan pemanggil untuk aksi yang idempoten (mis. unggah bagian berkas).
     async post(action, data, opsi) {
-      var body = JSON.stringify({ action: action, data: data || {} });
+      var body = JSON.stringify({ action: action, data: data || {}, token: (opsi && opsi.token) || undefined });
       return kirim(cfg.GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },

@@ -71,6 +71,7 @@
     tandaiNav(r ? r.nav : '');
     pasangReveal();
     isiFooter();
+    if (window.Auth) window.Auth.syncHeader();
     if (r && r.after) r.after($main, ctx());
 
     if (opsi.jagaScroll || !gantiHalaman) window.scrollTo(0, y);

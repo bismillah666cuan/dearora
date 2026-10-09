@@ -343,6 +343,9 @@
       'privasi': { judul: 'Kebijakan Privasi', view: privasi, nav: '' },
       'syarat': { judul: 'Syarat & Ketentuan', view: syarat, nav: '' },
       'buat': { judul: 'Buat Ucapan', view: function (c) { return window.Form.view(c); }, nav: 'buat', after: function (m, c) { window.Form.after(m, c); }, jagaState: true },
+      'masuk': { judul: 'Masuk', view: function (c) { return window.Portal.viewMasuk(c); }, nav: 'portal', after: function (m, c) { window.Portal.afterMasuk(m, c); }, jagaState: true },
+      'portal': { judul: 'Portal Saya', view: function (c) { return window.Portal.viewPortal(c); }, nav: 'portal', after: function (m, c) { window.Portal.afterPortal(m, c); }, jagaState: true },
+      'pesanan': { judul: 'Detail Pesanan', view: function (c) { return window.Portal.viewDetail(c); }, nav: 'portal', after: function (m, c) { window.Portal.afterDetail(m, c); }, jagaState: true },
       'status': { judul: 'Status Pembayaran', view: function (c) { return window.Status.view(c); }, nav: '', after: function (m, c) { window.Status.after(m, c); }, jagaState: true }
     },
     tidakAda: tidakAda,

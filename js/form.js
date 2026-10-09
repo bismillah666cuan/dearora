@@ -108,7 +108,19 @@
   };
 
   VIEW.pemesan = function () {
-    return fld('namaPembeli', 'Nama kamu', inp('namaPembeli', 'text', 'autocomplete="name" maxlength="60"'), 'Dipakai untuk tanda terima. Tidak tampil di halaman ucapan.') +
+    var Au = window.Auth, prof = Au && Au.ada() ? Au.profil() : null;
+    if (prof) {
+      return '<div class="notice" role="status"><strong>Masuk sebagai ' + esc(prof.nama) + '</strong><br>Pesanan ini akan ditambahkan ke akunmu, memakai data akunmu (' + esc(prof.email) + '). Kamu tidak akan menerima kode redeem baru.</div>' +
+        '<button type="button" class="link-btn" data-f="akun-lepas">Pesan sebagai pembeli baru</button>';
+    }
+    var akunBox = '<details class="akun-box"' + (ui.akunBuka ? ' open' : '') + '><summary>Sudah punya akun? Masuk dulu</summary><div class="akun-isi">' +
+      '<p class="small muted">Gunakan kode redeem dan password dari pesanan sebelumnya. Data pemesan akan terisi otomatis.</p>' +
+      '<div class="field"><label for="akunKode">Kode redeem</label><input class="input" id="akunKode" autocomplete="username" autocapitalize="characters" spellcheck="false" placeholder="DRA-XXXX-XXXX" maxlength="14"></div>' +
+      '<div class="field"><label for="akunPw">Password</label><input class="input" id="akunPw" type="password" autocomplete="current-password" maxlength="72"></div>' +
+      '<p class="err" id="akunErr" role="alert" hidden></p>' +
+      '<button type="button" class="btn btn-secondary btn-sm" data-f="akun-masuk">Masuk &amp; isi otomatis</button>' +
+      '<p class="small muted" style="margin-top:.5rem">Belum membuat password? <a class="text-accent" style="font-weight:700" href="#/masuk" target="_blank" rel="noopener">Buat di halaman Masuk</a>.</p></div></details>';
+    return akunBox + fld('namaPembeli', 'Nama kamu', inp('namaPembeli', 'text', 'autocomplete="name" maxlength="60"'), 'Dipakai untuk tanda terima. Tidak tampil di halaman ucapan.') +
       fld('whatsapp', 'Nomor WhatsApp', inp('whatsapp', 'tel', 'autocomplete="tel" inputmode="tel" placeholder="08xxxxxxxxxx"'), 'Hanya untuk keperluan pesananmu. Tidak tampil di halaman ucapan.') +
       fld('email', 'Email', inp('email', 'email', 'autocomplete="email" inputmode="email" maxlength="100"'), 'Kode redeem dan tanda terima dikirim ke email ini. Pastikan benar.');
   };
@@ -221,7 +233,8 @@
     return (sim ? '<p class="notice warn" role="status"><strong>Mode simulasi.</strong> Tidak ada pembayaran sungguhan; ini hanya uji coba alur.</p>' : '') +
       '<dl class="summary">' +
       ringkasBaris('Paket', esc(pk.nama) + ' · aktif ' + esc(U.formatMasa(pk.masaAktifHari)), 'paket') +
-      ringkasBaris('Pemesan', esc(ST.namaPembeli) + '<br><span class="muted small">' + esc(ST.whatsapp) + ' · ' + esc(ST.email) + '</span>', 'pemesan') +
+      (function () { var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null; var n = pf ? pf.nama : ST.namaPembeli, w = pf ? pf.whatsapp : ST.whatsapp, e = pf ? pf.email : ST.email;
+        return ringkasBaris('Pemesan', esc(n) + (pf ? ' <span class="tag sage">Akun terhubung</span>' : '') + '<br><span class="muted small">' + esc(w) + ' · ' + esc(e) + '</span>', 'pemesan'); })() +
       ringkasBaris('Untuk / Dari', esc(ST.penerima) + ' / ' + dari, 'untuk') +
       ringkasBaris('Pesan', '<span class="clip">' + esc(ST.pesan) + '</span>', 'pesan') +
       ringkasBaris('Foto', files.filter(function (f) { return f.jenis === 'foto'; }).length + ' foto' + (files.some(function (f) { return f.jenis === 'video'; }) ? ' + 1 video' : ''), 'foto') +
@@ -241,7 +254,7 @@
   function validasi(id) {
     var e = {}, t = function (k) { return String(ST[k] || '').trim(); };
     if (id === 'paket') { if (!paketAktif()) e.paketId = 'Pilih salah satu paket.'; }
-    if (id === 'pemesan') {
+    if (id === 'pemesan' && !(window.Auth && window.Auth.ada() && window.Auth.profil())) {
       if (t('namaPembeli').length < 2) e.namaPembeli = 'Nama minimal 2 karakter.';
       if (!RE_WA.test(t('whatsapp').replace(/[\s\-().]/g, ''))) e.whatsapp = 'Nomor WhatsApp tidak valid (contoh 081234567890).';
       if (!RE_EMAIL.test(t('email'))) e.email = 'Format email tidak valid.';
@@ -391,6 +404,8 @@
       desainId: ST.mode === 'pilih' ? ST.desainId : '', ideSendiri: ST.mode === 'ide' ? ST.ideSendiri.trim() : '',
       musikId: ST.musikId, catatan: ST.catatan.trim(), setuju: ST.setuju === true, website: ''
     };
+    var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null;
+    if (pf) { p.sesi = window.Auth.token(); p.namaPembeli = pf.nama; p.whatsapp = pf.whatsapp; p.email = pf.email; }
     if (ST.paket === 'special') { p.jenisSurprise = ST.jenisSurprise; p.pesanRahasia = ST.pesanRahasia.trim(); p.passwordRahasia = ST.passwordRahasia; p.pembuka = ST.pembuka; }
     return p;
   }
@@ -430,6 +445,10 @@
         setPay('Menyimpan pesananmu…', 5);
         var r = await API.post('createOrder', p, { timeout: 30000 });
         if (!r.success) {
+          if (/Sesi berakhir/i.test(r.message || '')) {
+            window.Auth.keluarLokal(); ui.sibuk = false; ui.pay = null;
+            errors = { namaPembeli: 'Sesi akunmu berakhir. Isi data pemesan atau masuk kembali.' }; kePaketDenganError('pemesan'); return;
+          }
           if (r.errors) { errors = r.errors; var pertama = Object.keys(r.errors)[0]; ui.sibuk = false; ui.pay = null; kePaketDenganError(ID_LANGKAH[pertama] || 'ringkasan'); return; }
           throw galatPermanen(r.message || 'Pesanan ditolak.');
         }
@@ -502,6 +521,20 @@
     else if (a === 'down') geser(b.dataset.id, 1);
     else if (a === 'rm') hapus(b.dataset.id);
     else if (a === 'pay') bayar();
+    else if (a === 'akun-masuk') masukAkun(b);
+    else if (a === 'akun-lepas') { window.Auth.keluar(); if (order) order = null; paint(); }
+  }
+
+  async function masukAkun(btn) {
+    var kode = (document.getElementById('akunKode').value || '').toUpperCase().replace(/\s+/g, ''), pw = document.getElementById('akunPw').value || '';
+    var er = document.getElementById('akunErr'); er.hidden = true;
+    if (!/^DRA-[2-9A-Z]{4}-[2-9A-Z]{4}$/.test(kode) || !pw) { er.hidden = false; er.textContent = 'Isi kode redeem (mis. DRA-7K3M-9QXA) dan password.'; return; }
+    btn.disabled = true; btn.textContent = 'Memproses…';
+    try {
+      var r = await window.Auth.masuk(kode, pw);
+      if (!r.success) { er.hidden = false; er.textContent = r.message || 'Gagal masuk.'; btn.disabled = false; btn.innerHTML = 'Masuk &amp; isi otomatis'; ui.akunBuka = true; return; }
+      var p = r.data.profil; ST.namaPembeli = p.nama; ST.whatsapp = p.whatsapp; ST.email = p.email; errors = {}; if (order) order = null; paint(); simpanDraf();
+    } catch (e) { er.hidden = false; er.textContent = 'Koneksi bermasalah. Coba lagi.'; btn.disabled = false; btn.innerHTML = 'Masuk &amp; isi otomatis'; }
   }
 
   /* ---------------- API modul ---------------- */
