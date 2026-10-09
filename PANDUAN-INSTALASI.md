@@ -1,96 +1,87 @@
-# PANDUAN INSTALASI — Dearora (sampai Fase 3: Portal Pembeli & Halaman Ucapan)
+# PANDUAN INSTALASI — Dearora (sampai Fase 4: Dashboard Admin & Rutinitas Otomatis)
 
 | Bagian | Berkas | Dipasang di |
 |---|---|---|
-| Backend (API) | `Kode.gs`, `Pesanan.gs`, `Pembayaran.gs`, `Email.gs`, `Portal.gs`, `Kartu.gs`, `appsscript.json` | Google Apps Script (akun Gmail **usaha**) |
-| Frontend (toko + portal + kartu) | isi `dearora-frontend-fase3.zip` | Vercel (via GitHub) |
+| Backend (API) | `Kode.gs`, `Pesanan.gs`, `Pembayaran.gs`, `Email.gs`, `Portal.gs`, `Kartu.gs`, **`Admin.gs`**, **`Rutin.gs`**, `appsscript.json` | Google Apps Script (akun Gmail **usaha**) |
+| Frontend (toko, portal, kartu, **admin**) | isi `dearora-frontend-fase4.zip` | Vercel (via GitHub) |
 
-Urutan: **A (backend) → B (frontend) → C (uji alur) → D (Special manual) → E (iPaymu) → F (menuju rilis).**
+Urutan: **A (backend) → B (password admin) → C (frontend) → D (uji) → E (iPaymu) → F (menuju rilis).**
 
 ---
 
 ## A. Backend — Google Apps Script
+1. Ganti isi **`Kode`**, **`Pesanan`**, **`Pembayaran`**, **`Email`**, **`Portal`**, **`Kartu`** dengan berkas yang baru.
+2. Tambah **dua file baru**: **＋ → Skrip** → `Admin` dan `Rutin` (tanpa `.gs`) → tempel isinya.
+3. Jalankan **`setupAppEnvironment`** (aman diulang): menambah kolom baru `CatatanAdmin`, `PengingatKirim`, `TglDihapus` tanpa menyentuh data Ibu.
+4. **Deploy ulang**: Terapkan → Kelola deployment → ✏ → Versi baru → Terapkan. Setujui izin baru bila diminta (akses Drive dan email sudah ada).
 
-### A1. Perbarui kode
-1. Ganti isi **`Kode`**, **`Pesanan`**, **`Pembayaran`**, **`Email`** dengan berkas yang baru.
-2. Tambah **dua file baru**: tombol **＋ → Skrip** → nama `Portal` dan `Kartu` (tanpa `.gs`) → tempel isinya.
-3. `appsscript.json` tidak berubah dari Fase 2.
+## B. Membuat password admin (sekali, aman)
+Password admin **tidak pernah ditulis di kode atau sheet**. Hanya hash-nya disimpan.
+1. Apps Script → ⚙ **Setelan Proyek → Properti skrip → Tambah**:
+   - `ADMIN_EMAIL` = email yang akan Ibu ketik saat login (boleh email apa saja, hanya sebagai nama pengenal),
+   - `ADMIN_PASSWORD_BARU` = password baru, **minimal 12 karakter** (frasa panjang lebih baik).
+2. Pilih fungsi **`aturPasswordAdmin`** → ▶ Jalankan.
+3. Buka Log: `✅ Password admin tersimpan…`. Properti `ADMIN_PASSWORD_BARU` otomatis **dihapus**.
+4. Lupa password atau ingin menggantinya? Ulangi langkah 1–3. Semua sesi admin lama otomatis dicabut dan kunci login (bila terkunci) dibuka.
 
-### A2. Jalankan setup lagi (aman diulang)
-Pilih **`setupAppEnvironment`** → ▶ Jalankan. Ini menambah kolom baru (`AkunTertaut`) tanpa menimpa data Ibu.
+> Login dikunci 15 menit setelah 5 kali salah (berlaku untuk siapa pun, termasuk bila password benar). Ini melindungi dari tebak-tebakan, tetapi artinya orang lain bisa "mengunci" Ibu sementara. Jalankan `aturPasswordAdmin` bila perlu masuk segera.
 
-### A3. Properti skrip
-Pastikan `SITE_URL`, `PAYMENT_MODE`, `IPAYMU_VA`, `IPAYMU_API_KEY` masih terisi (tidak ada yang baru di Fase 3).
-
-### A4. Deploy ulang
-**Terapkan → Kelola deployment → ✏ → Versi baru → Terapkan.** URL `/exec` tetap sama.
-
-### A5. Aktifkan pesanan lama
-Pesanan Basic/Premium yang dibayar **sebelum** Fase 3 masih berstatus *Dibayar*. Jalankan fungsi **`aktifkanPesananDibayar`** sekali: pesanan itu mendapat link ucapan, dan email "Ucapanmu sudah jadi" terkirim ke pembelinya (jika pesanan itu uji coba, abaikan emailnya).
-
----
-
-## B. Frontend — Vercel
-1. Ekstrak `dearora-frontend-fase3.zip`. **Salin SEMUA isinya** ke folder proyek `dearora` (jangan hapus folder `.git`). Pilih "Ganti file di tujuan".
-2. Buka `js/config.js` dan **isi lagi `GAS_URL`** (ZIP mengosongkannya).
+## C. Frontend — Vercel
+1. Ekstrak `dearora-frontend-fase4.zip`, **salin semua isinya** ke folder proyek `dearora` (jangan hapus folder `.git`), pilih "Ganti file".
+2. Buka `js/config.js` dan **isi lagi `GAS_URL`**.
 3. Dari folder yang berisi `index.html`:
    ```bash
    git add .
-   git commit -m "Dearora fase 3"
+   git commit -m "Dearora fase 4"
    git push
    ```
-4. Berkas baru yang penting: **`u/index.html`** (halaman ucapan) dan **`vercel.json`** (aturan alamat `/u/{kode}`). Tanpa `vercel.json` yang baru, alamat `/u/...` akan menampilkan 404.
+4. Dashboard admin ada di **`https://ALAMAT-ANDA/admin/`** (tidak ditautkan dari toko, tidak diindeks mesin pencari). Simpan sebagai bookmark.
 
 ---
 
-## C. Uji alur penuh
-1. **Pesan Basic** (mode simulasi/sandbox) sampai bayar. Di halaman status muncul **kode redeem** dan **link ucapan aktif**.
-2. Buka link ucapan di HP: layar pembuka, tombol **Buka Ucapan**, lalu isi kartu.
-3. Buka **Masuk** di menu → tempel kode redeem → **buat password** (minimal 8 karakter) → masuk ke **Portal Saya**: pesanan, timeline, link, dan **Unduh PDF Bukti**.
-4. Di portal tekan **Buat Ucapan Baru**: form menampilkan "Masuk sebagai ..." (pesanan ditautkan ke akun yang sama, tanpa kode baru).
-5. Uji **Keluar**, lalu masuk lagi dengan kode + password.
+## D. Uji dashboard admin
+1. Buka `/admin/`, masuk dengan `ADMIN_EMAIL` dan password.
+2. **Ringkasan**: pendapatan, grafik 30 hari, dan daftar "Perlu tindakan" (Special yang sedang dikerjakan, revisi, pembayaran perlu ditinjau, ucapan segera berakhir).
+3. **Pesanan**: cari (ID, nama, email, WhatsApp), filter status/paket, ekspor CSV. Buka satu pesanan untuk melihat kontak pembeli, isi ucapan, foto (buka/unduh dari Drive), pembayaran, email, dan riwayat aktivitas.
+4. **Paket Special**: di detail pesanan tekan **Tandai selesai & aktifkan** (opsional: isi alamat halaman kustom `https://…`). Email "Ucapanmu sudah jadi" otomatis dikirim ke pembeli.
+5. **Revisi**: muncul di Ringkasan dan di detail. Selesai dikerjakan → tekan tombol yang sama; link dan masa aktif tidak berubah.
+6. **Pengaturan**: ubah harga, masa aktif, jumlah foto, daftar fitur paket; tambah/ubah desain dan musik; ubah email kontak dan batas waktu bayar. Perubahan langsung tampil di toko. Harga baru hanya untuk pesanan baru.
+7. Tombol **Tema** mengganti mode terang/gelap.
 
----
-
-## D. Paket Special (sementara, sebelum dashboard Fase 4)
-Special dikerjakan manual. Setelah Ibu selesai mengerjakannya:
-1. (Opsional) Jika Ibu membuat halaman kustom, taruh di folder `special/NAMA-ACAK/` pada proyek Vercel, lalu tulis alamat lengkapnya di kolom **`LinkHasil`** sheet `Pesanan` (baris pesanan itu). Jika tidak, kartu memakai halaman standar `u/` (sudah mendukung amplop dan pesan rahasia).
-2. Di Apps Script buka fungsi **`aktifkanSpecialManual`**, isi `ORDER_ID` dengan nomor pesanan (mis. `DRA-261009-ABCDE`), simpan, lalu ▶ Jalankan.
-3. Hasilnya ada di Log eksekusi: link ucapan dan tanggal berakhir. Email "Ucapanmu sudah jadi" otomatis terkirim ke pembeli, dan masa aktif 1 tahun mulai dihitung.
-4. **Revisi**: pembeli mengajukan lewat portal (status berubah ke Diproses, catatan masuk di sheet `Revisi`). Setelah Ibu mengerjakan revisinya, jalankan `aktifkanSpecialManual` lagi dengan `ORDER_ID` yang sama. Link dan masa aktif tidak berubah.
-
-> Halaman kustom Special yang menampilkan pesan rahasia harus memakai API yang sama (`unlockSecret`). Untuk halaman kustom, salin `u/index.html` ke `special/NAMA/index.html` dan tambahkan `data-slug="SLUG-ASLI"` pada tag `<body>`.
+> Foto di halaman admin dimuat dari Google Drive. Jika gambar kecil tidak tampil, pastikan di browser yang sama Ibu sedang masuk ke akun Google yang menjadi pemilik Drive. Tautan **Buka/Unduh** di bawah foto tetap berfungsi.
 
 ---
 
 ## E. Menyambungkan iPaymu (sandbox)
 Dokumentasi: https://docs.ipaymu.com/en/docs/getting-started
+1. Daftar akun **sandbox** di https://sandbox.ipaymu.com. Dari menu **Integrasi** salin **VA** dan **API Key** sandbox.
+2. Isi `IPAYMU_VA`, `IPAYMU_API_KEY`, ubah `PAYMENT_MODE` menjadi `sandbox`. Jalankan **`ujiKoneksiIpaymu`** sampai `✅ BERHASIL`.
+3. Tidak perlu menempel URL webhook di dashboard iPaymu (alamat notifikasi dikirim bersama tiap pembayaran). Format callback: `application/x-www-form-urlencoded`.
+4. Untuk "membayar" di sandbox, klik **"Klik Disini"** pada banner atas halaman pembayaran iPaymu, lalu tekan **←** untuk kembali ke Dearora.
+5. Jika status tidak berpindah, lihat kolom `RawCallbackRingkas` di sheet `Pembayaran` dan menu **Eksekusi** di Apps Script.
 
-1. Daftar akun **sandbox** di https://sandbox.ipaymu.com. Dari menu **Integrasi**, salin **VA** dan **API Key** sandbox.
-2. Isi `IPAYMU_VA`, `IPAYMU_API_KEY`, ubah `PAYMENT_MODE` menjadi `sandbox`.
-3. Jalankan **`ujiKoneksiIpaymu`** dan pastikan Log menampilkan `✅ BERHASIL`.
-4. **Tidak perlu menempel URL webhook di dashboard iPaymu.** Alamat notifikasi dikirim bersama setiap pembayaran. Pastikan **Integrasi → Callback notifikasi** berformat `application/x-www-form-urlencoded`.
-5. Buat pesanan uji sampai halaman pembayaran iPaymu. Untuk "membayar" di sandbox, klik **"Klik Disini"** pada banner atas halaman itu, atau pakai menu **Tes Notify** dengan *Merchant Ref ID* = nomor pesanan Dearora.
-6. Setelah pembayaran, tekan tombol **←** di halaman iPaymu untuk kembali ke Dearora. Halaman status menampilkan kode redeem.
-7. Jika status tidak berpindah, lihat kolom **`RawCallbackRingkas`** di sheet `Pembayaran` (alasan penolakan tercatat di sana) dan menu **Eksekusi** di Apps Script.
-
-### Hal yang BELUM terbukti (tanyakan ke iPaymu sebelum rilis)
-- **IP statis & domain di produksi.** Dokumentasi menyebut IP server dan domain URL (returnUrl/notifyUrl) harus terdaftar. Apps Script memakai IP Google yang berubah dan notifyUrl di `script.google.com`.
-- **Escrow.** Transaksi sandbox berstatus *Escrow* (dana ditahan). Dearora menerimanya sebagai "sudah dibayar", tetapi aturan pencairan ke saldo Ibu perlu dipastikan.
-- **Biaya transaksi.** Biaya per metode bisa besar untuk harga Basic yang rendah (VA bank). Cek tabel biaya sebelum menetapkan harga.
-- **Respons webhook.** Apps Script membalas dengan pengalihan (302). Pesanan tetap diproses (idempoten) dan halaman status mengecek ulang.
+**Belum terbukti, tanyakan ke iPaymu sebelum rilis:** IP statis & domain terdaftar di produksi (Apps Script memakai IP Google yang berubah); aturan pencairan dana *Escrow*; biaya per metode (VA bank bisa besar untuk harga Basic); perilaku webhook terhadap pengalihan 302.
 
 ---
 
 ## F. Menuju rilis
-1. Jalankan **`cekKesiapanRilis`** dan perbaiki semua yang ditandai ❌.
-2. Isi `KONTAK_EMAIL` di sheet **Config**.
-3. Jalankan **`pasangTriggerHarian`** (sekali): membatalkan pesanan tak terbayar > 24 jam, mengaktifkan ulang pesanan yang tertunda, dan membersihkan sesi login kedaluwarsa.
-4. Ubah `PAYMENT_MODE` ke `production` hanya setelah poin iPaymu di atas beres. Setelah itu jalankan transaksi nyata percobaan.
-5. Ganti `WEBHOOK_TOKEN` dengan teks acak baru bila token pernah terlihat orang lain.
+1. Jalankan **`cekKesiapanRilis`** dan perbaiki semua yang ❌ (termasuk `PAYMENT_MODE` jangan `simulasi`).
+2. Isi `KONTAK_EMAIL` (di sheet Config atau Pengaturan → Umum).
+3. Jalankan **`pasangTriggerHarian`** sekali. Tiap hari sekitar pukul 02.00 sistem akan:
+   - membatalkan pesanan tak terbayar > batas waktu bayar,
+   - mengaktifkan ulang pesanan Basic/Premium yang tertunda,
+   - mengirim **pengingat email H-3** sebelum ucapan berakhir,
+   - menandai ucapan yang lewat masa aktif sebagai **Kedaluwarsa** dan mencabut akses fotonya,
+   - setelah **masa tenggang** (bawaan 7 hari): membuang folder foto di Drive dan mengosongkan isi pesan (catatan transaksi tetap ada untuk pembukuan),
+   - menonaktifkan akun yang semua pesanannya sudah berakhir,
+   - setiap hari **Minggu**: membuat salinan cadangan spreadsheet di Drive → `Dearora/backup` (8 salinan terakhir disimpan).
+   Untuk mencoba tanpa menunggu: jalankan `rutinHarian_` atau `backupSekarang` dari editor.
+4. Ubah `PAYMENT_MODE` ke `production` hanya setelah poin iPaymu di atas beres, lalu coba satu transaksi nyata kecil.
+5. Ganti `WEBHOOK_TOKEN` dengan teks acak baru bila pernah terlihat orang lain.
 
 ## Catatan penting
-- **Foto di halaman ucapan** dimuat dari Google Drive lewat link thumbnail. Foto hanya dibuka untuk "yang punya link" saat pesanan **diaktifkan**, bukan saat diunggah. Bila ucapan sangat ramai dibuka, Google dapat membatasi lalu lintas foto (batas ini dicatat di PRD §6.3).
-- **Pembersihan saat kedaluwarsa** (menonaktifkan link, menghapus foto dari Drive, menonaktifkan akun) belum otomatis. Itu dikerjakan di **Fase 4**. Sampai saat itu, kartu yang lewat masa aktif sudah **tidak bisa dibuka** (halaman "sudah berakhir"), tetapi fotonya masih ada di Drive.
-- Sheet `Pesanan` dan `Akun` berisi data pribadi. Jangan bagikan akses Spreadsheet.
-- Kuota email Gmail biasa ±100/hari. Pantau sheet `EmailLog`.
+- Pengembalian dana (refund) dilakukan manual di dashboard iPaymu; dashboard Dearora hanya membatalkan/menonaktifkan pesanan.
+- File musik tetap diunggah ke folder `assets/musik/` pada proyek Vercel (lewat GitHub); dashboard hanya mendaftarkan jalurnya.
+- Sheet `Pesanan` dan `Akun` berisi data pribadi. Jangan bagikan akses Spreadsheet, termasuk folder `backup`.
+- Kuota email Gmail biasa ±100/hari. Pantau sheet `EmailLog` dan kartu "Perhatian" di Ringkasan admin.
+- Teks Syarat & Ketentuan dan Kebijakan Privasi disusun dari draf PRD; mohon ditinjau sebelum rilis.

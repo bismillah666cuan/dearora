@@ -1,6 +1,6 @@
-# Dearora — Frontend (Fase 3)
+# Dearora — Frontend (Fase 4)
 
-Toko, form pemesanan, status pembayaran, portal pembeli, dan halaman ucapan `/u/{kode}` (statis).
+Toko, form pemesanan, status pembayaran, portal pembeli, halaman ucapan `/u/{kode}`, dan dashboard admin `/admin/` (statis).
 
 - Tanpa build step. HTML + CSS + JS biasa. Deploy ke Vercel (Framework Preset: **Other**).
 - Satu-satunya berkas yang diedit: `js/config.js` (isi `GAS_URL`).
