@@ -63,6 +63,7 @@
     var gantiHalaman = h.path !== state.rute;
     state.rute = h.path;
 
+    if (window.Status) window.Status.stop();                 // hentikan polling halaman status
     var html = r ? r.view(ctx()) : V.tidakAda();
     var y = window.scrollY;
     $main.innerHTML = '<div class="view">' + html + '</div>';
@@ -70,6 +71,7 @@
     tandaiNav(r ? r.nav : '');
     pasangReveal();
     isiFooter();
+    if (r && r.after) r.after($main, ctx());
 
     if (opsi.jagaScroll || !gantiHalaman) window.scrollTo(0, y);
     else { window.scrollTo(0, 0); $main.focus({ preventScroll: true }); }
@@ -119,9 +121,13 @@
       var res = await API.get('getPublicData');
       if (!res || !res.success || !bentukValid(res.data)) throw new Error((res && res.message) || 'Data tidak valid');
       var berubah = !state.data || tanpaStempel(state.data) !== tanpaStempel(res.data);
+      var sebelumnya = state.status;
       state.data = res.data; state.status = 'ready'; state.sumber = 'live';
       simpanCache(res.data);
-      if (berubah) render({ jagaScroll: true });
+      var r0 = V.rute[state.rute];
+      // Jangan merender ulang form/status yang sedang diisi hanya karena data segar tiba.
+      var lewati = r0 && r0.jagaState && sebelumnya === 'ready';
+      if (berubah && !lewati) render({ jagaScroll: true });
     } catch (err) {
       console.warn('[Dearora] Gagal memuat data:', err && err.message);
       if (state.status !== 'ready') { state.status = 'error'; render({ jagaScroll: true }); }

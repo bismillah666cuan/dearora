@@ -1,6 +1,6 @@
-# Dearora — Frontend (Fase 1)
+# Dearora — Frontend (Fase 2)
 
-Toko publik statis: Home, Contoh Desain (+demo), Paket & Harga, Cara Kerja, FAQ, Kebijakan Privasi, Syarat & Ketentuan.
+Toko publik + form pemesanan + status pembayaran (statis).
 
 - Tanpa build step. HTML + CSS + JS biasa. Deploy ke Vercel (Framework Preset: **Other**).
 - Satu-satunya berkas yang diedit: `js/config.js` (isi `GAS_URL`).

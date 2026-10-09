@@ -1,85 +1,95 @@
-# PANDUAN INSTALASI — Dearora (Fase 1: Toko Publik)
-
-Ada **dua bagian** yang dipasang di dua tempat berbeda:
+# PANDUAN INSTALASI — Dearora (sampai Fase 2: Pemesanan & Pembayaran)
 
 | Bagian | Berkas | Dipasang di |
 |---|---|---|
-| Backend (API) | `Kode.gs` | Google Apps Script (akun Gmail **usaha** Dearora) |
-| Frontend (toko) | isi ZIP ini (`index.html`, `css/`, `js/`, ...) | Vercel |
+| Backend (API) | `Kode.gs`, `Pesanan.gs`, `Pembayaran.gs`, `Email.gs`, `appsscript.json` | Google Apps Script (akun Gmail **usaha**) |
+| Frontend (toko) | isi ZIP `dearora-frontend-fase2.zip` | Vercel (via GitHub) |
 
-Kerjakan **berurutan**: A (backend) dulu, baru B (frontend).
-
----
-
-## A. BACKEND — Google Apps Script
-
-> Gunakan **akun Gmail khusus usaha** (mis. `dearora.id@gmail.com`), bukan akun pribadi. Dengan begitu email dan berkas Dearora tidak bercampur dengan akun pribadi Ibu.
-
-1. Masuk ke https://script.google.com dengan akun usaha → **Proyek baru**.
-2. Ganti nama proyek menjadi **Dearora API**.
-3. Hapus isi `Code.gs`, lalu **tempel seluruh isi `Kode.gs`**. Ganti nama file menjadi `Kode`.
-4. Di dropdown fungsi (atas), pilih **`setupAppEnvironment`** lalu klik **▶ Jalankan** — **cukup sekali**.
-   - Klik **Tinjau izin** → pilih akun usaha → **Lanjutan** → **Buka Dearora API (tidak aman)** → **Izinkan**. (Peringatan ini normal untuk skrip buatan sendiri.)
-5. Buka **Log eksekusi** dan pastikan ada tulisan `✅ SETUP SELESAI` beserta tautan Spreadsheet dan Folder.
-6. Cek hasilnya:
-   - Google Drive → folder **Dearora** berisi `pesanan` dan `bukti-pdf`, serta file **Dearora_DB**.
-   - Buka **Dearora_DB**: ada 12 sheet. Sheet `Paket`, `Desain`, `Config` sudah berisi data contoh.
-7. Di sheet **Config**, isi baris `KONTAK_EMAIL` dengan email usaha (akan tampil di footer dan kebijakan).
-8. **Deploy**: **Terapkan → Deployment baru → ikon roda gigi → Aplikasi web**
-   - Jalankan sebagai: **Saya**
-   - Yang memiliki akses: **Siapa saja**
-   - Klik **Deploy** → **salin URL** yang berakhiran `/exec`.
-9. **Tes**: tempel URL itu di browser lalu tambahkan `?action=ping` di belakangnya. Harus muncul teks JSON berisi `"success":true`. Lalu coba `?action=getPublicData` — harus muncul data paket dan desain.
-
-⚠️ Setiap kali Ibu mengubah **kode** `Kode.gs`, buat **Deployment baru** (atau Kelola deployment → Edit → Versi baru). Mengubah **isi Sheet** tidak perlu deploy ulang.
-
-### Mengubah harga, paket, dan desain (Fase 1)
-Edit langsung di sheet `Paket` / `Desain` / `Config`. Perubahan tampil di toko dalam ±10 menit. Agar langsung tampil, jalankan fungsi **`hapusCachePublik`** dari editor Apps Script.
-- Harga di data awal (19.000 / 39.000 / 79.000) hanyalah **contoh**. Silakan ubah di kolom `Harga`.
-- Kolom `Aktif` berupa kotak centang. Hilangkan centang untuk menyembunyikan paket/desain.
-- `Thumbnail` berisi `tema:blossom` (tampilan bawaan) atau URL gambar `https://...`.
-- Dashboard admin untuk mengedit lewat tampilan khusus hadir di Fase 4.
+Urutan: **A (backend) → B (frontend) → C (uji mode simulasi) → D (iPaymu sandbox) → E (menuju rilis).**
 
 ---
 
-## B. FRONTEND — Vercel
+## A. Backend — Google Apps Script
 
-### B1. Isi alamat API
-1. Ekstrak ZIP. Folder hasil ekstraksi **itulah folder proyek** (di dalamnya langsung terlihat `index.html`, `css`, `js`).
-2. Buka `js/config.js` dengan Notepad, lalu tempel URL `/exec` dari langkah A8:
-   ```js
-   GAS_URL: 'https://script.google.com/macros/s/XXXXXXXX/exec',
-   ```
-3. **Tes lokal (opsional):** klik ganda `index.html`. Jika `GAS_URL` masih kosong, muncul label "Mode pratinjau" dan data contoh bawaan.
+### A1. Pasang atau perbarui kode
+Jika proyek **Dearora API** dari Fase 1 sudah ada, perbarui. Jika belum, buat dulu (script.google.com → Proyek baru).
 
-### B2. Naikkan ke Vercel (lewat GitHub)
-> Buka terminal **di folder yang berisi `index.html`** (bukan folder di atasnya). Di Windows: buka folder itu di File Explorer, klik address bar, ketik `powershell`, Enter.
+1. Buka `Kode.gs` di editor, hapus isinya, tempel isi `Kode.gs` yang baru.
+2. Tambah tiga file: tombol **＋ → Skrip** → beri nama `Pesanan`, `Pembayaran`, `Email` (tanpa `.gs`), lalu tempel isi masing-masing berkas.
+3. **⚙ Setelan Proyek** → centang **Tampilkan file manifes "appsscript.json" di editor** → buka `appsscript.json` → ganti isinya dengan berkas `appsscript.json` (mengatur zona waktu Asia/Jakarta).
 
-1. Pastikan `dir` (Windows) atau `ls` (Mac/Linux) menampilkan `index.html` di daftar teratas.
-2. Buat repository kosong di https://github.com (jangan centang README).
-3. Jalankan:
+### A2. Jalankan setup lagi (aman diulang)
+Pilih fungsi **`setupAppEnvironment`** → ▶ Jalankan. Izinkan izin baru (kirim email, akses layanan eksternal).
+Fungsi ini **tidak menimpa** data Ibu; ia menambah kolom baru di sheet dan membuat `WEBHOOK_TOKEN` secara otomatis. Cek Log: ada `MODE BAYAR : simulasi`.
+
+### A3. Isi pengaturan rahasia
+**⚙ Setelan Proyek → Properti skrip → Tambah properti:**
+
+| Nama | Isi | Keterangan |
+|---|---|---|
+| `SITE_URL` | `https://dearora.vercel.app` | Alamat toko Ibu, **tanpa** garis miring di akhir |
+| `PAYMENT_MODE` | `simulasi` | Biarkan `simulasi` dulu (lihat peringatan di bawah) |
+| `IPAYMU_VA`, `IPAYMU_API_KEY` | dari dashboard iPaymu | Diisi di bagian D |
+
+> ⚠️ **Mode `simulasi` TANPA uang sungguhan: siapa pun bisa "membayar" gratis.** Pakai hanya untuk uji coba. Sebelum rilis wajib `production` (bagian E).
+
+### A4. Deploy ulang
+**Terapkan → Kelola deployment → ✏ (edit) → Versi: Versi baru → Terapkan.** URL `/exec` tetap sama.
+Jika baru pertama kali: Deployment baru → Aplikasi web → Jalankan sebagai **Saya**, Akses **Siapa saja**.
+
+Tes cepat di browser: `URL_EXEC?action=getPublicData` harus menampilkan data. Di bagian `config` terlihat `"MODE_BAYAR":"simulasi"`.
+
+---
+
+## B. Frontend — Vercel
+1. Ekstrak ZIP. Folder hasil ekstraksi **itulah folder proyek** (isinya langsung `index.html`, `status.html`, `css`, `js`).
+2. Buka `js/config.js`, isi `GAS_URL` dengan URL `/exec` dari A4.
+3. Dorong ke GitHub **dari folder yang berisi `index.html`** (akun GitHub Dearora):
    ```bash
-   git init
    git add .
-   git commit -m "Dearora fase 1"
-   git branch -M main
-   git remote add origin https://github.com/NAMA-ANDA/dearora.git
-   git push -u origin main
+   git commit -m "Dearora fase 2"
+   git push
    ```
-   Saat diminta password, pakai **Personal Access Token** GitHub (bukan password akun).
-4. Buka https://vercel.com → **Add New → Project** → impor repository `dearora`.
-5. **Framework Preset: Other**. Kosongkan Build Command dan Output Directory. Klik **Deploy**.
-6. Untuk nama alamat, buka **Settings → Domains** dan pilih nama `.vercel.app` yang diinginkan (mis. `dearora.vercel.app`, jika masih tersedia).
-
-> Jika Ibu belum pernah memakai Git/GitHub, beri tahu saya. Saya pandu **satu langkah per langkah** sambil memeriksa tangkapan layar terminal Ibu.
-
-### B3. Uji akhir
-- Buka alamat Vercel → harga di halaman **Paket & Harga** harus sama dengan sheet `Paket`.
-- Coba menu **Contoh Desain** → **Lihat Demo**.
-- Buka dari HP, lalu coba tombol menu dan **Buat Ucapan**.
-- Jika data tidak muncul: tekan F12 → tab **Network**, cari permintaan ke `script.google.com`. Pastikan deploy berstatus **Siapa saja** dan `GAS_URL` benar.
+   Vercel otomatis men-deploy ulang setiap ada push. Pastikan pengaturan Vercel: Framework Preset **Other**.
+4. Buka alamat Vercel. Halaman **Paket & Harga** harus menampilkan harga dari sheet.
 
 ---
 
-## Yang BELUM ada di Fase 1
-Form **Buat Ucapan** (tombol sementara menampilkan halaman "Pemesanan Segera Dibuka"), pembayaran iPaymu, portal pembeli, halaman ucapan `/u/{kode}`, email/PDF, dan dashboard admin. Semuanya hadir di Fase 2–4.
+## C. Uji alur penuh (mode simulasi)
+1. Buka toko → **Buat Ucapan** → isi semua langkah sampai **Bayar Sekarang**.
+2. Di halaman status, tekan **Simulasikan Pembayaran Berhasil**. Kode redeem `DRA-XXXX-XXXX` muncul, dan email tanda terima masuk ke email yang Ibu isi.
+3. Buka **Dearora_DB**: cek sheet `Pesanan`, `Pembayaran`, `Media`, `Akun`, `EmailLog`, dan folder Drive `Dearora/pesanan/{OrderID}` berisi foto.
+4. Uji juga: paket Premium, paket Special (surprise + 1 video kecil), pesan dengan foto dari HP, dan pesanan yang tidak dibayar.
+
+> Status pesanan setelah dibayar: Basic/Premium = **Dibayar**, Special = **Diproses**. Pengaktifan link otomatis dan halaman ucapan `/u/{kode}` hadir di **Fase 3**; pesanan yang sudah Dibayar akan diaktifkan saat itu.
+
+---
+
+## D. Menyambungkan iPaymu (sandbox)
+Dokumentasi: https://docs.ipaymu.com/en/docs/getting-started
+
+1. Daftar akun **sandbox** di https://sandbox.ipaymu.com. Dari menu **Integration**, salin **VA** dan **API Key** (kunci sandbox berbeda dari produksi).
+2. Isi `IPAYMU_VA`, `IPAYMU_API_KEY`, lalu ubah `PAYMENT_MODE` menjadi `sandbox`.
+3. Jalankan fungsi **`tampilkanUrlWebhook`**, salin baris `URL webhook (notifyUrl)`. **Rahasiakan**, karena berisi token.
+4. Tempel URL itu di pengaturan callback sandbox: https://sandbox.ipaymu.com/integration/setting (pilih format `application/x-www-form-urlencoded`).
+5. Lakukan satu pesanan uji sampai halaman pembayaran iPaymu muncul. Selesaikan pembayaran uji di sana.
+6. Periksa: status berpindah ke "Pembayaran Berhasil", kode redeem tampil, dan sheet `Pembayaran` berstatus `Berhasil`.
+
+### Hal yang BELUM terbukti (mohon uji di sandbox dan tanyakan ke iPaymu)
+- **IP statis & domain di mode produksi.** Dokumentasi iPaymu menyebut di produksi alamat IP server dan domain pada URL (returnUrl/notifyUrl) harus terdaftar. Apps Script memakai IP Google yang berubah-ubah dan notifyUrl berada di `script.google.com`. Sandbox bisa jalan, tetapi **produksi belum tentu**. Tanyakan ke iPaymu sebelum rilis (draf pesan disertakan di chat).
+- **Respons webhook.** Apps Script menjawab pesan POST dengan pengalihan (HTTP 302), sedangkan iPaymu meminta jawaban 200. Pesanan tetap diproses (idempoten), dan halaman status mengecek ulang sebagai cadangan.
+- **`trx_id` di returnUrl.** Cadangan polling memakai `trx_id` bila iPaymu menambahkannya pada returnUrl. Cek di sandbox apakah dikirim.
+
+---
+
+## E. Menuju rilis
+1. Jalankan **`cekKesiapanRilis`** dan perbaiki semua yang ditandai ❌.
+2. Isi `KONTAK_EMAIL` di sheet **Config**.
+3. Jalankan **`pasangTriggerHarian`** (sekali): pesanan tak terbayar > 24 jam dibatalkan otomatis dan foto uploadnya dihapus.
+4. Ubah `PAYMENT_MODE` ke `production` hanya setelah poin IP/domain di atas beres, lalu jalankan transaksi nyata percobaan.
+5. Setelah mengubah mode, jalankan `hapusCachePublik` agar banner mode di toko ikut berubah.
+
+## Catatan keamanan
+- Rahasia (API Key, token webhook) hanya di **Properti skrip**, tidak pernah di frontend atau sheet.
+- Sheet `Pesanan` dan `Akun` berisi data pribadi pembeli. Jangan bagikan akses Spreadsheet.
+- Kuota email Gmail biasa ±100/hari. Pantau sheet `EmailLog`.

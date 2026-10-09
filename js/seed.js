@@ -43,5 +43,5 @@ window.DEARORA_SEED = {
     { id: 'DSN-008', nama: 'Level Up Birthday', kategori: 'Ulang Tahun', paket: ['special'], thumbnail: 'tema:arcade', urlDemo: '' }
   ],
   musik: [],
-  config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7 }
+  config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }
 };

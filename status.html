@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <title>Memeriksa pembayaran… — Dearora</title>
+  <style>body{font-family:system-ui,sans-serif;background:#FCF9F7;color:#261C24;display:grid;place-items:center;min-height:100vh;margin:0}</style>
+</head>
+<body>
+  <p>Memeriksa pembayaran…</p>
+  <noscript><p><a href="index.html">Lanjut ke Dearora</a></p></noscript>
+  <script>
+    // Halaman perantara untuk returnUrl/cancelUrl gateway: meneruskan parameter ke rute SPA (#/status).
+    // Hanya parameter yang dikenal yang dibawa; nilai lain dari gateway diabaikan.
+    (function () {
+      var q = new URLSearchParams(location.search), out = new URLSearchParams();
+      ['o', 't', 'batal'].forEach(function (k) { if (q.get(k)) out.set(k, q.get(k)); });
+      var trx = q.get('trx_id') || q.get('trxId') || q.get('transactionId');
+      if (trx && /^[0-9]{1,15}$/.test(trx)) out.set('trx', trx);
+      location.replace('index.html#/status?' + out.toString());
+    })();
+  </script>
+</body>
+</html>

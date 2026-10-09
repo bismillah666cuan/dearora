@@ -10,11 +10,11 @@
 
   function jeda(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
 
-  async function kirim(url, opsi, percobaan) {
+  async function kirim(url, opsi, percobaan, timeoutMs) {
     var terakhir;
     for (var i = 0; i <= percobaan; i++) {
       var ctrl = new AbortController();
-      var timer = setTimeout(function () { ctrl.abort(); }, cfg.TIMEOUT_MS || 15000);
+      var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs || cfg.TIMEOUT_MS || 15000);
       try {
         var res = await fetch(url, Object.assign({}, opsi, { signal: ctrl.signal }));
         clearTimeout(timer);
@@ -35,19 +35,20 @@
   window.DearoraAPI = {
     siap: function () { return !!(cfg.GAS_URL && /^https:\/\//.test(cfg.GAS_URL)); },
 
-    async get(action, params) {
+    async get(action, params, opsi) {
       var q = new URLSearchParams(Object.assign({ action: action }, params || {}));
-      return kirim(cfg.GAS_URL + '?' + q.toString(), { method: 'GET' }, cfg.COBA_ULANG || 0);
+      return kirim(cfg.GAS_URL + '?' + q.toString(), { method: 'GET' }, (opsi && opsi.coba != null) ? opsi.coba : (cfg.COBA_ULANG || 0), opsi && opsi.timeout);
     },
 
-    // POST tidak diulang otomatis (hindari pesanan/pembayaran ganda) — dipakai mulai Fase 2.
-    async post(action, data, token) {
-      var body = JSON.stringify({ action: action, data: data || {}, token: token || undefined });
+    // POST tidak diulang otomatis di sini (hindari pesanan/pembayaran ganda).
+    // Pengulangan aman dilakukan pemanggil untuk aksi yang idempoten (mis. unggah bagian berkas).
+    async post(action, data, opsi) {
+      var body = JSON.stringify({ action: action, data: data || {} });
       return kirim(cfg.GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: body
-      }, 0);
+      }, 0, opsi && opsi.timeout);
     }
   };
 })();

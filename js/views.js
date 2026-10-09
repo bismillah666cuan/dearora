@@ -327,27 +327,6 @@
       '</article></div></section>';
   }
 
-  /* Placeholder Fase 1: form pemesanan dibangun di Fase 2 */
-  function buat(ctx) {
-    var q = ctx.query || {};
-    var dipilih = '';
-    if (ctx.status === 'ready') {
-      var p = ctx.data.paket.filter(function (x) { return x.id === q.paket; })[0];
-      var d = ctx.data.desain.filter(function (x) { return x.id === q.desain; })[0];
-      var baris = [];
-      if (p) baris.push('Paket: <strong>' + esc(p.nama) + '</strong> (Rp ' + esc(U.rupiah(p.harga)) + ')');
-      if (d) baris.push('Desain: <strong>' + esc(d.nama) + '</strong>');
-      if (baris.length) dipilih = '<p class="notice" role="status">' + baris.join('<br>') + '</p>';
-    }
-    return '<section class="section"><div class="container"><div class="card soon">' +
-      '<span class="icon-tile">' + ic('heart') + '</span>' +
-      '<h1 class="h1">Pemesanan Segera Dibuka</h1>' +
-      '<p class="lead" style="margin-top:.75rem">Form pemesanan sedang kami siapkan. Sementara itu, kamu bisa melihat contoh desain dan membandingkan paket.</p>' +
-      dipilih +
-      '<div class="hero-cta" style="justify-content:center"><a class="btn btn-primary" href="#/contoh-desain">Lihat Contoh Desain</a>' +
-      '<a class="btn btn-secondary" href="#/paket">Lihat Paket &amp; Harga</a></div></div></div></section>';
-  }
-
   function tidakAda() {
     return '<section class="section"><div class="container"><div class="card soon"><span class="icon-tile">' + ic('info') + '</span>' +
       '<h1 class="h1">Halaman Tidak Ditemukan</h1><p class="lead" style="margin-top:.75rem">Alamat yang kamu tuju tidak tersedia.</p>' +
@@ -363,7 +342,8 @@
       'faq': { judul: 'FAQ', view: faqHalaman, nav: 'faq' },
       'privasi': { judul: 'Kebijakan Privasi', view: privasi, nav: '' },
       'syarat': { judul: 'Syarat & Ketentuan', view: syarat, nav: '' },
-      'buat': { judul: 'Buat Ucapan', view: buat, nav: 'buat' }
+      'buat': { judul: 'Buat Ucapan', view: function (c) { return window.Form.view(c); }, nav: 'buat', after: function (m, c) { window.Form.after(m, c); }, jagaState: true },
+      'status': { judul: 'Status Pembayaran', view: function (c) { return window.Status.view(c); }, nav: '', after: function (m, c) { window.Status.after(m, c); }, jagaState: true }
     },
     tidakAda: tidakAda,
     kontak: kontak
