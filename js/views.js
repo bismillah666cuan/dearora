@@ -13,6 +13,13 @@
     function cari(id, cad) { var p = d.filter(function (x) { return x.id === id; })[0]; return p ? U.formatMasa(p.masaAktifHari) : cad; }
     return { basic: cari('basic', '10 hari'), premium: cari('premium', '30 hari'), special: cari('special', '1 tahun') };
   }
+  /** "Basic 10 hari dan Special 1 tahun" — hanya paket yang sedang aktif di toko. */
+  function daftarMasa(ctx) {
+    var d = (ctx.data && ctx.data.paket) || [];
+    var arr = d.length ? d.map(function (p) { return p.nama + ' ' + U.formatMasa(p.masaAktifHari); }) : ['Basic 10 hari', 'Special 1 tahun'];
+    return arr.length > 1 ? arr.slice(0, -1).join(', ') + ' dan ' + arr[arr.length - 1] : arr[0];
+  }
+  function adaPaket(ctx, id) { var d = ctx.data && ctx.data.paket; return !d || !d.length || d.some(function (p) { return p.id === id; }); }
   function kontak(ctx) {
     var e = ctx.data && ctx.data.config && ctx.data.config.KONTAK_EMAIL;
     return e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) ? String(e) : '';
@@ -20,22 +27,26 @@
 
   /* ---------- FAQ (dipakai di Home dan halaman FAQ) ---------- */
   function faqItems(ctx) {
-    var m = masaAktifRingkas(ctx);
+    var otoPremium = adaPaket(ctx, 'premium');
     return [
       { q: 'Berapa lama masa aktif website ucapan?',
-        a: '<p>Masa aktif dihitung sejak link aktif: Basic <strong>' + esc(m.basic) + '</strong>, Premium <strong>' + esc(m.premium) + '</strong>, dan Special <strong>' + esc(m.special) + '</strong>. Setelah itu link dinonaktifkan dan berkas dihapus.</p>' },
+        a: '<p>Masa aktif dihitung sejak link aktif: <strong>' + esc(daftarMasa(ctx)) + '</strong>. Setelah itu link dinonaktifkan dan foto serta isi pesan dihapus.</p>' },
+      { q: 'Seperti apa ucapan yang diterima penerima?',
+        a: '<p>Penerima membuka link di HP-nya dan menikmati sebuah perjalanan kecil: layar pembuka, sapaan dengan nama mereka, <strong>surat</strong> yang dibuka dengan animasi, lalu satu <strong>kejutan</strong> yang dimainkan, dan terakhir album foto kenangan.</p>' },
+      { q: 'Apa saja pilihan kejutannya?',
+        a: '<p>Delapan jenis: <strong>kotak kado</strong>, <strong>kuis kecil</strong> (pertanyaanmu sendiri), <strong>gosok untuk melihat</strong>, <strong>pilih ceritamu</strong>, <strong>kode rahasia</strong>, <strong>tiup lilin</strong>, <strong>taman bunga</strong>, dan <strong>seberapa besar cintaku</strong>. Di form pemesanan ada tombol "Lihat contoh" untuk mencobanya dulu.</p>' },
       { q: 'Apa itu "Link Random"?',
         a: '<p>Alamat link dibuat acak dan unik sehingga tidak bisa ditebak. Hanya orang yang kamu beri link yang bisa membuka ucapanmu.</p>' },
       { q: 'Apakah foto dan pesan saya aman?',
         a: '<p>Foto hanya dipakai untuk membuat ucapan pesananmu, tidak dijual, tidak dipakai untuk iklan, dan tidak ditampilkan di galeri publik tanpa izin tertulis. Data kontakmu (nama, WhatsApp, email) tidak pernah tampil di halaman ucapan.</p>' },
       { q: 'Bagaimana cara membuat ucapannya?',
-        a: '<p>Tekan <strong>Buat Ucapan</strong>, pilih paket, isi nama penerima dan pesan, unggah foto, pilih desain (atau tulis ide sendiri), lalu bayar. Kamu akan mendapat <strong>kode redeem</strong> untuk memantau progres, dan link ucapan setelah jadi.</p>' },
+        a: '<p>Tekan <strong>Buat Ucapan</strong>, pilih paket, isi nama penerima, tulis surat, pilih jenis kejutan, unggah foto, pilih desain, lalu bayar. Kamu akan mendapat <strong>kode redeem</strong> untuk memantau pesanan, dan link ucapan setelah jadi.</p>' },
       { q: 'Metode pembayaran apa yang tersedia?',
         a: '<p>Pembayaran lewat payment gateway dengan metode populer seperti QRIS, virtual account, dan e-wallet (sesuai yang tersedia saat checkout). Konfirmasinya otomatis, tanpa perlu kirim bukti transfer.</p>' },
       { q: 'Berapa lama ucapan jadi?',
-        a: '<p>Paket Basic dan Premium dibuat otomatis dan link aktif beberapa menit setelah pembayaran terkonfirmasi. Paket Special dikerjakan manual dengan estimasi 1–2 hari kerja (bukan jaminan pasti).</p>' },
+        a: '<p>Paket Basic dibuat otomatis dan link aktif beberapa menit setelah pembayaran terkonfirmasi. Paket Special dikerjakan manual dengan desain khusus, estimasi 1–2 hari kerja (bukan jaminan pasti).</p>' },
       { q: 'Apakah saya bisa merevisi ucapan?',
-        a: '<p>Basic dan Premium tanpa revisi, jadi periksa data sebelum membayar. Paket Special mendapat <strong>1× revisi gratis</strong> untuk perubahan teks, foto, atau urutan (bukan mengganti konsep total).</p>' },
+        a: '<p>Paket Basic tanpa revisi, jadi periksa data sebelum membayar. Paket Special mendapat <strong>1× revisi gratis</strong> untuk perubahan teks, foto, atau urutan (bukan mengganti konsep total).</p>' },
       { q: 'Bolehkah mengirim sebagai inisial atau anonim?',
         a: '<p>Boleh. Kamu bisa memilih tampil dengan nama lengkap, inisial, atau anonim. Identitas pengirim anonim tidak ditampilkan ke penerima, namun tetap tercatat internal sesuai Kebijakan Privasi.</p>' }
     ];
@@ -47,7 +58,7 @@
       '<div class="hero-copy">' +
         '<span class="pill-tag">' + ic('sparkles') + ' Premium Kartu Ucapan Digital</span>' +
         '<h1 class="display" id="hero-title">Dearora — Kirimkan Rasa &amp; Cerita Lewat <span class="text-accent">Website Ucapan</span> Spesial</h1>' +
-        '<p class="lead">Lebih dari sekadar kartu kertas atau pesan singkat. Rangkai ucapan personal dengan foto, musik, dan kejutan interaktif, lalu kirim ke orang tersayang lewat satu link.</p>' +
+        '<p class="lead">Lebih dari sekadar kartu atau pesan singkat. Rangkai surat personal dan pilih kejutan interaktif seperti kado, kuis, atau taman bunga, lalu kirim ke orang tersayang lewat satu link.</p>' +
         '<div class="hero-cta">' +
           '<a class="btn btn-primary" href="#/buat">' + ic('heart') + ' Buat Ucapan Sekarang</a>' +
           '<a class="btn btn-secondary" href="#/contoh-desain">Lihat Contoh Desain</a>' +
@@ -57,7 +68,7 @@
           '<li><span>' + ic('card') + ' Pembayaran otomatis</span></li>' +
           '<li><span>' + ic('lock') + ' Link random &amp; privat</span></li>' +
         '</ul>' +
-        '<p class="small muted" style="margin-top:.5rem">*Paket Basic dan Premium. Special dikerjakan manual 1–2 hari kerja.</p>' +
+        '<p class="small muted" style="margin-top:.5rem">*Paket Basic. Paket Special dikerjakan manual 1–2 hari kerja.</p>' +
       '</div>' +
       '<div class="hero-visual" aria-hidden="true">' +
         '<div class="hero-blob"></div>' +
@@ -96,8 +107,8 @@
   function keunggulan() {
     var items = [
       { i: 'link', t: 'Link Privat & Terlindungi', tone: '', p: 'Alamat link dibuat acak sehingga tidak bisa ditebak. Hanya yang kamu beri link yang bisa membuka.' },
-      { i: 'image', t: 'Foto, Musik & Kenangan', tone: 'lav', p: 'Tambahkan galeri foto, musik latar, dan timeline kenangan (Premium), hingga video pendek (Special).' },
-      { i: 'gift', t: 'Surprise & Amplop Rahasia', tone: '', p: 'Paket Special menghadirkan amplop digital dan pesan rahasia yang bisa dikunci dengan password.' },
+      { i: 'sparkles', t: 'Pengalaman Interaktif', tone: 'lav', p: 'Bukan teks biasa: ada sapaan, surat yang dibuka dengan animasi, lalu kejutan yang dimainkan penerima.' },
+      { i: 'gift', t: '8 Jenis Kejutan', tone: '', p: 'Kado, kuis, gosok, kode rahasia, tiup lilin, taman bunga, dan lainnya. Kamu yang memilih.' },
       { i: 'zap', t: 'Tanpa Ribet & Otomatis', tone: 'sage', p: 'Pesan dari HP tanpa tatap muka. Pembayaran terkonfirmasi otomatis dan link aktif beberapa menit.' }
     ];
     return '<section class="section section-alt" aria-labelledby="unggul-title"><div class="container">' +
@@ -155,7 +166,7 @@
 
   var LANGKAH = [
     { i: 'card', t: 'Pilih Paket & Desain', p: 'Tentukan paket, lalu pilih desain dari contoh atau ceritakan ide sendiri.', tag: 'Langkah 1' },
-    { i: 'pencil', t: 'Isi Pesan & Foto', p: 'Tulis untuk siapa, dari siapa, pesanmu, lalu unggah foto-foto terbaik.', tag: 'Langkah 2' },
+    { i: 'pencil', t: 'Tulis Surat & Pilih Kejutan', p: 'Tulis suratmu, pilih jenis kejutan, lalu unggah foto-foto terbaik.', tag: 'Langkah 2' },
     { i: 'zap', t: 'Pembayaran Otomatis', p: 'Bayar lewat QRIS, VA, atau e-wallet. Kode redeem langsung kamu terima.', tag: 'Langkah 3' },
     { i: 'link', t: 'Link Jadi & Bagikan', p: 'Pantau progres di portal, lalu bagikan link ucapan ke orang spesialmu.', tag: 'Langkah 4' }
   ];
@@ -278,7 +289,7 @@
     return kepalaHalaman('Cara Kerja', 'Cara Kerja Dearora', 'Dari memilih paket sampai link ucapan siap dibagikan.') +
       '<section class="section" style="padding-top:2.5rem"><div class="container">' + langkahGrid() +
       '<div class="callout"><span class="icon-tile">' + ic('clock') + '</span><div><p><strong>Setelah link aktif</strong></p>' +
-      '<p>Masa aktif dihitung sejak link aktif (Basic ' + esc(m.basic) + ', Premium ' + esc(m.premium) + ', Special ' + esc(m.special) +
+      '<p>Masa aktif dihitung sejak link aktif (' + esc(daftarMasa(ctx)) +
       '). Setelah itu link dan berkas dinonaktifkan otomatis dan tidak dapat dipulihkan.</p></div></div>' +
       '</div></section>' + ctaBand();
   }
@@ -317,10 +328,10 @@
       '<h2>1. Layanan</h2><p>Dearora adalah jasa pembuatan kartu ucapan digital dalam bentuk link website.</p>' +
       '<h2>2. Pembelian dan pembayaran</h2><p>Harga sesuai paket yang dipilih. Pembayaran dilakukan lewat payment gateway dan pesanan diproses setelah pembayaran terkonfirmasi. Pesanan yang tidak dibayar dalam batas waktu yang ditentukan akan dibatalkan otomatis.</p>' +
       '<h2>3. Konten</h2><p>Pembeli bertanggung jawab atas isi ucapan dan menyatakan berhak atas foto/video yang diunggah. Dilarang konten ancaman, pelecehan, pornografi, ujaran kebencian, penipuan, atau yang melanggar hukum. Dearora berhak menolak atau menghapus pesanan. Mengirim secara anonim tidak berarti kebal dari pelaporan.</p>' +
-      '<h2>4. Link random</h2><p>Link dibuat acak dan hanya diketahui pemegangnya. Pembeli bertanggung jawab atas siapa saja yang diberi link.</p>' +
-      '<h2>5. Masa aktif link</h2><p>Basic ' + esc(m.basic) + ', Premium ' + esc(m.premium) + ', Special ' + esc(m.special) + ', dihitung sejak link aktif. Setelah itu link dan berkas dihapus dan tidak dapat dipulihkan.</p>' +
-      '<h2>6. Revisi</h2><p>Basic dan Premium tanpa revisi (periksa data sebelum membayar). Special mendapat 1× revisi gratis untuk perubahan teks, foto, dan urutan, bukan mengganti konsep total.</p>' +
-      '<h2>7. Waktu pengerjaan</h2><p>Basic dan Premium dibuat otomatis. Special memiliki estimasi 1–2 hari kerja dan bukan jaminan pasti.</p>' +
+      '<h2>4. Link</h2><p>Link ucapan Basic dibuat acak dan hanya diketahui pemegangnya. Pembeli bertanggung jawab atas siapa saja yang diberi link. Pada paket Special, link dapat berupa nama pilihan; link yang mudah ditebak berarti isi ucapan lebih mudah ditemukan orang lain.</p>' +
+      '<h2>5. Masa aktif link</h2><p>' + esc(daftarMasa(ctx)) + ', dihitung sejak link aktif. Setelah itu link dan berkas dihapus dan tidak dapat dipulihkan.</p>' +
+      '<h2>6. Revisi</h2><p>Paket Basic tanpa revisi (periksa data sebelum membayar). Special mendapat 1× revisi gratis untuk perubahan teks, foto, dan urutan, bukan mengganti konsep total.</p>' +
+      '<h2>7. Waktu pengerjaan</h2><p>Basic dibuat otomatis. Special dikerjakan manual dengan estimasi 1–2 hari kerja dan bukan jaminan pasti.</p>' +
       '<h2>8. Pembatalan dan pengembalian dana</h2><p>Tidak ada pengembalian dana setelah link aktif atau pengerjaan dimulai, kecuali terjadi kegagalan dari pihak Dearora.</p>' +
       '<h2>9. Hak kekayaan intelektual</h2><p>Desain, template, dan aset adalah milik Dearora. Desain bergaya "terinspirasi" tidak memakai logo atau merek pihak lain. Musik memakai lisensi yang sesuai.</p>' +
       '<h2>10. Batasan tanggung jawab, hukum, dan kontak</h2><p>Dearora tidak bertanggung jawab atas gangguan layanan pihak ketiga. Syarat ini tunduk pada hukum yang berlaku di Indonesia. Pertanyaan dapat disampaikan ' + kon + '.</p>' +

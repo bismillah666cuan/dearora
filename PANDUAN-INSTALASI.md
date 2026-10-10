@@ -10,9 +10,12 @@ Urutan: **A (backend) → B (password admin) → C (frontend) → D (uji) → E 
 ---
 
 ## A. Backend — Google Apps Script
+**Pembaruan terbaru (pengalaman ucapan interaktif):** ganti isi **`Kode`**, **`Pesanan`**, **`Kartu`**, **`Rutin`**, dan **`Admin`**. Berkas lain tidak berubah. Lalu jalankan **`setupAppEnvironment`** (menambah kolom `KejutanJSON`) dan **deploy versi baru**.
+
+Jika memasang dari awal:
 1. Ganti isi **`Kode`**, **`Pesanan`**, **`Pembayaran`**, **`Email`**, **`Portal`**, **`Kartu`** dengan berkas yang baru.
 2. Tambah **dua file baru**: **＋ → Skrip** → `Admin` dan `Rutin` (tanpa `.gs`) → tempel isinya.
-3. Jalankan **`setupAppEnvironment`** (aman diulang): menambah kolom baru `CatatanAdmin`, `PengingatKirim`, `TglDihapus` tanpa menyentuh data Ibu.
+3. Jalankan **`setupAppEnvironment`** (aman diulang): menambah kolom baru (`CatatanAdmin`, `PengingatKirim`, `TglDihapus`, `KejutanJSON`) tanpa menyentuh data Ibu.
 4. **Deploy ulang**: Terapkan → Kelola deployment → ✏ → Versi baru → Terapkan. Setujui izin baru bila diminta (akses Drive dan email sudah ada).
 
 ## B. Membuat password admin (sekali, aman)
@@ -27,6 +30,7 @@ Password admin **tidak pernah ditulis di kode atau sheet**. Hanya hash-nya disim
 > Login dikunci 15 menit setelah 5 kali salah (berlaku untuk siapa pun, termasuk bila password benar). Ini melindungi dari tebak-tebakan, tetapi artinya orang lain bisa "mengunci" Ibu sementara. Jalankan `aturPasswordAdmin` bila perlu masuk segera.
 
 ## C. Frontend — Vercel
+Berkas baru yang penting pada pembaruan ini: **`u/index.html`**, `css/card.css`, `js/card.js` (halaman ucapan interaktif), serta perubahan pada `js/form.js` (langkah Kejutan Akhir) dan `js/app.js` (demo di katalog).
 1. Ekstrak `dearora-frontend-fase4.zip`, **salin semua isinya** ke folder proyek `dearora` (jangan hapus folder `.git`), pilih "Ganti file".
 2. Buka `js/config.js` dan **isi lagi `GAS_URL`**.
 3. Dari folder yang berisi `index.html`:
@@ -38,6 +42,31 @@ Password admin **tidak pernah ditulis di kode atau sheet**. Hanya hash-nya disim
 4. Dashboard admin ada di **`https://ALAMAT-ANDA/admin/`** (tidak ditautkan dari toko, tidak diindeks mesin pencari). Simpan sebagai bookmark.
 
 ---
+
+## C2. Paket Basic & Special saja, dan teks paket Basic
+Premium tidak perlu dihapus. Cukup disembunyikan:
+1. **Admin → Pengaturan → Paket & harga**, matikan sakelar **Premium**. Premium langsung hilang dari toko dan form.
+2. Klik **Edit paket** pada **Basic**, lalu ganti kolom **Daftar fitur** dengan teks di bawah (data lama di sheet tidak otomatis berubah):
+   ```
+   + Sapaan manis + animasi confetti
+   + Surat yang dibuka, berisi pesan pribadi dari pengirim
+   + Kejutan akhir pilihanmu: kado, kuis, gosok, taman bunga, kue ulang tahun, dan lainnya
+   + Tema warna sesuai momen
+   + Link random, hanya yang diberi link bisa membuka
+   - Musik latar
+   - Revisi
+   ```
+   Tagline yang disarankan: *Ucapan interaktif yang dimainkan: ada surat, sapaan, dan kejutan pilihanmu.*
+
+**Apa yang bisa diubah dari Pengaturan admin, dan apa yang perlu kode**
+| Lewat Pengaturan admin | Perlu perubahan kode |
+|---|---|
+| Harga, masa aktif, jumlah foto maksimal, daftar fitur, aktif/nonaktif paket | Batas karakter surat per paket (Basic 300) |
+| Nama, kategori, tema warna, dan paket tiap desain; tampil/sembunyi | Daftar delapan jenis kejutan dan cara kerjanya |
+| Daftar musik, email kontak, batas waktu bayar | Kalimat sapaan tiap kategori, animasi, dan tata letak kartu |
+| | Teks FAQ, Syarat & Ketentuan |
+
+**Paket Special** dikerjakan manual: Ibu membuat halaman kustom, menempel alamatnya saat menekan **Tandai selesai & aktifkan** di detail pesanan, dan sistem menghitung masa aktif sejak itu.
 
 ## D. Uji dashboard admin
 1. Buka `/admin/`, masuk dengan `ADMIN_EMAIL` dan password.

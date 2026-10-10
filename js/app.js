@@ -140,39 +140,28 @@
   function tutupDrawer() { $drawer.classList.remove('open'); $menuBtn.setAttribute('aria-expanded', 'false'); $menuBtn.setAttribute('aria-label', 'Buka menu'); document.body.style.overflow = ''; }
 
   /* ---------------- Modal demo ---------------- */
+  var DEMO_JENIS = [['kado', 'Kado'], ['kuis', 'Kuis'], ['gosok', 'Gosok'], ['pilihan', 'Pilihan'], ['kode', 'Kode'], ['harapan', 'Tiup lilin'], ['taman', 'Taman'], ['cinta', 'Cinta']];
+  function urlDemo(tema, kat, j) { return '/u/?demo=1&tema=' + encodeURIComponent(tema) + '&kat=' + encodeURIComponent(kat) + '&j=' + encodeURIComponent(j); }
   function bukaDemo(id, pemicu) {
     if (!state.data) return;
     var d = state.data.desain.filter(function (x) { return x.id === id; })[0];
     if (!d) return;
-    var tema = U.temaDari(d.thumbnail);
-    var kat = U.infoKategori(d.kategori);
-    var cth = U.CONTOH[d.kategori] || U.CONTOH['Ulang Tahun'];
-    var ikon = U.ikonTema(tema, d.kategori);
-    var partIkon = (tema === 'cinema' || tema === 'arcade' || tema === 'grad') ? 'sparkles' : 'heart';
+    var tema = U.temaDari(d.thumbnail), kat = d.kategori;
     var tags = (d.paket || []).map(function (p) { return U.badgePaket(p, state.data.paket); }).join(' ');
-    var urlDemo = U.amanHttps(d.urlDemo);
-
+    var urlDemoLengkap = U.amanHttps(d.urlDemo);
     $dialog.innerHTML =
       '<div class="modal-box">' +
-        '<div class="modal-bar"><div><strong id="demoTitle">' + esc(d.nama) + '</strong><small>Demo dengan data contoh</small></div>' +
+        '<div class="modal-bar"><div><strong id="demoTitle">' + esc(d.nama) + '</strong><small>Demo interaktif · data contoh</small></div>' +
         '<button type="button" class="icon-btn" data-action="close-demo" aria-label="Tutup demo">' + ic('x') + '</button></div>' +
-        '<div class="demo-stage"><div class="demo-phone theme theme-' + tema + '" id="demoPhone">' + U.partikel(9, partIkon) +
-          '<div class="demo-layer demo-cover"><span class="ico">' + ic(ikon) + '</span>' +
-            '<p style="font-weight:700;letter-spacing:.06em;font-size:.75rem">UNTUK RANI</p>' +
-            '<h3>' + esc(cth.judul) + '</h3><p>Ada pesan kecil yang menunggumu.</p>' +
-            '<button type="button" class="demo-open" data-action="open-card">Ketuk untuk membuka</button></div>' +
-          '<div class="demo-layer demo-msg" aria-live="polite">' +
-            '<span class="to">Untuk Rani</span><div class="demo-photos" aria-hidden="true"><i></i><i></i><i></i></div>' +
-            '<p class="body">' + esc(cth.pesan) + '</p><p class="from">— Dimas</p>' +
-            '<button type="button" class="btn btn-ghost-light btn-sm" style="color:var(--tink);border-color:var(--tacc)" data-action="replay-card">Ulangi</button></div>' +
-        '</div></div>' +
-        '<div class="modal-foot"><div style="display:flex;flex-wrap:wrap;gap:.375rem;justify-content:center">' +
-          '<span class="tag lav">' + esc(kat.judul.split(' & ')[0]) + '</span>' + tags + '</div>' +
+        '<div class="demo-stage"><iframe class="demo-frame" id="demoFrame" title="Demo ucapan: ' + esc(d.nama) + '" src="' + esc(urlDemo(tema, kat, 'kado')) + '"></iframe></div>' +
+        '<div class="demo-jenis" role="group" aria-label="Coba jenis kejutan"><span class="small muted">Coba kejutan:</span>' + DEMO_JENIS.map(function (j, i) { return '<button type="button" class="chip' + (i === 0 ? ' on' : '') + '" data-demo-j="' + j[0] + '" aria-pressed="' + (i === 0) + '">' + esc(j[1]) + '</button>'; }).join('') + '</div>' +
+        '<div class="modal-foot"><div style="display:flex;flex-wrap:wrap;gap:.375rem;justify-content:center"><span class="tag lav">' + esc(kat.split(' & ')[0]) + '</span>' + tags + '</div>' +
           '<a class="btn btn-primary" data-action="close-demo" href="#/buat?desain=' + encodeURIComponent(d.id) + '">Pakai Desain Ini</a>' +
-          (urlDemo ? '<a class="btn btn-secondary" href="' + esc(urlDemo) + '" target="_blank" rel="noopener noreferrer">Buka Demo Lengkap</a>' : '') +
+          (urlDemoLengkap ? '<a class="btn btn-secondary" href="' + esc(urlDemoLengkap) + '" target="_blank" rel="noopener noreferrer">Buka Demo Lengkap</a>' : '') +
           '<p class="small">Ini hanya contoh dengan nama dan pesan fiktif.</p></div>' +
       '</div>';
     $dialog.setAttribute('aria-labelledby', 'demoTitle');
+    $dialog._tema = tema; $dialog._kat = kat;
     if (typeof $dialog.showModal === 'function') $dialog.showModal(); else $dialog.setAttribute('open', '');
     $dialog._pemicu = pemicu;
   }
@@ -182,6 +171,12 @@
 
   /* ---------------- Event (delegasi) ---------------- */
   document.addEventListener('click', function (ev) {
+    var chip = ev.target.closest('[data-demo-j]');
+    if (chip && $dialog.open) {
+      var fr = document.getElementById('demoFrame'); if (fr) fr.src = urlDemo($dialog._tema, $dialog._kat, chip.dataset.demoJ);
+      $dialog.querySelectorAll('[data-demo-j]').forEach(function (c) { var on = c === chip; c.classList.toggle('on', on); c.setAttribute('aria-pressed', String(on)); });
+      return;
+    }
     var el = ev.target.closest('[data-action]');
     if (!el) {
       if (ev.target === $dialog) tutupDemo();     // klik backdrop

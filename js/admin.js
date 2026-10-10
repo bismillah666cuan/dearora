@@ -201,6 +201,21 @@
     return '<div class="actions">' + b.join('') + '</div>';
   }
 
+  var NAMA_KEJUTAN = { kado: 'Kotak kado', kuis: 'Kuis kecil', gosok: 'Gosok untuk melihat', pilihan: 'Pilih ceritamu', kode: 'Kode rahasia', harapan: 'Tiup lilin', taman: 'Taman bunga', cinta: 'Seberapa besar cintaku' };
+  function kejutanAdmin(k, o) {
+    if (!k) return '';
+    var h = '<strong>' + esc(NAMA_KEJUTAN[k.jenis] || k.jenis) + '</strong>';
+    if (k.jenis === 'kode') h += '<br>Petunjuk: ' + esc(k.petunjuk || '-') + '<br>Ucapan terkunci: ' + esc(o.PesanRahasia) + '<br><span class="small muted">Kode tidak disimpan (hanya hash). Jika pembeli lupa kodenya, tanyakan langsung kepada pembeli.</span>';
+    else h += '<br>Ucapan: ' + esc(k.ucapan);
+    if (k.jenis === 'kado' && k.judul) h += '<br>Judul: ' + esc(k.judul);
+    if (k.jenis === 'gosok') h += '<br>Petunjuk: ' + esc(k.petunjuk || '-');
+    if (k.jenis === 'harapan') h += '<br>Jumlah lilin: ' + esc(k.lilin);
+    if (k.jenis === 'cinta') h += '<br>Target ketukan: ' + esc(k.target) + '<br>Kalimat: ' + esc((k.kalimat || []).join(' · '));
+    if (k.jenis === 'taman') h += '<br>Bunga: ' + esc((k.bunga || []).join(' · '));
+    if (k.jenis === 'pilihan') h += '<br>' + (k.pilihan || []).map(function (x) { return esc(x.label) + ' → ' + esc(x.teks); }).join('<br>');
+    if (k.jenis === 'kuis') h += '<br>' + (k.soal || []).map(function (x, i) { return (i + 1) + '. ' + esc(x.q) + ' [' + (x.opsi || []).map(function (op, n) { return (n === x.benar ? '✓ ' : '') + esc(op); }).join(' / ') + ']'; }).join('<br>');
+    return h;
+  }
   function isiDetail(d) {
     var o = d.pesanan, id = encodeURIComponent(o.OrderID), dihapus = !!o.TglDihapus;
     var media = d.media.filter(function (m) { return m.status === 'ada'; }).map(function (m) {
@@ -218,7 +233,7 @@
       '<div class="card"><h2>Ucapan</h2><dl class="kv">' + kv('Tautan', o.LinkHasil ? '<a href="' + esc(o.LinkHasil) + '" target="_blank" rel="noopener noreferrer">' + esc(o.LinkHasil) + '</a>' : '') + kv('Aktif', o.TglAktif ? esc(tglJam(o.TglAktif)) : '') + kv('Berakhir', o.TglKedaluwarsa ? esc(tglJam(o.TglKedaluwarsa)) : '') + kv('Berkas dihapus', dihapus ? esc(tglJam(o.TglDihapus)) : '') + '</dl></div></div>' +
       '<div class="card" style="margin-top:1rem"><h2>Isi ucapan</h2>' + (dihapus ? '<p class="muted">Isi pesan sudah dihapus otomatis setelah masa tenggang.</p>' : '<dl class="kv">' +
       kv('Untuk', esc(o.NamaPenerima)) + kv('Dari', o.TipeDari === 'anonim' ? 'Anonim' : esc(o.TipeDari + ': ' + o.NilaiDari)) + kv('Pesan', esc(o.Pesan)) + kv('Pesan personal', esc(o.PesanPersonal)) +
-      kv('Desain', d.desainNama ? esc(d.desainNama) : (o.IdeSendiri ? 'Ide sendiri: ' + esc(o.IdeSendiri) : '')) + kv('Musik', esc(o.MusikID)) + kv('Surprise', esc(o.JenisSurprise)) + kv('Pesan rahasia', esc(o.PesanRahasia) + (o.punyaPasswordRahasia ? ' <span class="badge">berpassword</span>' : '')) +
+      kv('Desain', d.desainNama ? esc(d.desainNama) : (o.IdeSendiri ? 'Ide sendiri: ' + esc(o.IdeSendiri) : '')) + kv('Musik', esc(o.MusikID)) + kv('Kejutan akhir', kejutanAdmin(d.kejutan, o)) + kv('Surprise (Special)', esc(o.JenisSurprise)) + kv('Pesan rahasia', esc(o.PesanRahasia) + (o.punyaPasswordRahasia ? ' <span class="badge">berpassword</span>' : '')) +
       kv('Catatan pembeli', esc(o.CatatanKhusus)) + '</dl>') + '</div>' +
       '<div class="card" style="margin-top:1rem"><h2>Foto &amp; video</h2>' + (media ? '<div class="media-grid">' + media + '</div>' : '<p class="muted">Tidak ada berkas' + (dihapus ? ' (sudah dihapus).' : '.') + '</p>') +
       (d.folderId ? '<p style="margin-top:.75rem"><a class="btn sm" href="https://drive.google.com/drive/folders/' + encodeURIComponent(d.folderId) + '" target="_blank" rel="noopener noreferrer">' + ic('ext') + ' Buka folder di Drive</a></p>' : '') + '</div>' +

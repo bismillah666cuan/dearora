@@ -18,8 +18,8 @@
   };
   var ID_LANGKAH = { namaPembeli: 'pemesan', whatsapp: 'pemesan', email: 'pemesan', penerima: 'untuk', tipeDari: 'untuk', nilaiDari: 'untuk',
     pesan: 'pesan', pesanPersonal: 'pesan', desain: 'desain', musikId: 'ekstra', jenisSurprise: 'ekstra', pesanRahasia: 'ekstra',
-    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket' };
-  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Pesan', foto: 'Foto', desain: 'Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan' };
+    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket', kejutanJenis: 'kejutan', kejutanUcapan: 'kejutan', kejutanDetail: 'kejutan' };
+  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Surat', kejutan: 'Kejutan Akhir', foto: 'Foto', desain: 'Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan' };
 
   var ST = null;            // isian
   var langkah = 0;          // indeks langkah aktif
@@ -35,8 +35,26 @@
   function paketAktif() { var d = data(); return d && ST.paket ? d.paket.filter(function (p) { return p.id === ST.paket; })[0] : null; }
   function musikAda() { var d = data(); return !!(d && d.musik && d.musik.length); }
 
+  var JENIS_KEJUTAN = [
+    { id: 'kado', nama: 'Kotak Kado', ikon: 'gift', desk: 'Kotak kado berpita. Penerima mengetuknya, lalu ucapan dan fotomu muncul.' },
+    { id: 'kuis', nama: 'Kuis Kecil', ikon: 'help', desk: 'Penerima menjawab pertanyaan darimu, lalu mendapat respons lucu atau manis.' },
+    { id: 'gosok', nama: 'Gosok untuk Melihat', ikon: 'eraser', desk: 'Penerima menggosok layar untuk menyingkap pesan tersembunyi.' },
+    { id: 'pilihan', nama: 'Pilih Ceritamu', ikon: 'menu', desk: 'Beberapa tombol, tiap pilihan membuka bagian cerita yang berbeda.' },
+    { id: 'kode', nama: 'Kode Rahasia', ikon: 'lock', desk: 'Pesan terkunci. Penerima memasukkan kode buatanmu (tanggal penting atau kata rahasia).' },
+    { id: 'harapan', nama: 'Tiup Lilin', ikon: 'cake', desk: 'Kue ulang tahun digital. Penerima meniup lilin, lalu ucapan dan perayaan muncul.' },
+    { id: 'taman', nama: 'Taman Bunga', ikon: 'flower', desk: 'Taman kosong. Setiap bunga yang diketuk tumbuh dan membuka pesan; semua mekar memunculkan ucapan utama.' },
+    { id: 'cinta', nama: 'Seberapa Besar Cintaku', ikon: 'heart', desk: 'Hati yang diketuk berkali-kali, makin besar, sampai ucapan utama muncul.' }
+  ];
+  function soalBaru() { return { q: '', opsi: ['', '', ''], benar: 0, rb: '', rs: '' }; }
+  function kejutanBaru() {
+    return { jenis: 'kado', ucapan: '', judul: '', soal: [soalBaru()], petunjuk: '', pilihan: [{ label: '', teks: '' }, { label: '', teks: '' }, { label: '', teks: '' }],
+      kode: '', petunjukKode: '', lilin: 3, bunga: ['', '', ''], target: 10, kalimat: ['', '', ''] };
+  }
+  function setPath(o, path, val) { var p = path.split('.'), c = o; for (var i = 0; i < p.length - 1; i++) { if (c[p[i]] == null) return; c = c[p[i]]; } c[p[p.length - 1]] = val; }
+  function templatPaket() { return ST.paket === 'basic' || ST.paket === 'premium'; }
+
   function baru() {
-    return { paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
+    return { kejutan: kejutanBaru(), paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
       mode: 'pilih', desainId: '', ideSendiri: '', musikId: '', jenisSurprise: '', pesanRahasia: '', passwordRahasia: '', pembuka: 'judul',
       catatan: '', setuju: false, _langkah: 0 };
   }
@@ -44,12 +62,12 @@
     ST = baru();
     try {
       var j = JSON.parse(localStorage.getItem(KEY_DRAF));
-      if (j && j.v === 1 && j.s) { Object.keys(ST).forEach(function (k) { if (k in j.s && k !== 'passwordRahasia' && k !== 'setuju') ST[k] = j.s[k]; }); langkah = ST._langkah || 0; }
+      if (j && j.v === 1 && j.s) { Object.keys(ST).forEach(function (k) { if (k in j.s && k !== 'passwordRahasia' && k !== 'setuju' && k !== 'kejutan') ST[k] = j.s[k]; }); if (j.s.kejutan && typeof j.s.kejutan === 'object') ST.kejutan = Object.assign(kejutanBaru(), j.s.kejutan); langkah = ST._langkah || 0; }
     } catch (e) { /* abaikan */ }
   }
   function tulisDraf() {
     if (!ST) return;
-    try { var s = Object.assign({}, ST, { _langkah: langkah }); delete s.passwordRahasia; delete s.setuju; localStorage.setItem(KEY_DRAF, JSON.stringify({ v: 1, s: s })); } catch (e) { /* penuh/diblokir */ }
+    try { var s = Object.assign({}, ST, { _langkah: langkah, kejutan: Object.assign({}, ST.kejutan, { kode: '' }) }); delete s.passwordRahasia; delete s.setuju; localStorage.setItem(KEY_DRAF, JSON.stringify({ v: 1, s: s })); } catch (e) { /* penuh/diblokir */ }
   }
   function simpanDraf() { clearTimeout(simpanT); simpanT = setTimeout(tulisDraf, 250); }
   // Pastikan draf tidak hilang bila tab ditutup/dimuat ulang sebelum jeda 250 ms selesai.
@@ -57,7 +75,9 @@
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') { clearTimeout(simpanT); if (ui.simpanAktif !== false) tulisDraf(); } });
 
   function daftarLangkah() {
-    var l = ['paket', 'pemesan', 'untuk', 'pesan', 'foto', 'desain'];
+    var l = ['paket', 'pemesan', 'untuk', 'pesan'];
+    if (templatPaket()) l.push('kejutan');
+    l.push('foto', 'desain');
     if (ST.paket === 'premium' || ST.paket === 'special') l.push('ekstra');
     l.push('catatan', 'ringkasan');
     return l;
@@ -140,9 +160,58 @@
 
   VIEW.pesan = function () {
     var p = ST.paket, maks = LIM.pesan[p] || 300;
-    return fld('pesan', 'Pesan untuk penerima', ta('pesan', maks, 6), p === 'basic' ? 'Paket Basic: pesan singkat, maksimal ' + maks + ' karakter.' : 'Maksimal ' + maks + ' karakter.') +
+    return '<p class="lead small" style="margin-bottom:1rem">Ini isi <strong>surat</strong> yang dibuka penerima. Tulis dari hati; ucapan penutup ada di langkah berikutnya.</p>' + fld('pesan', 'Isi surat', ta('pesan', maks, 6), p === 'basic' ? 'Paket Basic: maksimal ' + maks + ' karakter.' : 'Maksimal ' + maks + ' karakter.') +
       ((p === 'premium' || p === 'special')
         ? fld('pesanPersonal', 'Pesan personal dari pengirim', ta('pesanPersonal', LIM.personal, 4), 'Kata-kata tambahan yang muncul di bagian penutup kartu.', true) : '');
+  };
+
+  function cth(jenis) {
+    var tema = 'blossom';
+    if (data() && ST.desainId) { var d = data().desain.filter(function (x) { return x.id === ST.desainId; })[0]; if (d) tema = U.temaDari(d.thumbnail); }
+    return '/u/?demo=1&j=' + encodeURIComponent(jenis) + '&tema=' + encodeURIComponent(tema);
+  }
+  function kolom(id, label, nilai, p, maks, hint, tipe) {
+    return fld(id, label, '<input class="input" id="' + id + '" data-p="' + p + '" type="' + (tipe || 'text') + '" value="' + esc(nilai) + '" maxlength="' + maks + '"' + aria(id) + '>', hint, false);
+  }
+  function detailKejutan(k) {
+    var h = '';
+    if (k.jenis === 'kado') h = fld('kejudul', 'Judul kado (opsional)', '<input class="input" id="kejudul" data-p="kejutan.judul" type="text" value="' + esc(k.judul) + '" maxlength="40" placeholder="Hadiah untukmu"' + aria('kejudul') + '>', 'Tampil di atas kotak kado.');
+    if (k.jenis === 'gosok') h = kolom('kpetunjuk', 'Kalimat di atas lapisan gosok', k.petunjuk, 'kejutan.petunjuk', 80, 'Mis. "Ada sesuatu yang selalu ingin kusampaikan…" (kosong = bawaan).');
+    if (k.jenis === 'kode') h = kolom('kkode', 'Kode rahasia', k.kode, 'kejutan.kode', 30, '4–20 huruf/angka, mis. tanggal jadian 17082020 atau kata "kopisenja". Huruf besar/kecil dan spasi diabaikan. Beri tahu penerima petunjuknya, bukan kodenya.') +
+      kolom('kpetkode', 'Petunjuk untuk penerima', k.petunjukKode, 'kejutan.petunjukKode', 100, 'Mis. "Tanggal pertama kali kita bertemu (ddmmyyyy)".');
+    if (k.jenis === 'harapan') h = fld('klilin', 'Jumlah lilin', '<select class="input" id="klilin" data-p="kejutan.lilin" data-num="1">' + [1, 2, 3, 4, 5].map(function (n) { return '<option value="' + n + '"' + (Number(k.lilin) === n ? ' selected' : '') + '>' + n + ' lilin</option>'; }).join('') + '</select>', 'Penerima mengetuk semua lilin untuk memadamkannya.');
+    if (k.jenis === 'cinta') h = fld('ktarget', 'Berapa kali hati harus diketuk?', '<input class="input" id="ktarget" data-p="kejutan.target" data-num="1" type="number" min="5" max="30" value="' + esc(k.target) + '"' + aria('ktarget') + '>', '5–30 ketukan.') +
+      '<p class="small muted" style="margin:.25rem 0 .5rem">Kalimat yang muncul tiap ketukan (opsional, kosong = bawaan):</p>' + k.kalimat.map(function (x, i) { return '<div class="field"><label class="sr-only" for="kkal' + i + '">Kalimat ' + (i + 1) + '</label><input class="input" id="kkal' + i + '" data-p="kejutan.kalimat.' + i + '" type="text" maxlength="60" value="' + esc(x) + '" placeholder="Kalimat ' + (i + 1) + '"></div>'; }).join('');
+    if (k.jenis === 'taman') h = '<p class="small muted" style="margin-bottom:.5rem">Pesan singkat di tiap bunga (minimal 2, maksimal 5):</p>' + k.bunga.map(function (x, i) {
+      return '<div class="field kej-baris"><label class="sr-only" for="kbunga' + i + '">Bunga ' + (i + 1) + '</label><input class="input" id="kbunga' + i + '" data-p="kejutan.bunga.' + i + '" type="text" maxlength="80" value="' + esc(x) + '" placeholder="Bunga ' + (i + 1) + ', mis. Kamu selalu kuat"></div>'; }).join('') +
+      '<div class="actions">' + (k.bunga.length < 5 ? '<button type="button" class="btn btn-secondary btn-sm" data-f="bunga+">+ Tambah bunga</button>' : '') + (k.bunga.length > 2 ? '<button type="button" class="btn btn-secondary btn-sm" data-f="bunga-">− Kurangi</button>' : '') + '</div>';
+    if (k.jenis === 'pilihan') h = '<p class="small muted" style="margin-bottom:.5rem">Isi 2–3 tombol. Tiap tombol membuka cerita yang berbeda:</p>' + k.pilihan.map(function (x, i) {
+      return '<div class="kej-sub"><div class="field"><label for="kpl' + i + '">Tombol ' + (i + 1) + '</label><input class="input" id="kpl' + i + '" data-p="kejutan.pilihan.' + i + '.label" type="text" maxlength="30" value="' + esc(x.label) + '" placeholder="mis. Buka kenangan manis"></div>' +
+        '<div class="field"><label for="kpt' + i + '">Cerita yang terbuka</label><textarea class="input textarea" id="kpt' + i + '" data-p="kejutan.pilihan.' + i + '.teks" rows="2" maxlength="220">' + esc(x.teks) + '</textarea></div></div>'; }).join('');
+    if (k.jenis === 'kuis') h = k.soal.map(function (x, i) {
+      var opsi = x.opsi.map(function (o, n) {
+        return '<div class="kej-opsi"><input type="radio" name="kbenar' + i + '" data-p="kejutan.soal.' + i + '.benar" data-num="1" value="' + n + '"' + (Number(x.benar) === n ? ' checked' : '') + ' aria-label="Jawaban benar: pilihan ' + (n + 1) + '"><input class="input" type="text" data-p="kejutan.soal.' + i + '.opsi.' + n + '" maxlength="60" value="' + esc(o) + '" placeholder="Pilihan ' + (n + 1) + '" aria-label="Pilihan ' + (n + 1) + '"></div>'; }).join('');
+      return '<div class="kej-sub"><p class="small" style="font-weight:800;margin-bottom:.5rem">Pertanyaan ' + (i + 1) + '</p>' +
+        '<div class="field"><label for="kq' + i + '">Pertanyaan</label><input class="input" id="kq' + i + '" data-p="kejutan.soal.' + i + '.q" type="text" maxlength="120" value="' + esc(x.q) + '" placeholder="mis. Di mana kita pertama kali bertemu?"></div>' +
+        '<p class="small muted" style="margin:.25rem 0 .375rem">Pilihan jawaban. Tandai bulatan di sebelah jawaban yang <strong>benar</strong>:</p>' + opsi +
+        '<div class="field"><label for="krb' + i + '">Respons bila benar</label><input class="input" id="krb' + i + '" data-p="kejutan.soal.' + i + '.rb" type="text" maxlength="120" value="' + esc(x.rb) + '" placeholder="Betul! Kamu memang yang paling mengerti aku."></div>' +
+        '<div class="field"><label for="krs' + i + '">Respons bila salah</label><input class="input" id="krs' + i + '" data-p="kejutan.soal.' + i + '.rs" type="text" maxlength="120" value="' + esc(x.rs) + '" placeholder="Hampir! Tapi kamu tetap favoritku."></div></div>'; }).join('') +
+      '<div class="actions">' + (k.soal.length < 3 ? '<button type="button" class="btn btn-secondary btn-sm" data-f="soal+">+ Tambah pertanyaan</button>' : '') + (k.soal.length > 1 ? '<button type="button" class="btn btn-secondary btn-sm" data-f="soal-">− Hapus yang terakhir</button>' : '') + '</div>';
+    return h ? '<div class="kej-detail">' + h + (errors.kejutanDetail ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.kejutanDetail) + '</p>' : '') + '</div>' : (errors.kejutanDetail ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.kejutanDetail) + '</p>' : '');
+  }
+  VIEW.kejutan = function () {
+    var k = ST.kejutan, info = JENIS_KEJUTAN.filter(function (j) { return j.id === k.jenis; })[0] || JENIS_KEJUTAN[0];
+    var kartu = JENIS_KEJUTAN.map(function (j) {
+      var on = k.jenis === j.id;
+      return '<div class="kej-card' + (on ? ' on' : '') + '"><label for="kj-' + j.id + '"><input type="radio" id="kj-' + j.id + '" name="kjenis" data-p="kejutan.jenis" value="' + j.id + '"' + (on ? ' checked' : '') + '>' +
+        '<span class="kc-ico">' + ic(j.ikon) + '</span><strong>' + esc(j.nama) + '</strong><small>' + esc(j.desk) + '</small></label>' +
+        '<a class="kc-demo" href="' + esc(cth(j.id)) + '" target="_blank" rel="noopener">Lihat contoh ' + ic('arrow') + '</a></div>';
+    }).join('');
+    var hintUcapan = k.jenis === 'kode' ? 'Pesan yang terbuka setelah kode benar. Disimpan di server, tidak tampil di halaman sebelum kode dimasukkan.' : k.jenis === 'gosok' ? 'Pesan yang tersembunyi di bawah lapisan gosok.' : 'Ucapan utama yang muncul di akhir. Ini bisa berbeda dari isi surat.';
+    return '<p class="lead small" style="margin-bottom:1rem">Setelah surat dibaca, penerima memainkan satu <strong>kejutan</strong>. Pilih yang paling cocok dengan momenmu. Tekan <em>Lihat contoh</em> untuk mencobanya.</p>' +
+      '<fieldset class="field"><legend class="sr-only">Jenis kejutan</legend><div class="kej-grid">' + kartu + '</div>' + (errors.kejutanJenis ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.kejutanJenis) + '</p>' : '') + '</fieldset>' +
+      '<h2 class="h3" style="margin:1.25rem 0 .75rem">' + esc(info.nama) + '</h2>' + detailKejutan(k) +
+      fld('kejutanUcapan', 'Ucapan kejutan', '<textarea class="input textarea" id="kejutanUcapan" data-p="kejutan.ucapan" rows="4" maxlength="350"' + aria('kejutanUcapan') + '>' + esc(k.ucapan) + '</textarea><span class="counter' + (k.ucapan.length > 300 ? ' over' : '') + '" data-counter="kejutanUcapan" data-max="300">' + k.ucapan.length + '/300</span>', hintUcapan);
   };
 
   VIEW.foto = function () {
@@ -236,7 +305,8 @@
       (function () { var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null; var n = pf ? pf.nama : ST.namaPembeli, w = pf ? pf.whatsapp : ST.whatsapp, e = pf ? pf.email : ST.email;
         return ringkasBaris('Pemesan', esc(n) + (pf ? ' <span class="tag sage">Akun terhubung</span>' : '') + '<br><span class="muted small">' + esc(w) + ' · ' + esc(e) + '</span>', 'pemesan'); })() +
       ringkasBaris('Untuk / Dari', esc(ST.penerima) + ' / ' + dari, 'untuk') +
-      ringkasBaris('Pesan', '<span class="clip">' + esc(ST.pesan) + '</span>', 'pesan') +
+      ringkasBaris('Surat', '<span class="clip">' + esc(ST.pesan) + '</span>', 'pesan') +
+      (templatPaket() ? ringkasBaris('Kejutan akhir', esc((JENIS_KEJUTAN.filter(function (j) { return j.id === ST.kejutan.jenis; })[0] || {}).nama || '') + '<br><span class="clip muted small">' + esc(ST.kejutan.ucapan) + '</span>', 'kejutan') : '') +
       ringkasBaris('Foto', files.filter(function (f) { return f.jenis === 'foto'; }).length + ' foto' + (files.some(function (f) { return f.jenis === 'video'; }) ? ' + 1 video' : ''), 'foto') +
       ringkasBaris('Desain', esc(ds), 'desain') +
       (ST.paket !== 'basic' && musikAda() ? ringkasBaris('Musik', esc(mus), 'ekstra') : '') +
@@ -250,6 +320,43 @@
   };
 
   /* ---------------- Validasi per langkah ---------------- */
+  function normKode(x) { return String(x || '').toLowerCase().replace(/[\s.\-\/_,:;]/g, ''); }
+  /** Cermin validasi server (yang tetap menjadi acuan). */
+  function galatKejutan(k) {
+    var tr = function (v) { return String(v || '').trim(); };
+    if (k.jenis === 'kuis') {
+      for (var i = 0; i < k.soal.length; i++) {
+        var s2 = k.soal[i], ops = s2.opsi.map(tr).filter(Boolean);
+        if (tr(s2.q).length < 3) return 'Kuis: isi pertanyaan ' + (i + 1) + ' (minimal 3 karakter).';
+        if (ops.length < 2) return 'Kuis: pertanyaan ' + (i + 1) + ' perlu minimal 2 pilihan jawaban.';
+        if (!tr(s2.opsi[Number(s2.benar)])) return 'Kuis: tandai jawaban yang benar pada pertanyaan ' + (i + 1) + ' (pilih jawaban yang terisi).';
+      }
+    }
+    if (k.jenis === 'pilihan') {
+      var isi = k.pilihan.filter(function (x) { return tr(x.label) || tr(x.teks); });
+      if (isi.length < 2 || isi.some(function (x) { return !tr(x.label) || tr(x.teks).length < 3; })) return 'Pilihan: isi minimal 2 tombol, masing-masing dengan label dan cerita (minimal 3 karakter).';
+    }
+    if (k.jenis === 'kode') { var kn = normKode(k.kode); if (kn.length < 4 || kn.length > 20) return 'Kode rahasia harus 4–20 huruf/angka (mis. 17082020 atau kopisenja).'; }
+    if (k.jenis === 'taman' && k.bunga.filter(function (x) { return tr(x); }).length < 2) return 'Taman: isi minimal 2 pesan bunga.';
+    if (k.jenis === 'cinta') { var t = Number(k.target); if (!(t >= 5 && t <= 30)) return 'Jumlah ketukan harus 5–30.'; }
+    return '';
+  }
+  function kejutanPayload() {
+    var k = ST.kejutan, tr = function (v) { return String(v || '').trim(); }, o = { jenis: k.jenis, ucapan: tr(k.ucapan) };
+    if (k.jenis === 'kado') o.judul = tr(k.judul);
+    if (k.jenis === 'gosok') o.petunjuk = tr(k.petunjuk);
+    if (k.jenis === 'kode') { o.kode = k.kode; o.petunjuk = tr(k.petunjukKode); }
+    if (k.jenis === 'harapan') o.lilin = Number(k.lilin);
+    if (k.jenis === 'cinta') { o.target = Number(k.target); o.kalimat = k.kalimat.map(tr).filter(Boolean); }
+    if (k.jenis === 'taman') o.bunga = k.bunga.map(tr).filter(Boolean);
+    if (k.jenis === 'pilihan') o.pilihan = k.pilihan.map(function (x) { return { label: tr(x.label), teks: tr(x.teks) }; }).filter(function (x) { return x.label || x.teks; });
+    if (k.jenis === 'kuis') o.soal = k.soal.map(function (s2) {
+      var idx = -1, ops = []; s2.opsi.forEach(function (x, i) { var t2 = tr(x); if (t2) { if (i === Number(s2.benar)) idx = ops.length; ops.push(t2); } });
+      return { q: tr(s2.q), opsi: ops, benar: idx, rb: tr(s2.rb), rs: tr(s2.rs) };
+    });
+    return o;
+  }
+
   var RE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, RE_WA = /^(\+62|62|0)8[0-9]{7,12}$/;
   function validasi(id) {
     var e = {}, t = function (k) { return String(ST[k] || '').trim(); };
@@ -269,6 +376,11 @@
       if (t('pesan').length < 5) e.pesan = 'Pesan minimal 5 karakter.';
       else if (t('pesan').length > m) e.pesan = 'Pesan maksimal ' + m + ' karakter untuk paket ini.';
       if (t('pesanPersonal').length > LIM.personal) e.pesanPersonal = 'Maksimal ' + LIM.personal + ' karakter.';
+    }
+    if (id === 'kejutan' && templatPaket()) {
+      var kj = ST.kejutan, uc = String(kj.ucapan || '').trim(), dt = galatKejutan(kj);
+      if (uc.length < 5) e.kejutanUcapan = 'Ucapan kejutan minimal 5 karakter.'; else if (uc.length > 300) e.kejutanUcapan = 'Ucapan kejutan maksimal 300 karakter.';
+      if (dt) e.kejutanDetail = dt;
     }
     if (id === 'foto') { if (!files.some(function (f) { return f.jenis === 'foto'; })) e.foto = 'Unggah minimal 1 foto.'; }
     if (id === 'desain') {
@@ -404,6 +516,7 @@
       desainId: ST.mode === 'pilih' ? ST.desainId : '', ideSendiri: ST.mode === 'ide' ? ST.ideSendiri.trim() : '',
       musikId: ST.musikId, catatan: ST.catatan.trim(), setuju: ST.setuju === true, website: ''
     };
+    if (templatPaket()) p.kejutan = kejutanPayload();
     var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null;
     if (pf) { p.sesi = window.Auth.token(); p.namaPembeli = pf.nama; p.whatsapp = pf.whatsapp; p.email = pf.email; }
     if (ST.paket === 'special') { p.jenisSurprise = ST.jenisSurprise; p.pesanRahasia = ST.pesanRahasia.trim(); p.passwordRahasia = ST.passwordRahasia; p.pembuka = ST.pembuka; }
@@ -482,17 +595,28 @@
 
   /* ---------------- Event ---------------- */
   function onInput(ev) {
-    var el = ev.target, k = el.dataset && el.dataset.k;
-    if (!k || el.type === 'radio' || el.type === 'checkbox') return;
-    ST[k] = el.value;
-    var c = $root.querySelector('[data-counter="' + k + '"]');
+    var el = ev.target, k = el.dataset && el.dataset.k, p = el.dataset && el.dataset.p;
+    if ((!k && !p) || el.type === 'radio' || el.type === 'checkbox') return;
+    if (p) setPath(ST, p, el.dataset.num ? Number(el.value) : el.value); else ST[k] = el.value;
+    var cid = el.id || k;
+    var c = $root.querySelector('[data-counter="' + cid + '"]');
     if (c) { var n = el.value.length, m = Number(c.dataset.max); c.textContent = n + '/' + m; c.classList.toggle('over', n > m); }
-    if (errors[k]) { delete errors[k]; el.removeAttribute('aria-invalid'); var er = document.getElementById(k + '-e'); if (er) er.remove(); }
+    if (errors[cid]) { delete errors[cid]; el.removeAttribute('aria-invalid'); var er = document.getElementById(cid + '-e'); if (er) er.remove(); }
+    if (p && errors.kejutanDetail) { delete errors.kejutanDetail; var kd = $root.querySelector('.kej-detail > .err'); if (kd) kd.remove(); }
     simpanDraf();
   }
   function onChange(ev) {
     var el = ev.target;
     if (el.id === 'fileInput') { var l = Array.prototype.slice.call(el.files || []); el.value = ''; if (l.length) tambahBerkas(l); return; }
+    var pth = el.dataset && el.dataset.p;
+    if (pth) {
+      if (el.type === 'radio' || el.tagName === 'SELECT') {
+        setPath(ST, pth, el.dataset.num ? Number(el.value) : el.value);
+        if (pth === 'kejutan.jenis') { errors = {}; paint(); var ag = document.getElementById(el.id); if (ag) ag.focus({ preventScroll: true }); }
+        simpanDraf();
+      }
+      return;
+    }
     var k = el.dataset && el.dataset.k; if (!k) return;
     if (el.type === 'checkbox') { ST[k] = el.checked; if (errors[k]) { delete errors[k]; paint(); document.getElementById(k).focus(); } return; }
     if (el.type !== 'radio') return;
@@ -521,6 +645,10 @@
     else if (a === 'down') geser(b.dataset.id, 1);
     else if (a === 'rm') hapus(b.dataset.id);
     else if (a === 'pay') bayar();
+    else if (a === 'soal+') { if (ST.kejutan.soal.length < 3) { ST.kejutan.soal.push(soalBaru()); paint(); simpanDraf(); } }
+    else if (a === 'soal-') { if (ST.kejutan.soal.length > 1) { ST.kejutan.soal.pop(); paint(); simpanDraf(); } }
+    else if (a === 'bunga+') { if (ST.kejutan.bunga.length < 5) { ST.kejutan.bunga.push(''); paint(); simpanDraf(); } }
+    else if (a === 'bunga-') { if (ST.kejutan.bunga.length > 2) { ST.kejutan.bunga.pop(); paint(); simpanDraf(); } }
     else if (a === 'akun-masuk') masukAkun(b);
     else if (a === 'akun-lepas') { window.Auth.keluar(); if (order) order = null; paint(); }
   }

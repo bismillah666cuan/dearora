@@ -3,13 +3,14 @@
 window.DEARORA_SEED = {
   paket: [
     { id: 'basic', nama: 'Basic', harga: 19000, masaAktifHari: 10, maksFoto: 3,
-      fitur: { tagline: 'Kartu ucapan singkat yang manis, jadi otomatis.', foto: '1–3 foto', pembuatan: 'Otomatis',
+      fitur: { tagline: 'Ucapan interaktif yang dimainkan: ada surat, sapaan, dan kejutan pilihanmu.', foto: '1–3 foto', pembuatan: 'Otomatis',
         fitur: [
-          { t: 'Nama penerima, nama pengirim, dan pesan', ok: true },
-          { t: 'Tema dasar dengan animasi sederhana', ok: true },
+          { t: 'Sapaan manis + animasi confetti', ok: true },
+          { t: 'Surat yang dibuka, berisi pesan pribadi dari pengirim', ok: true },
+          { t: 'Kejutan akhir pilihanmu: kado, kuis, gosok, taman bunga, kue ulang tahun, dan lainnya', ok: true },
+          { t: 'Tema warna sesuai momen', ok: true },
           { t: 'Link random, hanya yang diberi link bisa membuka', ok: true },
           { t: 'Musik latar', ok: false },
-          { t: 'Timeline kenangan dan galeri foto', ok: false },
           { t: 'Revisi', ok: false } ] } },
     { id: 'premium', nama: 'Premium', harga: 39000, masaAktifHari: 30, maksFoto: 10,
       fitur: { tagline: 'Lebih personal: musik, galeri, dan timeline kenangan.', foto: 'Hingga 10 foto', pembuatan: 'Otomatis',
