@@ -10,6 +10,7 @@
   var timer = null, hitung = 0, MAKS = 360, run = 0;   // ±24 menit pada interval 4 dtk
   var info = null;                                     // {o, t, trx, batal, sim}
   var terakhir = null;                                 // data status terakhir
+  var jam = null, mulaiMs = 0;                         // penghitung lama menunggu
   var $ = function (id) { return document.getElementById(id); };
 
   function ambilInfo(q) {
@@ -17,7 +18,29 @@
     if (!o || !t) {                                    // cadangan: pesanan terakhir di browser ini
       try { var j = JSON.parse(sessionStorage.getItem(window.Form.KEY_ORDER) || localStorage.getItem(window.Form.KEY_ORDER)); if (j && j.o && j.t) { o = j.o; t = j.t; } } catch (e) { /* abaikan */ }
     }
-    return { o: o, t: t, trx: q.trx || '', batal: q.batal === '1', sim: q.sim === '1' };
+    return { o: o, t: t, trx: q.trx || '', batal: q.batal === '1', sim: q.sim === '1', r: q.r === '1' };
+  }
+
+  /** Tiga tahap yang selalu terlihat: Pesanan → Pembayaran → Ucapan. Pembeli tahu sedang di mana. */
+  function tracker(d) {
+    var bayar = !!(d && d.dibayar), special = !!(d && /special/i.test(d.paket));
+    var diverif = !bayar && ((info.r && !info.batal) || (d && d.trxDiterima));
+    var s2 = bayar ? ['done', 'Pembayaran terkonfirmasi', ''] : diverif ? ['now', 'Pembayaran diterima, sedang diverifikasi', 'Biasanya kurang dari 1 menit.'] : ['now', 'Menunggu pembayaran', 'Selesaikan transfer di halaman pembayaran.'];
+    var s3 = !bayar ? ['next', 'Ucapan disiapkan', ''] : (d.linkHasil ? ['done', 'Ucapan aktif', 'Link siap dibagikan.'] : (special ? ['now', 'Ucapan dikerjakan manual', 'Estimasi 1–2 hari kerja. Kami kirim email saat selesai.'] : ['now', 'Menyiapkan link ucapanmu', 'Beberapa detik lagi.']));
+    var li = function (st, judul, sub, nomor) {
+      return '<li class="' + st + '"><span class="st-dot" aria-hidden="true">' + (st === 'done' ? ic('check') : st === 'now' ? '<i class="st-spin"></i>' : nomor) + '</span><span><strong>' + esc(judul) + '</strong>' + (sub ? '<small>' + esc(sub) + '</small>' : '') + '</span></li>';
+    };
+    return '<ol class="steps-track" aria-label="Tahapan pesanan">' + li('done', 'Pesanan dibuat', '', 1) + li(s2[0], s2[1], s2[2], 2) + li(s3[0], s3[1], s3[2], 3) + '</ol>';
+  }
+  function mulaiJam() {
+    clearInterval(jam); jam = null;
+    var el = $('stWaktu'); if (!el) return;
+    function tik() {
+      var det = Math.floor((Date.now() - mulaiMs) / 1000), m = Math.floor(det / 60), s = det % 60;
+      var e = $('stWaktu'); if (e) e.textContent = 'Sudah menunggu ' + m + ':' + (s < 10 ? '0' : '') + s;
+      var lama = $('stLama'); if (lama && det >= 120) lama.hidden = false;
+    }
+    tik(); jam = setInterval(tik, 1000);
   }
 
   function kotak(ikon, judul, isi, tone) {
@@ -41,18 +64,26 @@
       html = menunggu(d);
     }
     el.innerHTML = html;
+    mulaiJam();
     var h = $('stTitle'); if (h) h.focus({ preventScroll: true });
   }
 
   function menunggu(d) {
     var payUrl = ''; try { payUrl = sessionStorage.getItem('dearora:payurl:' + info.o) || ''; } catch (e) { /* abaikan */ }
     var simulasi = d && d.mode === 'simulasi';
+    var diverif = (info.r && !info.batal) || (d && d.trxDiterima);
+    var judul = info.batal ? 'Pembayaran Belum Selesai' : diverif ? 'Memverifikasi Pembayaran…' : 'Menunggu Pembayaran';
+    var lead = info.batal ? 'Sepertinya pembayaran dibatalkan atau belum selesai. Kamu bisa melanjutkannya selama batas waktu belum lewat.'
+      : diverif ? 'Terima kasih! Kami sedang memastikan pembayaranmu masuk. Halaman ini berpindah otomatis, jadi kamu tidak perlu berbuat apa-apa.'
+      : 'Selesaikan pembayaranmu. Halaman ini akan berpindah otomatis setelah pembayaran terkonfirmasi.';
     return '<div class="card status-card"><span class="spinner" aria-hidden="true"></span>' +
-      '<h1 class="h2" id="stTitle" tabindex="-1">' + (info.batal ? 'Pembayaran Belum Selesai' : 'Menunggu Pembayaran') + '</h1>' +
-      '<p class="lead">' + (info.batal ? 'Sepertinya pembayaran dibatalkan atau belum selesai. Kamu bisa melanjutkannya selama batas waktu belum lewat.' : 'Selesaikan pembayaranmu. Halaman ini akan berpindah otomatis setelah pembayaran terkonfirmasi.') + '</p>' +
+      '<h1 class="h2" id="stTitle" tabindex="-1">' + judul + '</h1>' +
+      '<p class="lead">' + lead + '</p>' + tracker(d) +
+      '<p class="small muted" id="stWaktu" aria-live="off"></p>' +
+      '<p class="notice" id="stLama" hidden style="text-align:left">Verifikasi memakan waktu lebih lama dari biasanya. Pembayaranmu aman. Kami kirim email begitu terkonfirmasi, jadi kamu boleh menutup halaman ini.</p>' +
       (d ? '<p class="small muted">Pesanan <strong>' + esc(d.orderId) + '</strong> · Paket ' + esc(d.paket) + ' · Rp ' + esc(U.rupiah(d.nominal)) + '</p>' : '') +
       '<div class="hero-cta" style="justify-content:center">' +
-      (payUrl ? '<a class="btn btn-primary" href="' + esc(payUrl) + '">Buka Halaman Pembayaran</a>' : '') +
+      (payUrl && !diverif ? '<a class="btn btn-primary" href="' + esc(payUrl) + '">Buka Halaman Pembayaran</a>' : '') +
       '<button type="button" class="btn btn-secondary" data-s="cek">Periksa Status</button></div>' +
       (simulasi ? '<div class="notice warn" style="margin-top:1.5rem;text-align:left"><strong>Mode simulasi</strong><p class="small" style="margin-top:.25rem">Tidak ada pembayaran sungguhan. Tekan tombol di bawah untuk menganggap pembayaran berhasil.</p>' +
         '<button type="button" class="btn btn-lavender btn-sm" style="margin-top:.75rem" data-s="sim">Simulasikan Pembayaran Berhasil</button></div>' : '') +
@@ -63,7 +94,7 @@
     var special = /special/i.test(d.paket);
     return '<div class="card status-card ok"><span class="icon-tile sage">' + ic('check') + '</span>' +
       '<h1 class="h2" id="stTitle" tabindex="-1">Pembayaran Berhasil</h1>' +
-      '<p class="lead">Terima kasih! Pesanan <strong>' + esc(d.orderId) + '</strong> (Paket ' + esc(d.paket) + ') sudah kami terima.</p>' +
+      '<p class="lead">Terima kasih! Pesanan <strong>' + esc(d.orderId) + '</strong> (Paket ' + esc(d.paket) + ') sudah kami terima.</p>' + tracker(d) +
       (d.akunLama
         ? '<div class="notice" style="width:100%;text-align:left">Pesanan ini sudah ditambahkan ke akunmu. Masuk ke portal dengan kode redeem dan password yang sudah kamu miliki.</div>'
         : '<div class="code-box"><span class="code-label">Kode redeem kamu</span><output class="code" id="kodeRedeem">' + esc(d.kodeRedeem || 'Sedang disiapkan…') + '</output>' +
@@ -101,7 +132,7 @@
   }
 
   function after(main, c) {
-    stop(); run++; hitung = 0; terakhir = null;
+    stop(); run++; hitung = 0; terakhir = null; mulaiMs = Date.now();
     info = ambilInfo(c.query || {});
     var root = $('statusRoot'); if (!root) return;
     if (!info.o || !info.t) { tampilkan(null, 'tidak-ada'); return; }
@@ -133,7 +164,7 @@
     if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(teks).then(ok, fallback); } else fallback();
   }
 
-  function stop() { run++; clearTimeout(timer); timer = null; }
+  function stop() { run++; clearTimeout(timer); timer = null; clearInterval(jam); jam = null; }
 
   window.Status = { view: view, after: after, stop: stop };
 })();

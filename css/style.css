@@ -693,3 +693,23 @@ dialog.modal::backdrop { background: rgba(38, 28, 36, .6); -webkit-backdrop-filt
 .akun-box { margin-bottom: 1.5rem; border: 1.5px solid var(--border); border-radius: var(--r); background: var(--rose-wash); }
 .akun-box summary { min-height: 52px; display: flex; align-items: center; padding: 0 1rem; font-weight: 700; cursor: pointer; }
 .akun-isi { padding: 0 1rem 1rem; }
+
+/* ==========================================================
+   PELACAK TAHAPAN (halaman status) & PROGRES PEMBUATAN AKUN
+   ========================================================== */
+.steps-track { display: grid; gap: .875rem; width: 100%; text-align: left; margin: .25rem 0; padding: 1rem 1.125rem; border: 1px solid var(--border); border-radius: var(--r); background: var(--canvas); list-style: none; }
+.steps-track li { display: grid; grid-template-columns: 28px 1fr; gap: .75rem; align-items: start; color: var(--muted); }
+.steps-track li strong { display: block; color: var(--ink); font-size: .9375rem; }
+.steps-track li small { display: block; font-size: .8125rem; margin-top: .125rem; }
+.steps-track li.next strong { color: var(--muted); font-weight: 600; }
+.st-dot { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 2px solid var(--border); font-size: .75rem; font-weight: 800; color: var(--muted); }
+.steps-track li.done .st-dot { background: var(--primary); border-color: var(--primary); color: #fff; }
+.steps-track li.done .st-dot .icon { width: 14px; height: 14px; stroke-width: 3; }
+.steps-track li.now .st-dot { border-color: var(--primary); }
+.st-spin { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid #F3D3DB; border-top-color: var(--primary); animation: spin .9s linear infinite; display: block; }
+.proses-box { display: grid; gap: .875rem; justify-items: center; text-align: center; padding: 1.5rem .5rem; }
+.proses-box .spinner { width: 52px; height: 52px; }
+.proses-box .bar { width: min(100%, 18rem); }
+.proses-box .bar > span { width: 40%; animation: geser 1.4s ease-in-out infinite; }
+@keyframes geser { 0% { margin-left: -40%; } 100% { margin-left: 100%; } }
+@media (prefers-reduced-motion: reduce) { .st-spin { animation-duration: 3s !important; animation-iteration-count: infinite !important; } .proses-box .bar > span { animation: none; width: 60%; } }

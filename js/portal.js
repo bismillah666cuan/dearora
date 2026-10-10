@@ -67,7 +67,16 @@
     var root = $('masukRoot'), S = { langkah: 'kode', kode: '', galat: '', sibuk: false };
     var lanjut = (c.query && c.query.lanjut === 'buat') ? '#/buat' : '#/portal';
 
+    function paintProses() {
+      var m = S.sukses ? ['Berhasil! Membuka portalmu…', 'Sebentar lagi kamu diarahkan ke Pesanan Saya.']
+        : S.langkah === 'kode' ? ['Memeriksa kode…', 'Sebentar ya.']
+        : S.langkah === 'buat' ? ['Sedang membuat akunmu…', 'Password kamu sedang diamankan. Ini bisa memakan waktu beberapa detik. Mohon jangan tutup halaman ini.']
+        : ['Sedang masuk…', 'Mohon tunggu beberapa detik.'];
+      root.innerHTML = '<div class="proses-box" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span><h1 class="h2" id="mTitle" tabindex="-1">' + esc(m[0]) + '</h1><p class="muted">' + esc(m[1]) + '</p><div class="bar" aria-hidden="true"><span></span></div></div>';
+      var h = $('mTitle'); if (h) h.focus({ preventScroll: true });
+    }
     function paint() {
+      if (S.sibuk || S.sukses) { paintProses(); return; }
       var judul = S.langkah === 'kode' ? 'Masuk ke Portal' : S.langkah === 'buat' ? 'Buat Password' : 'Masukkan Password';
       var isi = '';
       if (S.langkah === 'kode') {
@@ -113,7 +122,7 @@
         var h = S.langkah === 'buat' ? await A.buatPassword(S.kode, pw) : await A.masuk(S.kode, pw);
         S.sibuk = false;
         if (!h.success) { S.galat = h.message || 'Gagal masuk.'; paint(); return; }
-        location.hash = lanjut;
+        S.sukses = true; paint(); location.hash = lanjut;
       } catch (e) { S.sibuk = false; S.galat = 'Koneksi bermasalah. Coba lagi.'; paint(); }
     });
     root.addEventListener('click', function (ev) { if (ev.target.closest('[data-m="ganti"]')) { S = { langkah: 'kode', kode: S.kode, galat: '', sibuk: false }; paint(); } });

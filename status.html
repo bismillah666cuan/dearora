@@ -17,6 +17,7 @@
     (function () {
       var q = new URLSearchParams(location.search), out = new URLSearchParams();
       ['o', 't', 'batal'].forEach(function (k) { if (q.get(k)) out.set(k, q.get(k)); });
+      out.set('r', '1');                         // tanda: pembeli baru kembali dari halaman pembayaran
       var trx = q.get('trx_id') || q.get('trxId') || q.get('transactionId');
       if (trx && /^[0-9]{1,15}$/.test(trx)) out.set('trx', trx);
       location.replace('index.html#/status?' + out.toString());

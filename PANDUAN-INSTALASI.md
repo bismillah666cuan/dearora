@@ -79,6 +79,15 @@ Dokumentasi: https://docs.ipaymu.com/en/docs/getting-started
 4. Ubah `PAYMENT_MODE` ke `production` hanya setelah poin iPaymu di atas beres, lalu coba satu transaksi nyata kecil.
 5. Ganti `WEBHOOK_TOKEN` dengan teks acak baru bila pernah terlihat orang lain.
 
+## Jika link ucapan Basic belum aktif / tidak bisa dibuka
+Desain yang dipilih **bukan** penyebabnya: desain hanya menentukan tampilan. Periksa berurutan:
+1. **Buka sheet `Pesanan`, lihat kolom `Status` pesanan itu.**
+   - `Menunggu Pembayaran` → pembayaran belum terkonfirmasi (lihat sheet `Pembayaran`, kolom `RawCallbackRingkas`).
+   - `Dibayar` → link belum terbentuk. Buka **Admin → pesanan itu → Aktifkan sekarang**. Jika gagal, alasannya tampil. Penyebab yang umum: `SITE_URL` belum benar (harus `https://alamat-anda` tanpa `/` di akhir) atau Google menolak berbagi foto "siapa saja yang punya link" (terjadi pada akun Google Workspace/kampus, gunakan akun Gmail biasa untuk Dearora).
+   - `Aktif` tetapi link menampilkan **404 dari Vercel** → berkas **`vercel.json`** yang baru belum ikut terunggah. Isinya aturan alamat `/u/...`. Pastikan berkas itu ada di GitHub, lalu tunggu Vercel selesai deploy.
+   - `Aktif` dan halaman menampilkan "Ucapan tidak ditemukan" → `GAS_URL` di `js/config.js` mengarah ke deployment lama; buat versi baru deployment atau perbarui alamatnya.
+2. Dashboard admin memuat daftar **"Dibayar tetapi link belum aktif"** agar hal ini tidak terlewat.
+
 ## Catatan penting
 - Pengembalian dana (refund) dilakukan manual di dashboard iPaymu; dashboard Dearora hanya membatalkan/menonaktifkan pesanan.
 - File musik tetap diunggah ke folder `assets/musik/` pada proyek Vercel (lewat GitHub); dashboard hanya mendaftarkan jalurnya.

@@ -134,6 +134,7 @@
     function daftar(judul, arr, fn) { return arr.length ? '<h3>' + esc(judul) + ' (' + arr.length + ')</h3>' + arr.map(fn).join('') : ''; }
     var link = function (o) { return '<a href="#/detail?o=' + encodeURIComponent(o.orderId) + '"><span><strong>' + esc(o.orderId) + '</strong> · ' + esc(o.penerima) + '</span>' + badge(o.status) + '</a>'; };
     var isiTodo =
+      daftar('Dibayar tetapi link belum aktif', t.tertahan || [], link) +
       daftar('Special sedang dikerjakan', t.special, link) +
       daftar('Revisi diminta', t.revisi, function (x) { return '<a href="#/detail?o=' + encodeURIComponent(x.orderId) + '"><span><strong>' + esc(x.orderId) + '</strong> · ' + esc(x.catatan.slice(0, 60)) + '</span><span class="badge warn">Revisi</span></a>'; }) +
       daftar('Pembayaran perlu ditinjau', t.tinjau, link) +
@@ -190,6 +191,7 @@
 
   function aksiDetail(d) {
     var o = d.pesanan, s = o.Status, b = [], hidup = ['Aktif', 'Selesai', 'Diproses'].indexOf(s) >= 0, dihapus = !!o.TglDihapus;
+    if (o.PaketID !== 'special' && s === 'Dibayar') b.push('<button class="btn primary" data-a="aktifkan-oto">' + ic('check') + ' Aktifkan sekarang</button>');
     if (o.PaketID === 'special' && s === 'Diproses') b.push('<button class="btn primary" data-a="special">' + ic('check') + ' Tandai selesai &amp; aktifkan</button>');
     if (s === 'Perlu Ditinjau') b.push('<button class="btn primary" data-a="setujui">Setujui pembayaran</button><button class="btn danger" data-a="tolak">Tolak</button>');
     if (hidup || (s === 'Kedaluwarsa' && !dihapus && o.SlugLink)) b.push('<button class="btn" data-a="perpanjang">' + (s === 'Kedaluwarsa' ? 'Aktifkan lagi' : 'Perpanjang') + '</button>');
@@ -208,6 +210,7 @@
     }).join('');
     var rev = d.revisi.map(function (r) { return '<li class="card" style="box-shadow:none"><div>' + badge(r.status) + ' <span class="small muted">' + esc(tglJam(r.tglMinta)) + '</span></div><p style="margin-top:.35rem;white-space:pre-wrap;overflow-wrap:anywhere">' + esc(r.catatan) + '</p></li>'; }).join('');
     return '<div class="page-h"><div><h1 tabindex="-1" id="h1">' + esc(o.OrderID) + '</h1><p class="muted small">Paket ' + esc(d.paket) + ' · dipesan ' + esc(tglJam(o.TglOrder)) + '</p></div>' + badge(o.Status) + '</div>' +
+      (o.Status === 'Dibayar' && o.PaketID !== 'special' ? '<p class="banner" role="alert">' + ic('alert') + '<span>Pembayaran sudah masuk tetapi link ucapan belum aktif. Tekan <strong>Aktifkan sekarang</strong>; jika gagal, alasannya akan ditampilkan.</span></p>' : '') +
       (o.Status === 'Perlu Ditinjau' ? '<p class="banner bad" role="alert">' + ic('alert') + '<span>Pembayaran perlu ditinjau (nominal tidak cocok atau dibayar setelah dibatalkan). Cek catatan pembayaran di bawah.</span></p>' : '') +
       '<div class="card"><h2>Tindakan</h2>' + aksiDetail(d) + '</div>' +
       '<div class="grid two" style="margin-top:1rem"><div class="card"><h2>Pembeli</h2><dl class="kv">' + kv('Nama', esc(o.NamaPembeli)) + kv('WhatsApp', waLink(o.WhatsApp)) + kv('Email', '<a href="mailto:' + esc(o.Email) + '">' + esc(o.Email) + '</a>') +
@@ -241,6 +244,9 @@
       v = await tanya({ judul: 'Aktifkan ucapan Special', teks: 'Link ucapan dibuat, foto dibuka untuk yang punya link, masa aktif mulai dihitung, dan email "Ucapanmu sudah jadi" dikirim ke pembeli.',
         fields: [{ name: 'linkKustom', label: 'Alamat halaman kustom (opsional)', type: 'url', hint: 'Isi bila Ibu membuat halaman sendiri, mis. https://dearora.vercel.app/special/xyz. Kosong = halaman kartu standar.' }], ya: 'Aktifkan' });
       if (!v) return; hasil = await call('adminSpecialAktif', { orderId: id, linkKustom: v.linkKustom });
+    } else if (a === 'aktifkan-oto') {
+      v = await tanya({ judul: 'Aktifkan ucapan sekarang?', teks: 'Link ucapan dibuat, foto dibuka untuk yang punya link, masa aktif mulai dihitung, dan email "Ucapanmu sudah jadi" dikirim ke pembeli.', ya: 'Aktifkan' });
+      if (!v) return; hasil = await call('adminAktifkan', { orderId: id });
     } else if (a === 'setujui' || a === 'tolak') {
       v = await tanya({ judul: a === 'setujui' ? 'Setujui pembayaran?' : 'Tolak & batalkan pesanan?', teks: a === 'setujui' ? 'Pembayaran dianggap lunas. Akun, kode redeem, dan aktivasi berjalan seperti biasa.' : 'Pesanan dibatalkan. Pengembalian dana (jika perlu) dilakukan manual di dashboard iPaymu.', ya: a === 'setujui' ? 'Setujui' : 'Tolak', bahaya: a === 'tolak' });
       if (!v) return; hasil = await call('adminTinjau', { orderId: id, keputusan: a });
@@ -276,98 +282,179 @@
       '<div class="card" style="margin-top:1rem"><h2>Desain terlaris</h2>' + hb(d.desainTerlaris, maksD) + '</div>';
   }
 
-  /* ---------------- Pengaturan ---------------- */
+/* ---------------- Pengaturan ---------------- */
+  var SW = { blossom: ['#FFE0E8', '#D84A6E'], confetti: ['#FFF1C9', '#E85D75'], cinema: ['#2B1B2E', '#FF93AD'], dusk: ['#E9DDFF', '#7D68B4'], grad: ['#DDEBFF', '#4A6FA8'], sage: ['#DDF0E1', '#3A6E46'], rose: ['#FFD3DE', '#C23A55'], arcade: ['#1F1B3A', '#B79CFF'] };
+  var tabAktif = 'paket', filterDesain = { q: '', k: '' };
+  function swatch(th) {
+    var m = /^tema:([a-z]+)$/.exec(String(th || '')), c = m && SW[m[1]];
+    if (c) return '<span class="sw" style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')" title="Tema ' + esc(m[1]) + '"></span>';
+    return /^https:\/\//.test(th) ? '<span class="sw"><img alt="" loading="lazy" referrerpolicy="no-referrer" src="' + esc(th) + '"></span>' : '<span class="sw"></span>';
+  }
+  function sakelar(jenis, id, aktif, label) {
+    return '<label class="switch"><input type="checkbox" data-a="toggle" data-j="' + jenis + '" data-id="' + esc(id) + '"' + (aktif ? ' checked' : '') + '><span class="slider" aria-hidden="true"></span><span class="sr">' + esc(label) + '</span></label>';
+  }
   function errF(errors, k) { return errors && errors[k] ? '<p class="err" role="alert">' + esc(errors[k]) + '</p>' : ''; }
   function parseFitur(js) { try { var f = JSON.parse(js); return f && typeof f === 'object' ? f : { fitur: [] }; } catch (e) { return { fitur: [] }; } }
 
-  function formPaket(p, errors) {
+  /* ----- Isi form (dipakai di dialog editor) ----- */
+  function isiFormPaket(p, errors) {
     var F = parseFitur(p.fiturJson), baris = (F.fitur || []).map(function (x) { return (x.ok ? '+ ' : '- ') + x.t; }).join('\n');
-    return '<form class="cfg-item" data-form="paket" data-id="' + esc(p.id) + '" novalidate><h2>' + esc(p.nama) + ' <span class="muted small">(' + esc(p.id) + ')</span></h2>' +
-      '<div class="row-2"><div class="field"><label>Nama paket</label><input name="nama" type="text" value="' + esc(p.nama) + '" maxlength="30">' + errF(errors, 'nama') + '</div>' +
-      '<div class="field"><label>Harga (Rp)</label><input name="harga" type="number" inputmode="numeric" min="1000" max="10000000" value="' + esc(p.harga) + '">' + errF(errors, 'harga') + '<p class="hint">Berlaku untuk pesanan BARU. Pesanan lama tidak berubah.</p></div>' +
-      '<div class="field"><label>Masa aktif (hari)</label><input name="masaAktifHari" type="number" inputmode="numeric" min="1" max="3650" value="' + esc(p.masaAktifHari) + '">' + errF(errors, 'masaAktifHari') + '</div>' +
-      '<div class="field"><label>Maks. foto</label><input name="maksFoto" type="number" inputmode="numeric" min="1" max="60" value="' + esc(p.maksFoto) + '">' + errF(errors, 'maksFoto') + '</div></div>' +
-      '<div class="field"><label>Tagline</label><input name="tagline" type="text" value="' + esc(F.tagline || '') + '" maxlength="140"></div>' +
-      '<div class="row-2"><div class="field"><label>Teks jumlah foto</label><input name="foto" type="text" value="' + esc(F.foto || '') + '" maxlength="60"></div><div class="field"><label>Teks pembuatan</label><input name="pembuatan" type="text" value="' + esc(F.pembuatan || '') + '" maxlength="80"></div></div>' +
-      '<div class="row-2"><div class="field"><label>Label sorotan (opsional)</label><input name="badge" type="text" value="' + esc(F.badge || '') + '" maxlength="30"></div><div class="field"><label class="chk"><input name="rekomendasi" type="checkbox"' + (F.rekomendasi ? ' checked' : '') + '> Tampilkan sebagai paket sorotan</label></div></div>' +
-      '<div class="field"><label>Daftar fitur</label><textarea name="fiturBaris" rows="7" spellcheck="false">' + esc(baris) + '</textarea><p class="hint">Satu fitur per baris. Awali dengan <strong>+</strong> (termasuk) atau <strong>-</strong> (tidak termasuk). Contoh: <span class="mono">+ Musik latar</span></p>' + errF(errors, 'fiturJson') + '</div>' +
-      '<label class="chk"><input name="aktif" type="checkbox"' + (p.aktif ? ' checked' : '') + '> Paket aktif (tampil di toko)</label><div class="actions" style="margin-top:.5rem"><button class="btn primary sm" type="submit">Simpan ' + esc(p.nama) + '</button></div></form>';
+    return '<div class="row-2"><div class="field"><label for="e-nama">Nama paket</label><input id="e-nama" name="nama" type="text" value="' + esc(p.nama) + '" maxlength="30">' + errF(errors, 'nama') + '</div>' +
+      '<div class="field"><label for="e-harga">Harga (Rp)</label><input id="e-harga" name="harga" type="number" inputmode="numeric" min="1000" max="10000000" value="' + esc(p.harga) + '">' + errF(errors, 'harga') + '<p class="hint">Berlaku untuk pesanan BARU.</p></div>' +
+      '<div class="field"><label for="e-masa">Masa aktif (hari)</label><input id="e-masa" name="masaAktifHari" type="number" inputmode="numeric" min="1" max="3650" value="' + esc(p.masaAktifHari) + '">' + errF(errors, 'masaAktifHari') + '</div>' +
+      '<div class="field"><label for="e-foto">Maks. foto</label><input id="e-foto" name="maksFoto" type="number" inputmode="numeric" min="1" max="60" value="' + esc(p.maksFoto) + '">' + errF(errors, 'maksFoto') + '</div></div>' +
+      '<details class="lanjut" open><summary>Teks yang tampil di kartu paket</summary>' +
+      '<div class="field"><label for="e-tag">Tagline</label><input id="e-tag" name="tagline" type="text" value="' + esc(F.tagline || '') + '" maxlength="140"></div>' +
+      '<div class="row-2"><div class="field"><label for="e-ft">Teks jumlah foto</label><input id="e-ft" name="foto" type="text" value="' + esc(F.foto || '') + '" maxlength="60"></div><div class="field"><label for="e-pb">Teks pembuatan</label><input id="e-pb" name="pembuatan" type="text" value="' + esc(F.pembuatan || '') + '" maxlength="80"></div></div>' +
+      '<div class="row-2"><div class="field"><label for="e-bd">Label sorotan (opsional)</label><input id="e-bd" name="badge" type="text" value="' + esc(F.badge || '') + '" maxlength="30"></div><div class="field"><label class="chk"><input name="rekomendasi" type="checkbox"' + (F.rekomendasi ? ' checked' : '') + '> Jadikan paket sorotan</label></div></div></details>' +
+      '<div class="field"><label for="e-fb">Daftar fitur</label><textarea id="e-fb" name="fiturBaris" rows="7" spellcheck="false">' + esc(baris) + '</textarea><p class="hint">Satu fitur per baris. Awali <strong>+</strong> (termasuk) atau <strong>-</strong> (tidak termasuk). Contoh: <span class="mono">+ Musik latar</span></p>' + errF(errors, 'fiturJson') + '</div>' +
+      '<label class="chk"><input name="aktif" type="checkbox"' + (p.aktif ? ' checked' : '') + '> Paket aktif (tampil di toko)</label>';
   }
-  function formDesain(x, data, errors) {
-    var baru = !x.id, sel = String(x.paket || '').split(',').map(function (s) { return s.trim(); }), th = String(x.thumbnail || 'tema:blossom'), pakaiTema = /^tema:/.test(th);
-    return '<form class="cfg-item" data-form="desain" data-id="' + esc(x.id || '') + '" novalidate><h2>' + (baru ? 'Tambah desain baru' : esc(x.nama) + ' <span class="muted small">(' + esc(x.id) + ')</span>') + '</h2>' +
-      '<div class="row-2"><div class="field"><label>Nama</label><input name="nama" type="text" value="' + esc(x.nama || '') + '" maxlength="60">' + errF(errors, 'nama') + '</div>' +
-      '<div class="field"><label>Kategori</label><select name="kategori">' + data.kategori.map(function (k) { return '<option' + (k === x.kategori ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select>' + errF(errors, 'kategori') + '</div></div>' +
+  function isiFormDesain(x, data, errors) {
+    var sel = String(x.paket || '').split(',').map(function (s) { return s.trim().toLowerCase(); }), th = String(x.thumbnail || 'tema:blossom'), pakaiTema = /^tema:/.test(th);
+    return '<div class="row-2"><div class="field"><label for="e-nama">Nama desain</label><input id="e-nama" name="nama" type="text" value="' + esc(x.nama || '') + '" maxlength="60">' + errF(errors, 'nama') + '</div>' +
+      '<div class="field"><label for="e-kat">Kategori</label><select id="e-kat" name="kategori">' + data.kategori.map(function (k) { return '<option' + (k === x.kategori ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select>' + errF(errors, 'kategori') + '</div></div>' +
       '<fieldset class="field" style="border:0;padding:0;margin:0 0 .875rem"><legend>Tersedia di paket</legend><div class="actions">' + data.paket.map(function (p) { return '<label class="chk"><input type="checkbox" name="paket" value="' + esc(p.id) + '"' + (sel.indexOf(p.id) >= 0 ? ' checked' : '') + '> ' + esc(p.nama) + '</label>'; }).join('') + '</div>' + errF(errors, 'paket') + '</fieldset>' +
-      '<div class="row-2"><div class="field"><label>Tema bawaan</label><select name="tema">' + data.tema.map(function (t) { return '<option' + (pakaiTema && th === 'tema:' + t ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select></div>' +
-      '<div class="field"><label>atau URL gambar (https)</label><input name="thumbUrl" type="url" value="' + (pakaiTema ? '' : esc(th)) + '" placeholder="https://…">' + errF(errors, 'thumbnail') + '<p class="hint">Jika URL diisi, URL yang dipakai.</p></div></div>' +
-      '<div class="field"><label>URL demo lengkap (opsional)</label><input name="urlDemo" type="url" value="' + esc(x.urlDemo || '') + '" placeholder="https://…">' + errF(errors, 'urlDemo') + '</div>' +
-      '<label class="chk"><input name="aktif" type="checkbox"' + (x.aktif !== false ? ' checked' : '') + '> Tampil di toko</label><div class="actions" style="margin-top:.5rem"><button class="btn primary sm" type="submit">' + (baru ? 'Tambah' : 'Simpan') + '</button></div></form>';
+      '<div class="field"><label for="e-tema">Tampilan (tema bawaan)</label><div class="tema-pilih">' + data.tema.map(function (t) { var c = SW[t] || ['#eee', '#999']; return '<label class="tema-opt"><input type="radio" name="tema" value="' + esc(t) + '"' + (pakaiTema && th === 'tema:' + t ? ' checked' : (!x.id && t === 'blossom' ? ' checked' : '')) + '><span class="sw" style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')"></span><span class="small">' + esc(t) + '</span></label>'; }).join('') + '</div></div>' +
+      '<details class="lanjut"' + (!pakaiTema || x.urlDemo ? ' open' : '') + '><summary>Lanjutan: gambar sendiri &amp; demo</summary>' +
+      '<div class="field"><label for="e-url">URL gambar pratinjau (https)</label><input id="e-url" name="thumbUrl" type="url" value="' + (pakaiTema ? '' : esc(th)) + '" placeholder="https://…">' + errF(errors, 'thumbnail') + '<p class="hint">Jika diisi, gambar ini dipakai menggantikan tema.</p></div>' +
+      '<div class="field"><label for="e-demo">URL demo lengkap (opsional)</label><input id="e-demo" name="urlDemo" type="url" value="' + esc(x.urlDemo || '') + '" placeholder="https://…">' + errF(errors, 'urlDemo') + '</div></details>' +
+      '<label class="chk"><input name="aktif" type="checkbox"' + (x.aktif !== false ? ' checked' : '') + '> Tampil di toko</label>';
   }
-  function formMusik(m, errors) {
-    var baru = !m.id;
-    return '<form class="cfg-item" data-form="musik" data-id="' + esc(m.id || '') + '" novalidate><h2>' + (baru ? 'Tambah musik' : esc(m.judul) + ' <span class="muted small">(' + esc(m.id) + ')</span>') + '</h2>' +
-      '<div class="row-2"><div class="field"><label>Judul</label><input name="judul" type="text" value="' + esc(m.judul || '') + '" maxlength="80">' + errF(errors, 'judul') + '</div>' +
-      '<div class="field"><label>Berkas</label><input name="fileUrl" type="text" value="' + esc(m.fileUrl || '') + '" placeholder="assets/musik/nama.mp3">' + errF(errors, 'fileUrl') + '<p class="hint">Unggah mp3 berlisensi ke folder <span class="mono">assets/musik/</span> di proyek, lalu tulis jalurnya di sini.</p></div></div>' +
-      '<label class="chk"><input name="aktif" type="checkbox"' + (m.aktif ? ' checked' : '') + '> Tampil sebagai pilihan musik</label><div class="actions" style="margin-top:.5rem"><button class="btn primary sm" type="submit">' + (baru ? 'Tambah' : 'Simpan') + '</button></div></form>';
+  function isiFormMusik(m, errors) {
+    return '<div class="field"><label for="e-judul">Judul</label><input id="e-judul" name="judul" type="text" value="' + esc(m.judul || '') + '" maxlength="80">' + errF(errors, 'judul') + '</div>' +
+      '<div class="field"><label for="e-file">Berkas</label><input id="e-file" name="fileUrl" type="text" value="' + esc(m.fileUrl || '') + '" placeholder="assets/musik/nama.mp3">' + errF(errors, 'fileUrl') + '<p class="hint">Unggah mp3 berlisensi ke folder <span class="mono">assets/musik/</span> di proyek (lewat GitHub), lalu tulis jalurnya di sini.</p></div>' +
+      '<label class="chk"><input name="aktif" type="checkbox"' + (m.aktif ? ' checked' : '') + '> Tampil sebagai pilihan musik</label>';
   }
-  function formConfig(c, errors) {
-    return '<form class="cfg-item" data-form="config" data-id="' + esc(c.key) + '" novalidate><div class="field"><label for="c-' + esc(c.key) + '">' + esc(c.label) + '</label><input id="c-' + esc(c.key) + '" name="value" type="text" value="' + esc(c.value) + '">' + errF(errors, c.key) + '</div><button class="btn primary sm" type="submit">Simpan</button></form>';
+
+  /* ----- Daftar ringkas per tab ----- */
+  function ringkasTabPaket(data) {
+    return '<div class="plan-grid">' + data.paket.map(function (p) {
+      var F = parseFitur(p.fiturJson), ya = (F.fitur || []).filter(function (x) { return x.ok; }).length;
+      return '<article class="plan-card' + (p.aktif ? '' : ' off') + '"><header><h2>' + esc(p.nama) + (F.badge ? ' <span class="badge info">' + esc(F.badge) + '</span>' : '') + '</h2>' + sakelar('paket', p.id, p.aktif, 'Paket ' + p.nama + ' aktif') + '</header>' +
+        '<p class="harga">' + rp(p.harga) + '</p><ul class="mini"><li>Aktif ' + esc(p.masaAktifHari) + ' hari</li><li>Maks. ' + esc(p.maksFoto) + ' foto</li><li>' + ya + ' fitur termasuk</li></ul>' +
+        '<button class="btn sm" data-a="edit" data-j="paket" data-id="' + esc(p.id) + '">Edit paket</button></article>';
+    }).join('') + '</div><p class="small muted" style="margin-top:.75rem">Harga baru hanya berlaku untuk pesanan baru; pesanan yang sudah ada tidak berubah.</p>';
   }
-  function tabPengaturan(tab, data, errors, idGalat) {
-    var e = function (id) { return id === idGalat ? errors : null; };
-    if (tab === 'desain') return formDesain({}, data, e('baru-desain')) + data.desain.map(function (x) { return formDesain(x, data, e(x.id)); }).join('');
-    if (tab === 'musik') return formMusik({}, e('baru-musik')) + (data.musik.length ? '' : '<p class="muted">Belum ada musik. Daftar pilihan musik di form pesanan baru muncul setelah ada yang aktif.</p>') + data.musik.map(function (m) { return formMusik(m, e(m.id)); }).join('');
-    if (tab === 'umum') return data.config.map(function (c) { return formConfig(c, e(c.key)); }).join('');
-    if (tab === 'keamanan') return '<div class="card"><h2>Mengganti password admin</h2><ol class="stack small" style="list-style:decimal;padding-left:1.25rem"><li>Buka Apps Script → ⚙ Setelan Proyek → Properti skrip.</li><li>Tambahkan <span class="mono">ADMIN_PASSWORD_BARU</span> berisi password baru (minimal 12 karakter).</li><li>Jalankan fungsi <span class="mono">aturPasswordAdmin</span>. Properti tadi dihapus otomatis dan semua sesi admin dicabut.</li></ol></div>' +
+  function barisDesain(data) {
+    var q = filterDesain.q.toLowerCase(), k = filterDesain.k;
+    var arr = data.desain.filter(function (x) { return (!k || x.kategori === k) && (!q || (x.nama + ' ' + x.kategori).toLowerCase().indexOf(q) >= 0); });
+    if (!arr.length) return '<div class="card empty">Tidak ada desain yang cocok.</div>';
+    return '<ul class="rows">' + arr.map(function (x) {
+      return '<li class="row-item' + (x.aktif ? '' : ' off') + '">' + swatch(x.thumbnail) + '<div class="ri-main"><strong>' + esc(x.nama) + '</strong><span class="small muted">' + esc(x.kategori) + ' · ' + esc(x.paket.split(',').map(function (s) { return s.trim(); }).join(', ')) + '</span></div>' +
+        sakelar('desain', x.id, x.aktif, 'Desain ' + x.nama + ' aktif') + '<button class="btn sm" data-a="edit" data-j="desain" data-id="' + esc(x.id) + '">Edit</button></li>';
+    }).join('') + '</ul>';
+  }
+  function ringkasTabDesain(data) {
+    return '<div class="toolbar"><div><label class="sr" for="ds-q">Cari desain</label><input id="ds-q" type="search" placeholder="Cari desain…" value="' + esc(filterDesain.q) + '"></div>' +
+      '<div><label class="sr" for="ds-k">Kategori</label><select id="ds-k"><option value="">Semua kategori</option>' + data.kategori.map(function (k) { return '<option' + (k === filterDesain.k ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></div>' +
+      '<button class="btn primary sm" data-a="tambah" data-j="desain">+ Tambah desain</button></div><div id="ds-list">' + barisDesain(data) + '</div>';
+  }
+  function ringkasTabMusik(data) {
+    return '<div class="toolbar"><span class="small muted" style="margin-right:auto">' + data.musik.length + ' musik terdaftar</span><button class="btn primary sm" data-a="tambah" data-j="musik">+ Tambah musik</button></div>' +
+      (data.musik.length ? '<ul class="rows">' + data.musik.map(function (m) {
+        return '<li class="row-item' + (m.aktif ? '' : ' off') + '"><span class="sw sw-ic">♪</span><div class="ri-main"><strong>' + esc(m.judul) + '</strong><span class="small muted mono">' + esc(m.fileUrl || '(belum ada berkas)') + '</span></div>' + sakelar('musik', m.id, m.aktif, 'Musik ' + m.judul + ' aktif') + '<button class="btn sm" data-a="edit" data-j="musik" data-id="' + esc(m.id) + '">Edit</button></li>';
+      }).join('') + '</ul>' : '<div class="card empty">Belum ada musik. Pilihan musik di form pesanan muncul setelah ada yang aktif.</div>');
+  }
+  function ringkasTabUmum(data, errors) {
+    return '<form class="card" data-form="umum" novalidate><h2>Pengaturan umum</h2><div class="row-2">' + data.config.map(function (c) {
+      return '<div class="field"><label for="c-' + esc(c.key) + '">' + esc(c.label) + '</label><input id="c-' + esc(c.key) + '" name="' + esc(c.key) + '" type="text" value="' + esc(c.value) + '">' + errF(errors, c.key) + '</div>';
+    }).join('') + '</div><button class="btn primary" type="submit">Simpan perubahan</button></form>';
+  }
+  function tabKeamanan() {
+    return '<div class="card"><h2>Mengganti password admin</h2><ol class="stack small" style="list-style:decimal;padding-left:1.25rem"><li>Buka Apps Script → ⚙ Setelan Proyek → Properti skrip.</li><li>Tambahkan <span class="mono">ADMIN_PASSWORD_BARU</span> berisi password baru (minimal 12 karakter).</li><li>Jalankan fungsi <span class="mono">aturPasswordAdmin</span>. Properti tadi dihapus otomatis dan semua sesi admin dicabut.</li></ol></div>' +
       '<div class="card"><h2>Hal yang sebaiknya dijaga</h2><ul class="stack small" style="list-style:disc;padding-left:1.25rem"><li>Jangan bagikan layar yang memuat <span class="mono">WEBHOOK_TOKEN</span> atau API Key iPaymu.</li><li>Ubah <span class="mono">PAYMENT_MODE</span> ke production hanya saat siap rilis (jalankan <span class="mono">cekKesiapanRilis</span>).</li><li>Spreadsheet Dearora_DB berisi data pribadi pembeli. Jangan dibagikan.</li></ul></div>';
-    return data.paket.map(function (p) { return formPaket(p, e(p.id)); }).join('');
   }
+  function tabPengaturan(tab, data, errors) {
+    if (tab === 'desain') return ringkasTabDesain(data);
+    if (tab === 'musik') return ringkasTabMusik(data);
+    if (tab === 'umum') return ringkasTabUmum(data, errors);
+    if (tab === 'keamanan') return tabKeamanan();
+    return ringkasTabPaket(data);
+  }
+  function segarkanTab() { var el = document.getElementById('tabIsi'); if (el) { var y = window.scrollY; el.innerHTML = tabPengaturan(el.dataset.tab, pengaturan); window.scrollTo(0, y); } }
+
   async function viewPengaturan(my, q) {
     var main = document.getElementById('main'), tab = ['paket', 'desain', 'musik', 'umum', 'keamanan'].indexOf(q.tab) >= 0 ? q.tab : 'paket';
     main.innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Pengaturan</h1></div>' + skel();
     var r = await call('adminPengaturan'); if (my !== run) return;
     if (!r.success) { main.innerHTML = galatBox(r.message); return; }
-    pengaturan = r.data;
+    pengaturan = r.data; tabAktif = tab;
     var tabs = [['paket', 'Paket & harga'], ['desain', 'Desain'], ['musik', 'Musik'], ['umum', 'Umum'], ['keamanan', 'Keamanan']];
     main.innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Pengaturan</h1></div><nav class="tabs" aria-label="Bagian pengaturan">' + tabs.map(function (t) { return '<a href="#/pengaturan?tab=' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : '') + '>' + t[1] + '</a>'; }).join('') + '</nav>' +
-      '<p class="small muted" style="margin-bottom:1rem">Perubahan langsung tampil di toko (cache dibersihkan otomatis).</p><div id="tabIsi" data-tab="' + tab + '">' + tabPengaturan(tab, pengaturan) + '</div>';
+      '<p class="small muted" style="margin-bottom:1rem">Perubahan langsung tampil di toko.</p><div id="tabIsi" data-tab="' + tab + '">' + tabPengaturan(tab, pengaturan) + '</div>';
   }
+
+  /* ----- Dialog editor ----- */
+  var dlgEdit = document.getElementById('dlgEdit'), editCtx = null;
+  function renderEditor(errors) {
+    var c = editCtx, item = c.id ? (pengaturan[c.jenis === 'paket' ? 'paket' : c.jenis === 'desain' ? 'desain' : 'musik'].filter(function (x) { return x.id === c.id; })[0] || {}) : {};
+    var judul = c.id ? 'Edit ' + (c.jenis === 'musik' ? item.judul : item.nama) : (c.jenis === 'desain' ? 'Tambah desain' : 'Tambah musik');
+    var isi = c.jenis === 'paket' ? isiFormPaket(item, errors) : c.jenis === 'desain' ? isiFormDesain(item, pengaturan, errors) : isiFormMusik(item, errors);
+    dlgEdit.innerHTML = '<div class="dlg-lg"><header><h2 id="edJudul">' + esc(judul) + '</h2><button type="button" class="icon-btn" data-a="tutup-editor" aria-label="Tutup">✕</button></header>' +
+      '<div class="dlg-body"><form id="editForm" data-form="' + c.jenis + '" data-id="' + esc(c.id || '') + '" novalidate>' + isi + '</form></div>' +
+      '<footer><button type="button" class="btn" data-a="tutup-editor">Batal</button><button type="submit" form="editForm" class="btn primary">Simpan</button></footer></div>';
+    dlgEdit.setAttribute('aria-labelledby', 'edJudul');
+  }
+  function bukaEditor(jenis, id) { editCtx = { jenis: jenis, id: id || '' }; renderEditor(null); if (!dlgEdit.open) dlgEdit.showModal(); var f = dlgEdit.querySelector('input,select,textarea'); if (f) f.focus(); }
+  function tutupEditor() { if (dlgEdit.open) dlgEdit.close(); editCtx = null; }
+
   function ambilNilaiForm(form) {
-    var v = {}; form.querySelectorAll('input,select,textarea').forEach(function (el) {
+    var v = {}, pk = [];
+    form.querySelectorAll('input,select,textarea').forEach(function (el) {
       if (!el.name) return;
-      if (el.type === 'checkbox') { if (el.name === 'paket') { v.paket = (v.paket ? v.paket + ',' : '') + (el.checked ? el.value : ''); } else v[el.name] = el.checked; }
+      if (el.type === 'checkbox') { if (el.name === 'paket') { if (el.checked) pk.push(el.value); } else v[el.name] = el.checked; }
+      else if (el.type === 'radio') { if (el.checked) v[el.name] = el.value; }
       else v[el.name] = el.value;
     });
-    if (v.paket) v.paket = v.paket.split(',').filter(Boolean).join(',');
+    if (pk.length || form.querySelector('[name=paket]')) v.paket = pk.join(',');
     return v;
   }
+  function dataSimpan(jenis, id, v) {
+    if (jenis === 'paket') {
+      var F = parseFitur((pengaturan.paket.filter(function (p) { return p.id === id; })[0] || {}).fiturJson), baris = String(v.fiturBaris || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean), fitur = [];
+      for (var i = 0; i < baris.length; i++) { var c = baris[i].charAt(0); if (c !== '+' && c !== '-') return { galat: 'Setiap baris fitur harus diawali + atau -' }; fitur.push({ t: baris[i].slice(1).trim(), ok: c === '+' }); }
+      F.fitur = fitur; F.tagline = v.tagline; F.foto = v.foto; F.pembuatan = v.pembuatan; F.rekomendasi = !!v.rekomendasi;
+      if (v.badge) F.badge = v.badge; else delete F.badge; if (!F.rekomendasi) delete F.rekomendasi;
+      return { aksi: 'adminSimpanPaket', data: { id: id, nama: v.nama, harga: v.harga, masaAktifHari: v.masaAktifHari, maksFoto: v.maksFoto, fiturJson: JSON.stringify(F), aktif: !!v.aktif } };
+    }
+    if (jenis === 'desain') return { aksi: 'adminSimpanDesain', data: { id: id, nama: v.nama, kategori: v.kategori, paket: v.paket || '', thumbnail: v.thumbUrl ? v.thumbUrl : 'tema:' + (v.tema || 'blossom'), urlDemo: v.urlDemo, aktif: !!v.aktif } };
+    return { aksi: 'adminSimpanMusik', data: { id: id, judul: v.judul, fileUrl: v.fileUrl, aktif: !!v.aktif } };
+  }
   async function kirimForm(form) {
-    var jenis = form.dataset.form, id = form.dataset.id, v = ambilNilaiForm(form), aksi, data = {}, idGalat = id;
-    var tombol = form.querySelector('[type=submit]'); tombol.disabled = true;
+    var jenis = form.dataset.form, id = form.dataset.id, tombol = document.querySelector('[type=submit][form="' + form.id + '"]') || form.querySelector('[type=submit]');
+    if (tombol) { tombol.disabled = true; tombol.textContent = 'Menyimpan…'; }
     try {
-      if (jenis === 'paket') {
-        var F = parseFitur((pengaturan.paket.filter(function (p) { return p.id === id; })[0] || {}).fiturJson), baris = String(v.fiturBaris || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean), fitur = [], salah = false;
-        baris.forEach(function (b) { var c = b.charAt(0); if (c !== '+' && c !== '-') { salah = true; return; } fitur.push({ t: b.slice(1).trim(), ok: c === '+' }); });
-        if (salah) { toast('Setiap baris fitur harus diawali + atau -'); tombol.disabled = false; return; }
-        F.fitur = fitur; F.tagline = v.tagline; F.foto = v.foto; F.pembuatan = v.pembuatan; F.rekomendasi = !!v.rekomendasi;
-        if (v.badge) F.badge = v.badge; else delete F.badge; if (!F.rekomendasi) delete F.rekomendasi;
-        aksi = 'adminSimpanPaket'; data = { id: id, nama: v.nama, harga: v.harga, masaAktifHari: v.masaAktifHari, maksFoto: v.maksFoto, fiturJson: JSON.stringify(F), aktif: !!v.aktif };
-      } else if (jenis === 'desain') {
-        aksi = 'adminSimpanDesain'; idGalat = id || 'baru-desain';
-        data = { id: id, nama: v.nama, kategori: v.kategori, paket: v.paket || '', thumbnail: v.thumbUrl ? v.thumbUrl : 'tema:' + v.tema, urlDemo: v.urlDemo, aktif: !!v.aktif };
-      } else if (jenis === 'musik') { aksi = 'adminSimpanMusik'; idGalat = id || 'baru-musik'; data = { id: id, judul: v.judul, fileUrl: v.fileUrl, aktif: !!v.aktif }; }
-      else { aksi = 'adminSimpanConfig'; data = { key: id, value: v.value }; }
-      var r = await call(aksi, data);
-      var tab = document.getElementById('tabIsi').dataset.tab;
-      if (!r.success) {
-        var galat = r.errors || (jenis === 'config' ? { [id]: r.message } : null);
-        if (galat) { var y = window.scrollY; document.getElementById('tabIsi').innerHTML = tabPengaturan(tab, pengaturan, galat, idGalat); window.scrollTo(0, y); }
-        toast(r.message || 'Periksa isian'); return;
+      if (jenis === 'umum') {
+        var errors = {}, ubah = 0;
+        for (var i = 0; i < pengaturan.config.length; i++) {
+          var c = pengaturan.config[i], el = form.elements[c.key]; if (!el || el.value.trim() === c.value) continue; ubah++;
+          var r0 = await call('adminSimpanConfig', { key: c.key, value: el.value });
+          if (r0.success) pengaturan = r0.data; else errors[c.key] = (r0.errors && r0.errors[c.key]) || r0.message;
+        }
+        var el2 = document.getElementById('tabIsi'); if (el2) el2.innerHTML = tabPengaturan('umum', pengaturan, errors);
+        toast(Object.keys(errors).length ? 'Ada isian yang perlu diperbaiki' : ubah ? 'Tersimpan' : 'Tidak ada perubahan'); return;
       }
-      pengaturan = r.data; var y2 = window.scrollY; document.getElementById('tabIsi').innerHTML = tabPengaturan(tab, pengaturan); window.scrollTo(0, y2); toast('Tersimpan');
+      var s = dataSimpan(jenis, id, ambilNilaiForm(form));
+      if (s.galat) { toast(s.galat); return; }
+      var r = await call(s.aksi, s.data);
+      if (!r.success) { if (r.errors) renderEditor(r.errors); toast(r.message || 'Periksa isian'); var e1 = dlgEdit.querySelector('.err'); if (e1) e1.scrollIntoView({ block: 'center' }); return; }
+      pengaturan = r.data; tutupEditor(); segarkanTab(); toast('Tersimpan');
     } catch (e) { if (e.message !== 'sesi') toast('Koneksi bermasalah'); }
-    finally { var t2 = document.querySelector('[type=submit][disabled]'); if (t2) t2.disabled = false; }
+    finally { var t2 = document.querySelector('dialog[open] [type=submit]'); if (t2) { t2.disabled = false; t2.textContent = 'Simpan'; } var t3 = document.querySelector('form[data-form=umum] [type=submit]'); if (t3) { t3.disabled = false; t3.textContent = 'Simpan perubahan'; } }
+  }
+  async function toggleAktif(el) {
+    var j = el.dataset.j, id = el.dataset.id, aktif = el.checked, item, aksi, data;
+    if (j === 'paket') { item = pengaturan.paket.filter(function (x) { return x.id === id; })[0]; aksi = 'adminSimpanPaket'; data = { id: id, nama: item.nama, harga: item.harga, masaAktifHari: item.masaAktifHari, maksFoto: item.maksFoto, fiturJson: item.fiturJson, aktif: aktif }; }
+    else if (j === 'desain') { item = pengaturan.desain.filter(function (x) { return x.id === id; })[0]; aksi = 'adminSimpanDesain'; data = { id: id, nama: item.nama, kategori: item.kategori, paket: item.paket, thumbnail: item.thumbnail, urlDemo: item.urlDemo, aktif: aktif }; }
+    else { item = pengaturan.musik.filter(function (x) { return x.id === id; })[0]; aksi = 'adminSimpanMusik'; data = { id: id, judul: item.judul, fileUrl: item.fileUrl, aktif: aktif }; }
+    el.disabled = true;
+    try {
+      var r = await call(aksi, data);
+      if (r.success) { pengaturan = r.data; toast(aktif ? 'Diaktifkan' : 'Disembunyikan dari toko'); } else { el.checked = !aktif; toast((r.errors && Object.values(r.errors)[0]) || r.message || 'Gagal'); }
+      segarkanTab();
+    } catch (e) { el.checked = !aktif; if (e.message !== 'sesi') toast('Koneksi bermasalah'); }
+    el.disabled = false;
   }
 
   /* ---------------- Router & event ---------------- */
@@ -389,11 +476,14 @@
   }
 
   document.addEventListener('click', async function (ev) {
-    var b = ev.target.closest('[data-a]'); if (!b) return;
+    var b = ev.target.closest('[data-a]'); if (!b || b.dataset.a === 'toggle') return;
     var a = b.dataset.a;
     if (a === 'tema') { setTema(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); return; }
     if (a === 'keluar') { try { await API.post('adminLogout', {}, { token: token, timeout: 8000 }); } catch (e) { /* tetap keluar */ } simpanToken(''); shellAda = false; location.hash = '#/'; tampilLogin(); return; }
     if (a === 'muat-ulang') { render(); return; }
+    if (a === 'edit') { bukaEditor(b.dataset.j, b.dataset.id); return; }
+    if (a === 'tambah') { bukaEditor(b.dataset.j, ''); return; }
+    if (a === 'tutup-editor') { tutupEditor(); return; }
     if (a === 'hal-' || a === 'hal+') { cari.hal = Math.max(1, cari.hal + (a === 'hal+' ? 1 : -1)); simpanCariKeUrl(); muatDaftar(run); window.scrollTo(0, 0); return; }
     if (a === 'csv') {
       b.disabled = true;
@@ -401,15 +491,18 @@
       catch (e) { /* sesi berakhir ditangani call */ }
       b.disabled = false; return;
     }
-    if (detailSaatIni && document.getElementById('detailIsi') && ['special', 'setujui', 'tolak', 'batalkan', 'nonaktif', 'perpanjang', 'kirim', 'catatan'].indexOf(a) >= 0) {
+    if (detailSaatIni && document.getElementById('detailIsi') && ['special', 'aktifkan-oto', 'setujui', 'tolak', 'batalkan', 'nonaktif', 'perpanjang', 'kirim', 'catatan'].indexOf(a) >= 0) {
       b.disabled = true; try { await aksiPesanan(a); } catch (e) { if (e.message !== 'sesi') toast('Koneksi bermasalah'); } b.disabled = false;
     }
   });
   document.addEventListener('input', function (ev) {
+    if (ev.target.id === 'ds-q') { filterDesain.q = ev.target.value.trim(); var l = document.getElementById('ds-list'); if (l && pengaturan) l.innerHTML = barisDesain(pengaturan); return; }
     if (!['fq'].includes(ev.target.id)) return;
     clearTimeout(tm); tm = setTimeout(function () { cari.q = ev.target.value.trim(); cari.hal = 1; simpanCariKeUrl(); muatDaftar(run); }, 350);
   });
   document.addEventListener('change', function (ev) {
+    if (ev.target.matches && ev.target.matches('input[data-a="toggle"]')) { toggleAktif(ev.target); return; }
+    if (ev.target.id === 'ds-k') { filterDesain.k = ev.target.value; var l = document.getElementById('ds-list'); if (l && pengaturan) l.innerHTML = barisDesain(pengaturan); return; }
     if (ev.target.id === 'fs') { cari.status = ev.target.value; cari.hal = 1; simpanCariKeUrl(); muatDaftar(run); }
     if (ev.target.id === 'fp') { cari.paket = ev.target.value; cari.hal = 1; simpanCariKeUrl(); muatDaftar(run); }
   });

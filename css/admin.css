@@ -160,3 +160,41 @@ dialog.dlg::backdrop { background: rgba(10, 5, 12, .6); }
 .grid > * { margin-top: 0 !important; }
 .hbar { margin: 0; padding: 0; }
 .tbl-wrap table { min-width: 28rem; }
+
+/* ---------- Pengaturan: kartu ringkas, baris, sakelar, dialog editor ---------- */
+.plan-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .plan-grid { grid-template-columns: repeat(3, 1fr); } }
+.plan-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 1.1rem; display: grid; gap: .5rem; align-content: start; }
+.plan-card.off { opacity: .65; }
+.plan-card header { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.plan-card h2 { font-size: 1.0625rem; font-weight: 800; margin: 0; }
+.plan-card .harga { font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+.mini { display: grid; gap: .125rem; color: var(--muted); font-size: .875rem; margin-bottom: .5rem; }
+.toolbar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: 1rem; }
+.toolbar > div { flex: 1 1 11rem; }
+.rows { display: grid; gap: .5rem; }
+.row-item { display: flex; align-items: center; gap: .75rem; padding: .625rem .75rem; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.row-item.off { opacity: .6; }
+.ri-main { flex: 1; min-width: 0; display: grid; }
+.ri-main strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sw { width: 44px; height: 44px; border-radius: 12px; flex: none; overflow: hidden; display: inline-grid; place-items: center; background: var(--panel-2); border: 1px solid var(--line); }
+.sw img { width: 100%; height: 100%; object-fit: cover; } .sw-ic { color: var(--info); background: var(--info-soft); font-size: 1.25rem; }
+.switch { position: relative; display: inline-flex; width: 48px; height: 28px; flex: none; cursor: pointer; }
+.switch input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 2; }
+.switch .slider { position: absolute; inset: 0; border-radius: 99px; background: var(--line); transition: background .2s; }
+.switch .slider::after { content: ""; position: absolute; width: 22px; height: 22px; top: 3px; left: 3px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.switch input:checked + .slider { background: var(--ok); } .switch input:checked + .slider::after { transform: translateX(20px); }
+.switch input:focus-visible + .slider { outline: 3px solid var(--brand); outline-offset: 2px; }
+.tema-pilih { display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: .5rem; }
+.tema-opt { display: grid; justify-items: center; gap: .25rem; padding: .5rem; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; position: relative; background: var(--panel-2); }
+.tema-opt input { position: absolute; opacity: 0; } .tema-opt:has(input:checked) { border-color: var(--brand); background: var(--brand-soft); }
+.tema-opt:has(input:focus-visible) { outline: 3px solid var(--brand); outline-offset: 2px; }
+details.lanjut { border: 1px solid var(--line); border-radius: 12px; padding: 0 .875rem; margin-bottom: .875rem; background: var(--panel-2); }
+details.lanjut summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
+details.lanjut[open] { padding-bottom: .5rem; }
+dialog.lg { width: min(96vw, 40rem); max-height: 92vh; }
+.dlg-lg { display: flex; flex-direction: column; max-height: 92vh; }
+.dlg-lg header, .dlg-lg footer { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .875rem 1.125rem; }
+.dlg-lg header { border-bottom: 1px solid var(--line); } .dlg-lg header h2 { font-size: 1.0625rem; font-weight: 800; }
+.dlg-lg footer { border-top: 1px solid var(--line); justify-content: flex-end; background: var(--panel); }
+.dlg-body { padding: 1.125rem; overflow-y: auto; }
