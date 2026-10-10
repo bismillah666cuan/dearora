@@ -84,7 +84,7 @@ Desain yang dipilih **bukan** penyebabnya: desain hanya menentukan tampilan. Per
 1. **Buka sheet `Pesanan`, lihat kolom `Status` pesanan itu.**
    - `Menunggu Pembayaran` → pembayaran belum terkonfirmasi (lihat sheet `Pembayaran`, kolom `RawCallbackRingkas`).
    - `Dibayar` → link belum terbentuk. Buka **Admin → pesanan itu → Aktifkan sekarang**. Jika gagal, alasannya tampil. Penyebab yang umum: `SITE_URL` belum benar (harus `https://alamat-anda` tanpa `/` di akhir) atau Google menolak berbagi foto "siapa saja yang punya link" (terjadi pada akun Google Workspace/kampus, gunakan akun Gmail biasa untuk Dearora).
-   - `Aktif` tetapi link menampilkan **404 dari Vercel** → berkas **`vercel.json`** yang baru belum ikut terunggah. Isinya aturan alamat `/u/...`. Pastikan berkas itu ada di GitHub, lalu tunggu Vercel selesai deploy.
+   - `Aktif` tetapi link menampilkan **404 dari Vercel** → aturan alamat `/u/...` di **`vercel.json`** belum aktif. Berkas **`404.html`** (jaring pengaman) otomatis mengalihkan `/u/{kode}` ke `/u/?k={kode}` walaupun `vercel.json` bermasalah, jadi pastikan `404.html` ada di GitHub di folder yang sama dengan `index.html`. Bila tetap bermasalah, buka dashboard Vercel → **Deployments** dan lihat apakah deployment terbaru berstatus **Error** (mis. karena `vercel.json` tidak valid); deployment gagal membuat situs tetap memakai versi lama.
    - `Aktif` dan halaman menampilkan "Ucapan tidak ditemukan" → `GAS_URL` di `js/config.js` mengarah ke deployment lama; buat versi baru deployment atau perbarui alamatnya.
 2. Dashboard admin memuat daftar **"Dibayar tetapi link belum aktif"** agar hal ini tidak terlewat.
 
