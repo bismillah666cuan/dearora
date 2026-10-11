@@ -138,7 +138,7 @@
     return '<section class="section" aria-labelledby="prev-title"><div class="container">' +
       '<div class="section-head-row"><div><span class="eyebrow">Katalog Populer</span>' +
       '<h2 class="h2" id="prev-title">Preview Desain Website Ucapan</h2>' +
-      '<p class="lead" style="margin-top:.5rem">Coba dulu demonya sebelum memilih.</p></div>' +
+      '<p class="lead" style="margin-top:.5rem">Bukan sekadar beda warna. Tiap desain punya gerak dan suasana sendiri. Coba demonya.</p></div>' +
       '<a class="link-arrow" href="#/contoh-desain">Lihat semua ' + ic('arrow') + '</a></div>' + body + '</div></section>';
   }
 
@@ -238,7 +238,7 @@
         ? '<p class="small muted" role="status" style="margin-bottom:1rem">' + list.length + ' desain ditemukan</p><div class="grid grid-designs">' + list.map(function (d) { return U.designCard(d, ctx.data.paket); }).join('') + '</div>'
         : '<div class="state-box" role="status"><p>Belum ada desain untuk filter ini. Coba pilih kategori atau paket lain.</p><button type="button" class="btn btn-secondary btn-sm" data-action="reset-filter">Hapus Filter</button></div>';
     }
-    return kepalaHalaman('Contoh Desain', 'Contoh Desain Website Ucapan', 'Jelajahi desain, coba demonya, lalu pilih yang paling cocok untuk momenmu.') +
+    return kepalaHalaman('Contoh Desain', 'Contoh Desain Website Ucapan', 'Setiap desain punya pengalaman sendiri: gerak, ilustrasi, dan suasana yang berbeda. Tekan Coba Demo untuk memainkannya.') +
       '<section class="section" style="padding-top:2rem"><div class="container">' +
       '<div class="filters"><div><p class="filter-label">Kategori</p><div class="chip-row">' + kats + '</div></div>' +
       '<div><p class="filter-label">Paket</p><div class="chip-row">' + pk + '</div></div></div>' + body +

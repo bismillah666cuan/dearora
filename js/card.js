@@ -13,19 +13,31 @@
   var U = window.UI, esc = U.esc, ic = U.ic, API = window.DearoraAPI;
   var $root = document.getElementById('kartu'), cv = document.getElementById('confetti');
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var data = null, slug = '', demo = false, audio = null, aktif = 0, stages = [], timers = [];
+  var data = null, slug = '', demo = false, audio = null, aktif = 0, stages = [], timers = [], ambT = [];
+  var gk = 'classic', gy = {}, opsiD = {};
   var NAMA_TAHAP = ['buka', 'sapa', 'surat', 'kejutan', 'penutup'];
 
   /* ---------------- Util ---------------- */
   function q(s) { return $root.querySelector(s); }
   function jeda(fn, ms) { var t = setTimeout(fn, reduce ? Math.min(ms, 60) : ms); timers.push(t); return t; }
-  function bersih() { timers.forEach(clearTimeout); timers = []; }
+  function bersih() { timers.forEach(clearTimeout); timers = []; stopAmbien(); }
   function tgl(iso) { var t = Date.parse(iso); return t ? new Intl.DateTimeFormat('id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(t)) : ''; }
-  function fotoUrl(id) { return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1600'; }
+  function fotoDemoUri(n) {
+    var w = [['#FFD6E0', '#FF8FA3'], ['#CFE3FF', '#7FA8E6'], ['#FFF0B8', '#FFB36B']][n % 3], a = getComputedStyle($root).getPropertyValue('--tacc').trim() || '#E85D75';
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + w[0] + '"/><stop offset="1" stop-color="' + w[1] + '"/></linearGradient></defs><rect width="400" height="500" fill="url(#g)"/><circle cx="290" cy="130" r="48" fill="#fff" opacity=".55"/><path d="M0 420c70-50 130-40 200 0s150 20 200-20v100H0z" fill="#fff" opacity=".4"/><path d="M200 330S130 285 130 235a36 36 0 0 1 70-14 36 36 0 0 1 70 14c0 50-70 95-70 95z" fill="' + a + '" opacity=".85"/></svg>';
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+  }
+  function fotoUrl(id) { var m = /^demo:(\d+)$/.exec(String(id)); if (m) return fotoDemoUri(Number(m[1])); return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1600'; }
   function fotoCadangan(id) { return 'https://lh3.googleusercontent.com/d/' + encodeURIComponent(id) + '=w1600'; }
   function aman(u) { return /^https:\/\//.test(u) || /^assets\/[\w\-./]+$/.test(u) ? (/^assets\//.test(u) ? '/' + u : u) : ''; }
   function dariTeks(d) { return d.dari.tipe === 'anonim' ? 'Seseorang yang menyayangimu' : d.dari.nilai; }
+  var PALET = {
+    cinematic: ['#E3BE7B', '#F4E8D3', '#C9A24B', '#FFFFFF'], graduation: ['#D4AF55', '#F6E3A1', '#FBF6E9', '#FFFFFF'],
+    mama: ['#E8A7A2', '#D9A5A0', '#F1C9C4', '#C9B38C', '#A9BD9B'], garden: ['#FF8FB1', '#FFE27A', '#B79CFF', '#6BB36F', '#FFFFFF'],
+    baby: ['#FFD76A', '#FFB3C7', '#A3BCE8', '#FFFFFF'], starry: ['#B8A9FF', '#FFE8A3', '#FFFFFF', '#7BDFF2']
+  };
   function warna() {
+    if (PALET[gk]) return PALET[gk];
     var a = getComputedStyle($root).getPropertyValue('--tacc').trim() || '#E85D75';
     return [a, '#FFD166', '#FF8FA3', '#B79CFF', '#7BDFF2', '#FFFFFF'];
   }
@@ -101,9 +113,12 @@
     cinta: { jenis: 'cinta', target: 10, kalimat: ['Terus ketuk…', 'Cintaku makin besar!', 'Sedikit lagi…'], ucapan: UCAPAN_DEMO }
   };
   function dataDemo(qs) {
-    var tema = U.temaDari('tema:' + (qs.get('tema') || 'blossom')), kat = SAPAAN[qs.get('kat')] ? qs.get('kat') : 'Ulang Tahun', j = KEJ_DEMO[qs.get('j')] ? qs.get('j') : 'kado';
-    return { paket: 'basic', tema: tema, kategori: kat, penerima: 'Rani', dari: { tipe: 'nama', nilai: 'Dimas' }, pesan: (U.CONTOH[kat] || U.CONTOH['Ulang Tahun']).pesan,
-      pesanPersonal: '', foto: [], video: '', musik: null, amplop: false, rahasia: j === 'kode', perluPassword: j === 'kode', pembuka: 'judul', kedaluwarsa: '', kejutan: KEJ_DEMO[j], _demo: true };
+    var gkd = Gaya.kunci(qs.get('tema') || 'classic'), g0 = Gaya.G[gkd], dm = g0.demo || Gaya.G.classic.demo, j = KEJ_DEMO[qs.get('j')] ? qs.get('j') : 'kado';
+    var op = Gaya.opsiBawaan(gkd);
+    if (qs.get('dekor')) op.dekor = qs.get('dekor');
+    if (qs.get('ikon')) op.ikon = qs.get('ikon').split(',').slice(0, 4);
+    return { paket: 'basic', tema: gkd, kategori: dm.kat || 'Ulang Tahun', penerima: dm.penerima, dari: { tipe: 'nama', nilai: dm.dari }, pesan: dm.pesan,
+      pesanPersonal: '', foto: ['demo:0', 'demo:1', 'demo:2'], video: '', musik: null, amplop: false, rahasia: j === 'kode', perluPassword: j === 'kode', pembuka: 'judul', kedaluwarsa: '', kejutan: KEJ_DEMO[j], opsi: op, _demo: true };
   }
 
   /* ---------------- Ilustrasi ---------------- */
@@ -113,29 +128,35 @@
   }
   function polaroid(d, idx, kls) {
     var id = d.foto[idx]; if (id == null) return '<div class="polaroid ilus-wrap ' + (kls || '') + '">' + ilustrasi() + '</div>';
-    return '<figure class="polaroid ' + (kls || '') + '" data-foto="' + esc(id) + '"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Foto kenangan ' + (idx + 1) + '" src="' + esc(fotoUrl(id)) + '" data-alt="' + esc(fotoCadangan(id)) + '"></figure>';
+    var cap = gk === 'graduation' ? '<figcaption class="plakat">Penghargaan untuk ' + esc(d.penerima) + '</figcaption>' : '';
+    return '<figure class="polaroid ' + (kls || '') + '" data-foto="' + esc(id) + '"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Foto kenangan ' + (idx + 1) + '" src="' + esc(fotoUrl(id)) + '" data-alt="' + esc(fotoCadangan(id)) + '">' + cap + '</figure>';
   }
 
   /* ---------------- Tahap 1: pembuka ---------------- */
   function tBuka(d) {
+    if (gy.buka) return '<section class="stage buka" data-s="buka" aria-label="Pembuka"><div class="inner">' + gy.buka(d) + '</div></section>';
     var kat = U.CONTOH[d.kategori] || { judul: 'Ada Pesan Untukmu' }, ikon = U.ikonTema(d.tema, d.kategori);
     var foto = d.pembuka === 'foto' && d.foto.length ? ' foto" style="background-image:url(\'' + esc(fotoUrl(d.foto[0])) + '\')' : '';
-    return '<section class="stage buka' + foto + '" data-s="buka" aria-label="Pembuka"><div class="inner">' + (foto ? '' : U.partikel(8, d.tema === 'cinema' || d.tema === 'arcade' ? 'sparkles' : 'heart')) +
+    return '<section class="stage buka' + foto + '" data-s="buka" aria-label="Pembuka"><div class="inner">' + (foto ? '' : U.partikel(8, 'heart')) +
       '<span class="ico">' + ic(ikon) + '</span><p class="kpd">Untuk ' + esc(d.penerima) + '</p><h1 class="judul-buka" tabindex="-1">' + esc(kat.judul) + '</h1>' +
       '<p class="sub">Ada pesan spesial yang menunggumu.</p><button type="button" class="cbtn" data-go="1" id="btnBuka">Buka Ucapan</button></div></section>';
   }
 
   /* ---------------- Tahap 2: sapaan ---------------- */
+  function namaHuruf(n) {
+    return Array.from(String(n)).map(function (c, i) { return c === ' ' ? ' ' : '<span class="huruf" style="animation-delay:' + (i * 70 + 150) + 'ms">' + esc(c) + '</span>'; }).join('');
+  }
   function tSapa(d) {
-    var s = SAPAAN[d.kategori] || SAPAAN['Hari Spesial'];
-    return '<section class="stage sapa" data-s="sapa" aria-label="Sapaan"><div class="inner"><p class="kpd">Hai,</p><h1 class="nama-besar" tabindex="-1">' + esc(d.penerima) + '<span class="sparkle" aria-hidden="true">✦</span></h1>' +
+    var s = gy.sapa || SAPAAN[d.kategori] || SAPAAN['Hari Spesial'], kpd = gy.kpd || 'Hai,';
+    var nama = (gk === 'joyful' || gk === 'kids') ? namaHuruf(d.penerima) : esc(d.penerima);
+    return '<section class="stage sapa" data-s="sapa" aria-label="Sapaan"><div class="inner"><p class="kpd">' + esc(kpd) + '</p><h1 class="nama-besar" style="--nl:' + Array.from(String(d.penerima)).length + '" tabindex="-1" aria-label="' + esc(d.penerima) + '">' + nama + '<span class="sparkle" aria-hidden="true">✦</span></h1>' +
       '<p class="sapa-1">' + esc(s[0]) + '</p><p class="sapa-2">' + esc(s[1]) + '</p><button type="button" class="cbtn" data-go="2">Lanjut ' + ic('arrow') + '</button></div></section>';
   }
 
   /* ---------------- Tahap 3: surat ---------------- */
   function tSurat(d) {
     return '<section class="stage surat" data-s="surat" aria-label="Surat"><div class="inner">' +
-      '<p class="kpd" id="suratPetunjuk">Ada surat untukmu</p>' +
+      '<p class="kpd" id="suratPetunjuk">' + esc(gy.kpdSurat || 'Ada surat untukmu') + '</p>' +
       '<button type="button" class="env" id="env" aria-label="Ketuk untuk membuka surat"><span class="env-back"></span><span class="env-letter"><i></i><i></i><i></i></span><span class="env-front"></span><span class="env-flap"></span><span class="env-seal">' + ic('heart') + '</span><span class="env-ring" aria-hidden="true"></span></button>' +
       '<p class="hint" id="suratHint">Ketuk suratnya</p>' +
       '<article class="letter" id="letter" hidden><p class="l-untuk">Untuk ' + esc(d.penerima) + ',</p><p class="l-isi" id="lIsi"></p>' +
@@ -144,18 +165,19 @@
   }
   function bukaSurat(d) {
     var env = q('#env'); if (!env || env.classList.contains('open')) return;
+    var K = gy.lambat || 1;
     env.classList.add('open'); q('#suratHint').hidden = true; q('#suratPetunjuk').hidden = true; dariElemen(env, 26, { kuat: 7 });
-    jeda(function () { env.classList.add('rise'); }, 450);
-    jeda(function () { env.classList.add('fall'); }, 1150);
+    jeda(function () { env.classList.add('rise'); }, 450 * K);
+    jeda(function () { env.classList.add('fall'); }, 1150 * K);
     jeda(function () {
       var l = q('#letter'); l.hidden = false;
-      var kata = String(d.pesan).split(/(\s+)/), isi = q('#lIsi'), html = '', i = 0;
-      kata.forEach(function (k) { if (/^\s+$/.test(k)) html += k; else { html += '<span class="w" style="animation-delay:' + (reduce ? 0 : Math.min(i * 45, 2400)) + 'ms">' + esc(k) + '</span>'; i++; } });
+      var kata = String(d.pesan).split(/(\s+)/), isi = q('#lIsi'), html = '', i = 0, g = (gk === 'cinematic' ? 70 : 45) * K;
+      kata.forEach(function (k) { if (/^\s+$/.test(k)) html += k; else { html += '<span class="w" style="animation-delay:' + (reduce ? 0 : Math.min(i * g, 3200)) + 'ms">' + esc(k) + '</span>'; i++; } });
       isi.innerHTML = html; requestAnimationFrame(function () { l.classList.add('show'); });
-      var lama = reduce ? 100 : Math.min(i * 45, 2400) + 900;
+      var lama = reduce ? 100 : Math.min(i * g, 3200) + 900;
       jeda(function () { var b = q('#suratLanjut'); b.hidden = false; b.classList.add('muncul'); }, lama);
-    }, 1500);
-    jeda(function () { env.hidden = true; }, 2300);
+    }, 1500 * K);
+    jeda(function () { env.hidden = true; }, 2300 * K);
   }
 
   /* ---------------- Tahap 4: kejutan ---------------- */
@@ -170,7 +192,7 @@
   function tKejutan(d) {
     var k = kejutanAktif(d), j = JUDUL_KEJUTAN[k.jenis] || JUDUL_KEJUTAN.kado;
     var sub = k.jenis === 'gosok' ? k.petunjuk : k.jenis === 'kode' ? (k.petunjuk || 'Masukkan kode dari pengirim.') : j[1];
-    return '<section class="stage kejutan" data-s="kejutan" aria-label="Kejutan"><div class="inner wide"><p class="kpd">Kejutan</p><h1 class="judul-kej" tabindex="-1">' + esc(k.jenis === 'kado' && k.judul ? k.judul : j[0]) + '</h1>' +
+    return '<section class="stage kejutan" data-s="kejutan" aria-label="Kejutan"><div class="inner wide"><p class="kpd">' + esc(gy.kpdKejutan || 'Kejutan') + '</p><h1 class="judul-kej" tabindex="-1">' + esc(k.jenis === 'kado' && k.judul ? k.judul : j[0]) + '</h1>' +
       '<p class="sub-kej" id="subKej">' + esc(sub) + '</p><div class="arena" id="arena"></div>' +
       '<div class="finale" id="finale" hidden aria-live="polite"></div></div></section>';
   }
@@ -336,20 +358,100 @@
   }
 
   /* ---------------- Tahap 5: kenangan ---------------- */
+  var LABEL_IKON = { cangkir: 'Teh hangat', bunga: 'Kelembutan', rumah: 'Rumah yang nyaman', hati: 'Pelukan', resep: 'Resep keluarga', sendok: 'Masakan' };
+  function albumFoto(d) {
+    if (gk === 'cinematic') {
+      if (!d.foto.length) return '<div class="album">' + polaroid(d, 99, '') + '</div>';
+      return '<div class="slides" id="slides" aria-label="Foto kenangan">' + d.foto.map(function (id, i) { return '<figure class="slide' + (i === 0 ? ' on' : '') + '" data-foto="' + esc(id) + '"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Foto kenangan ' + (i + 1) + '" src="' + esc(fotoUrl(id)) + '" data-alt="' + esc(fotoCadangan(id)) + '"></figure>'; }).join('') + '</div>';
+    }
+    if (gk === 'mama') {
+      if (!d.foto.length) return '<div class="album">' + polaroid(d, 99, '') + '</div>';
+      return '<div class="album">' + d.foto.map(function (id, i) { return '<figure class="halaman" data-foto="' + esc(id) + '"><img loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="Foto kenangan ' + (i + 1) + '" src="' + esc(fotoUrl(id)) + '" data-alt="' + esc(fotoCadangan(id)) + '"><span class="cap">Kenangan ' + (i + 1) + '</span></figure>'; }).join('') + '</div>';
+    }
+    return d.foto.length ? '<div class="album">' + d.foto.map(function (id, i) { return polaroid(d, i, i % 2 ? 'miring-b' : 'miring-a'); }).join('') + '</div>' : '<div class="album">' + polaroid(d, 99, '') + '</div>';
+  }
+  function tambahanPenutup(d) {
+    if (gk === 'graduation') return '<ol class="edu" id="edu" aria-label="Garis waktu perjalanan">' + gy.milestone.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ol>';
+    if (gk === 'mama') {
+      var ik = (Array.isArray(opsiD.ikon) && opsiD.ikon.length ? opsiD.ikon : Gaya.opsiBawaan('mama').ikon).slice(0, 4);
+      return '<ul class="ikon-mama" aria-label="Hal-hal khas Mama">' + ik.map(function (n, i) { return '<li style="animation-delay:' + (i * 160) + 'ms"><span class="lingkar">' + Art.ikon(n) + '</span>' + esc(LABEL_IKON[n] || n) + '</li>'; }).join('') + '</ul>';
+    }
+    return '';
+  }
   function tPenutup(d) {
-    var foto = d.foto.length ? '<div class="album">' + d.foto.map(function (id, i) { return polaroid(d, i, i % 2 ? 'miring-b' : 'miring-a'); }).join('') + '</div>' : '<div class="album">' + polaroid(d, 99, '') + '</div>';
+    var judul = gy.judulPenutup ? gy.judulPenutup(d) : 'Untuk dikenang, ' + d.penerima;
     var video = d.video ? '<div class="video-wrap"><iframe loading="lazy" title="Video kenangan" src="https://drive.google.com/file/d/' + encodeURIComponent(d.video) + '/preview" allow="autoplay; fullscreen" referrerpolicy="no-referrer"></iframe></div>' : '';
     var lanjutan = d.pesanPersonal ? '<p class="personal">' + esc(d.pesanPersonal) + '</p>' : '';
-    return '<section class="stage penutup" data-s="penutup" aria-label="Kenangan"><div class="inner wide"><p class="kpd">Kenangan</p><h1 class="judul-kej" tabindex="-1">Untuk dikenang, ' + esc(d.penerima) + '</h1>' + lanjutan + foto + video +
-      '<p class="akhir">Semoga semua yang baik selalu menyertaimu.</p><div class="aksi-akhir"><button type="button" class="cbtn ghost" id="ulang">' + ic('replay') + ' Putar ulang</button>' +
+    return '<section class="stage penutup" data-s="penutup" aria-label="Kenangan"><div class="inner wide"><p class="kpd">' + esc(gy.kpdPenutup || 'Kenangan') + '</p><h1 class="judul-kej" tabindex="-1">' + esc(judul) + '</h1>' + lanjutan + tambahanPenutup(d) + albumFoto(d) + video +
+      '<p class="akhir">' + esc(gy.akhir || 'Semoga semua yang baik selalu menyertaimu.') + '</p><div class="aksi-akhir"><button type="button" class="cbtn ghost" id="ulang">' + ic('replay') + ' Putar ulang</button>' +
       '<a class="cbtn ghost" href="/" target="_blank" rel="noopener">Buat ucapan seperti ini</a></div>' +
       '<p class="kecil">' + (d.kedaluwarsa ? 'Ucapan ini aktif sampai ' + esc(tgl(d.kedaluwarsa)) + '. ' : '') + 'Dibuat dengan rasa di <a href="/" target="_blank" rel="noopener">Dearora</a></p></div></section>';
   }
 
-  /* ---------------- Mesin tahap ---------------- */
+  /* ---------------- Dekor & ambien per gaya ---------------- */
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function pilih(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function hiasan(svg, kls, style) { return svg.replace('class="art ', 'class="art ' + kls + ' ').replace('<svg ', '<svg style="' + style + '" '); }
+  function bintangLangit(n, putih) {
+    var h = '', i; for (i = 0; i < n; i++) h += '<i class="bt" style="--x:' + rnd(2, 96).toFixed(1) + '%;--y:' + rnd(2, 90).toFixed(1) + '%;--s:' + (putih ? rnd(2, 4.2) : rnd(12, 24)).toFixed(1) + 'px;--d:' + rnd(2.2, 5).toFixed(1) + 's;--dl:-' + rnd(0, 5).toFixed(1) + 's">' + (putih ? '' : Art.bintang('#FFD76A')) + '</i>';
+    return h;
+  }
+  function awanLatar(n) {
+    var h = '', i; for (i = 0; i < n; i++) h += '<i class="aw" style="--w:' + rnd(90, 150).toFixed(0) + 'px;--y:' + rnd(4, 70).toFixed(0) + '%;--d:' + rnd(42, 70).toFixed(0) + 's;animation-delay:-' + rnd(0, 40).toFixed(0) + 's">' + Art.awan(gk === 'kids', '#fff') + '</i>';
+    return h;
+  }
+  function dekorHTML() {
+    var h = '';
+    if (gk === 'joyful') h = hiasan(Art.bintang('#FF6B6B'), 'dod', 'right:6%;top:9%;width:34px;animation-delay:0s') + hiasan(Art.coretan('#FF5FA2'), 'dod', 'left:5%;top:20%;width:70px;animation-delay:1.2s') + hiasan(Art.kilau('#FFB81C'), 'dod', 'right:10%;top:34%;width:26px;animation-delay:2.4s') +
+      hiasan(Art.lingkaran('#5B2A3C'), 'dod', 'left:8%;bottom:26%;width:46px;animation-delay:3.6s') + hiasan(Art.bintang('#FFC93C'), 'dod', 'left:15%;bottom:10%;width:30px;animation-delay:4.8s') + hiasan(Art.coretan('#FFB81C'), 'dod', 'right:6%;bottom:14%;width:68px;animation-delay:6s');
+    else if (gk === 'graduation') h = Art.pojok('#D4AF55', 'pj a') + Art.pojok('#D4AF55', 'pj b') + Art.pojok('#D4AF55', 'pj c') + Art.pojok('#D4AF55', 'pj d');
+    else if (gk === 'mama') h = Art.bunga('#E8A7A2', '#FFD58A', 'bg a') + Art.bunga('#B9C8A9', '#F6E3B4', 'bg b') + Art.bunga('#D9A5A0', '#F6E3B4', 'bg c') + Art.bunga('#E8A7A2', '#FFD58A', 'bg d') + hiasan(Art.daun('#A9BD9B'), 'dn', 'left:30%;top:-8px') + hiasan(Art.daun('#A9BD9B'), 'dn', 'right:26%;top:-10px;animation-delay:-2s');
+    else if (gk === 'garden') h = '<i class="sinar"></i>' + hiasan(Art.daun('#5BA865'), 'dn', 'left:-10px;top:6%') + hiasan(Art.daun('#4E9E5C'), 'dn', 'right:-8px;top:14%;transform:scaleX(-1)') + hiasan(Art.daun('#6BB36F'), 'dn', 'left:2%;top:46%;width:60px') + '<i class="rumput"></i>';
+    else if (gk === 'kids') h = Art.matahari('mt') + awanLatar(4);
+    else if (gk === 'baby') h = (opsiD.dekor === 'awan') ? awanLatar(5) : bintangLangit(18, false);
+    else if (gk === 'starry') h = bintangLangit(46, true) + '<svg class="rasi" viewBox="0 0 100 60" aria-hidden="true"><path d="M6 46L26 24 46 36 64 12 90 30" fill="none" stroke="#B8A9FF" stroke-width=".5"/><g fill="#FFE8A3"><circle cx="6" cy="46" r="1.1" style="animation-delay:1.2s"/><circle cx="26" cy="24" r="1.1" style="animation-delay:2.8s"/><circle cx="46" cy="36" r="1.1" style="animation-delay:4.4s"/><circle cx="64" cy="12" r="1.1" style="animation-delay:6s"/><circle cx="90" cy="30" r="1.1" style="animation-delay:7.6s"/></g></svg>';
+    return h;
+  }
+  function mel(kind, svg, o) {
+    var amb = q('.ambien'); if (!amb || amb.children.length > 16) return;
+    var el = document.createElement('span'); el.className = 'mel ' + kind;
+    el.style.cssText = '--x:' + o.x.toFixed(1) + '%;--s:' + o.s.toFixed(0) + 'px;--d:' + o.d.toFixed(1) + 's;--dx:' + (o.dx || 0).toFixed(0) + 'px;--rot:' + (o.rot || 0).toFixed(0) + 'deg';
+    el.innerHTML = svg; amb.appendChild(el); el.addEventListener('animationend', function () { el.remove(); });
+  }
+  function ulang(fn, ms) { ambT.push(setInterval(fn, ms)); }
+  function stopAmbien() { ambT.forEach(clearInterval); ambT = []; }
+  function mulaiAmbien() {
+    stopAmbien(); if (reduce) return;
+    var PAL = ['#FF6B6B', '#FFC93C', '#FF5FA2', '#7BDFF2', '#B79CFF', '#6BD6A0'];
+    if (gk === 'joyful') {
+      ulang(function () { var love = opsiD.dekor === 'love'; mel('naik', love ? Art.hati(pilih(PAL)) : Art.balon(pilih(PAL)), { x: rnd(2, 92), s: love ? rnd(22, 40) : rnd(36, 58), d: rnd(9, 14), dx: rnd(-60, 60), rot: rnd(-20, 20) }); }, 950);
+      ulang(function () { confetti(rnd(40, innerWidth - 40), rnd(80, innerHeight * 0.5), 14, { kuat: 7 }); }, 7000);
+    } else if (gk === 'mama') {
+      ulang(function () { mel('turun', Art.kelopak(pilih(['#E8A7A2', '#D9A5A0', '#F1C9C4', '#C9B38C'])), { x: rnd(2, 94), s: rnd(14, 24), d: rnd(11, 17), dx: rnd(-90, 90), rot: rnd(200, 520) }); }, 2100);
+    } else if (gk === 'graduation') {
+      ulang(function () { mel('naik', Art.kilau('#F6E3A1'), { x: rnd(4, 94), s: rnd(8, 16), d: rnd(11, 18), dx: rnd(-30, 30), rot: rnd(-40, 40) }); }, 800);
+    } else if (gk === 'cinematic') {
+      ulang(function () { mel('naik', '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#E3BE7B" opacity=".5"/></svg>', { x: rnd(2, 96), s: rnd(4, 9), d: rnd(14, 22), dx: rnd(-20, 20), rot: 0 }); }, 900);
+      ulang(function () { mel('naik', '<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#E3BE7B" opacity=".12"/></svg>', { x: rnd(5, 90), s: rnd(40, 90), d: rnd(18, 26), dx: rnd(-40, 40), rot: 0 }); }, 3600);
+    } else if (gk === 'kids') {
+      ulang(function () { mel('naik', Art.bintang(pilih(['#FFC93C', '#FF8FB1', '#7BDFF2'])), { x: rnd(4, 92), s: rnd(18, 32), d: rnd(9, 13), dx: rnd(-40, 40), rot: rnd(-60, 60) }); }, 1500);
+    } else if (gk === 'baby') {
+      ulang(function () { mel('naik', Art.bintang(pilih(['#FFD76A', '#FFB3C7', '#A3BCE8'])), { x: rnd(4, 92), s: rnd(14, 24), d: rnd(11, 16), dx: rnd(-30, 30), rot: rnd(-30, 30) }); }, 2600);
+    } else if (gk === 'garden') {
+      if (!document.querySelector('.kupu-t')) [[16, 30], [46, 38], [72, 26]].forEach(function (k, i) { var b = document.createElement('div'); b.className = 'kupu-t'; b.style.cssText = '--y:' + k[0] + '%;--d:' + k[1] + 's;animation-delay:-' + (i * 11) + 's'; b.innerHTML = Art.kupu(pilih(['#FF8FB1', '#B79CFF', '#FFB36B']), '#FFE27A'); document.body.appendChild(b); });
+    } else if (gk === 'starry') {
+      ulang(function () { var j = document.createElement('i'); j.className = 'jatuh'; j.style.left = rnd(40, 95) + '%'; j.style.top = rnd(2, 35) + '%'; var a = q('.ambien'); if (a) { a.appendChild(j); setTimeout(function () { j.remove(); }, 1500); } }, 9000);
+    }
+  }
+  function mulaiGaya() {
+    var ar = q('.ambien'); if (!ar) return;
+    if (gk === 'cinematic') { var t = q('.tirai'); if (t) t.classList.add('awal'); }
+    mulaiAmbien();
+  }
+
   function pasangTitik() { return '<ol class="titik" aria-hidden="true">' + NAMA_TAHAP.map(function () { return '<li></li>'; }).join('') + '</ol>'; }
-  function ke(i) {
-    if (i === aktif || !stages[i]) return;
+  var slideT = 0;
+  function pindah(i) {
     var lama = stages[aktif], baru = stages[i];
     lama.classList.remove('on'); lama.setAttribute('inert', ''); lama.setAttribute('aria-hidden', 'true');
     baru.classList.add('on'); baru.removeAttribute('inert'); baru.removeAttribute('aria-hidden'); baru.scrollTop = 0;
@@ -358,8 +460,23 @@
     if (i === 1) jeda(function () { dariElemen(q('.nama-besar'), 70, { kuat: 11 }); hujan(1600); }, 350);
     if (i === 2) { var env = q('#env'); if (env) env.focus({ preventScroll: true }); }
     if (i === 3) mulaiKejutan();
-    if (i === 4) hujan(1200);
+    if (i === 4) { hujan(1200); mulaiPenutup(); }
     if (i === 1) mainkanMusik();
+  }
+  /** Efek khusus tahap kenangan: slideshow sinematik, garis waktu wisuda yang terisi bertahap. */
+  function mulaiPenutup() {
+    clearInterval(slideT);
+    var sl = $root.querySelectorAll('#slides .slide');
+    if (sl.length > 1 && !reduce) { var n = 0; slideT = setInterval(function () { sl[n].classList.remove('on'); n = (n + 1) % sl.length; sl[n].classList.add('on'); }, 5600); ambT.push(slideT); }
+    var edu = q('#edu');
+    if (edu) { var li = edu.querySelectorAll('li'); jeda(function () { edu.classList.add('isi'); }, 400); li.forEach(function (x, k) { jeda(function () { x.classList.add('on'); dariElemen(x, 6, { kuat: 3 }); }, 600 + k * (reduce ? 10 : 820)); }); }
+  }
+  function ke(i) {
+    if (i === aktif || !stages[i]) return;
+    if (gk === 'cinematic' && !reduce) {                 // transisi gelap ke terang
+      var t = q('.tirai'); if (t) { t.classList.remove('awal', 'aktif'); void t.offsetWidth; t.classList.add('aktif'); jeda(function () { pindah(i); }, 520); return; }
+    }
+    pindah(i);
   }
 
   function mainkanMusik() {
@@ -381,22 +498,39 @@
   }
 
   var terpasang = false;
+  function setGaya(d) {
+    gk = Gaya.kunci(d.tema); gy = Gaya.G[gk] || {};
+    opsiD = Object.assign(Gaya.opsiBawaan(gk), d.opsi || {});
+  }
   function render(d) {
-    data = d; bersih(); aktif = 0;
-    $root.className = 'card-root theme theme-' + U.temaDari('tema:' + d.tema);
-    $root.innerHTML = pasangTitik() + tBuka(d) + tSapa(d) + tSurat(d) + tKejutan(d) + tPenutup(d);
+    data = d; bersih(); aktif = 0; clearInterval(slideT);
+    document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
+    setGaya(d);
+    $root.className = 'card-root theme theme-' + gk + ' g-' + gk + (gy.gelap ? ' g-gelap' : '');
+    $root.innerHTML = '<div class="dekor" aria-hidden="true">' + dekorHTML() + '</div><div class="ambien" aria-hidden="true"></div><div class="tirai" aria-hidden="true"></div>' + pasangTitik() + tBuka(d) + tSapa(d) + tSurat(d) + tKejutan(d) + tPenutup(d);
     stages = Array.prototype.slice.call($root.querySelectorAll('.stage'));
     stages.forEach(function (s, i) { if (i) { s.setAttribute('inert', ''); s.setAttribute('aria-hidden', 'true'); } });
     stages[0].classList.add('on'); q('.titik li').className = 'kini';
     document.title = 'Ucapan untukmu — Dearora';
     var b = q('#btnBuka'); if (b && !d._demo) b.focus({ preventScroll: true });
+    mulaiGaya();
     if (!terpasang) {
       terpasang = true;
       $root.addEventListener('click', function (ev) {
-        var go = ev.target.closest('[data-go]'); if (go) { ke(Number(go.dataset.go)); return; }
+        var go = ev.target.closest('[data-go]');
+        if (go) {
+          var n = Number(go.dataset.go), g = q('.gerbang');
+          if (n === 1 && gy.jedaBuka && g && !g.classList.contains('terbuka')) { g.classList.add('terbuka'); dariElemen(g, 30, { kuat: 8 }); jeda(function () { ke(1); }, gy.jedaBuka); return; }
+          ke(n); return;
+        }
         if (ev.target.closest('#env')) { bukaSurat(data); return; }
         var f = ev.target.closest('[data-foto]'); if (f) { lightbox(f.dataset.foto); return; }
         if (ev.target.closest('#ulang')) { parts = []; render(data); }
+      });
+      $root.addEventListener('pointerdown', function (ev) {        // tombol "bereaksi" saat disentuh (Joyful & Kids)
+        if (gk !== 'joyful' && gk !== 'kids') return;
+        var el = ev.target.closest('.cbtn,.opsi,.heart-btn,.candle,.slot,.gift'); if (!el) return;
+        el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop'); confetti(ev.clientX, ev.clientY, 10, { kuat: 5, naik: 3 });
       });
       $root.addEventListener('error', function (ev) {
         var im = ev.target; if (im.tagName === 'IMG' && im.dataset.alt && im.src !== im.dataset.alt) { im.src = im.dataset.alt; im.removeAttribute('data-alt'); }

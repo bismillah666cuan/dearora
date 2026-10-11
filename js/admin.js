@@ -298,10 +298,12 @@
   }
 
 /* ---------------- Pengaturan ---------------- */
-  var SW = { blossom: ['#FFE0E8', '#D84A6E'], confetti: ['#FFF1C9', '#E85D75'], cinema: ['#2B1B2E', '#FF93AD'], dusk: ['#E9DDFF', '#7D68B4'], grad: ['#DDEBFF', '#4A6FA8'], sage: ['#DDF0E1', '#3A6E46'], rose: ['#FFD3DE', '#C23A55'], arcade: ['#1F1B3A', '#B79CFF'] };
+  var SW = { cinematic: ['#0A0810', '#E3BE7B'], joyful: ['#FFF3B0', '#FF6B6B'], graduation: ['#0F1F3D', '#D4AF55'], mama: ['#FFF3E4', '#C98C88'], garden: ['#E6F6D3', '#3F9A55'], kids: ['#BFE6FF', '#FFB020'], baby: ['#DCEBFF', '#7FA8E6'], starry: ['#0C1033', '#B8A9FF'], classic: ['#FFE0E8', '#D84A6E'] };
+  var SW_LAMA = { blossom: 'classic', confetti: 'joyful', cinema: 'cinematic', dusk: 'starry', grad: 'graduation', sage: 'garden', rose: 'mama', arcade: 'kids' };
+  function swKey(t) { return SW[t] ? t : (SW_LAMA[t] || 'classic'); }
   var tabAktif = 'paket', filterDesain = { q: '', k: '' };
   function swatch(th) {
-    var m = /^tema:([a-z]+)$/.exec(String(th || '')), c = m && SW[m[1]];
+    var m = /^tema:([a-z]+)$/.exec(String(th || '')), c = m && SW[swKey(m[1])];
     if (c) return '<span class="sw" style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')" title="Tema ' + esc(m[1]) + '"></span>';
     return /^https:\/\//.test(th) ? '<span class="sw"><img alt="" loading="lazy" referrerpolicy="no-referrer" src="' + esc(th) + '"></span>' : '<span class="sw"></span>';
   }
@@ -330,7 +332,7 @@
     return '<div class="row-2"><div class="field"><label for="e-nama">Nama desain</label><input id="e-nama" name="nama" type="text" value="' + esc(x.nama || '') + '" maxlength="60">' + errF(errors, 'nama') + '</div>' +
       '<div class="field"><label for="e-kat">Kategori</label><select id="e-kat" name="kategori">' + data.kategori.map(function (k) { return '<option' + (k === x.kategori ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select>' + errF(errors, 'kategori') + '</div></div>' +
       '<fieldset class="field" style="border:0;padding:0;margin:0 0 .875rem"><legend>Tersedia di paket</legend><div class="actions">' + data.paket.map(function (p) { return '<label class="chk"><input type="checkbox" name="paket" value="' + esc(p.id) + '"' + (sel.indexOf(p.id) >= 0 ? ' checked' : '') + '> ' + esc(p.nama) + '</label>'; }).join('') + '</div>' + errF(errors, 'paket') + '</fieldset>' +
-      '<div class="field"><label for="e-tema">Tampilan (tema bawaan)</label><div class="tema-pilih">' + data.tema.map(function (t) { var c = SW[t] || ['#eee', '#999']; return '<label class="tema-opt"><input type="radio" name="tema" value="' + esc(t) + '"' + (pakaiTema && th === 'tema:' + t ? ' checked' : (!x.id && t === 'blossom' ? ' checked' : '')) + '><span class="sw" style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')"></span><span class="small">' + esc(t) + '</span></label>'; }).join('') + '</div></div>' +
+      '<div class="field"><label for="e-tema">Tampilan (tema bawaan)</label><div class="tema-pilih">' + data.tema.map(function (t) { var c = SW[t] || ['#eee', '#999']; return '<label class="tema-opt"><input type="radio" name="tema" value="' + esc(t) + '"' + (pakaiTema && swKey(th.slice(5)) === t ? ' checked' : (!x.id && t === 'cinematic' ? ' checked' : '')) + '><span class="sw" style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')"></span><span class="small">' + esc(t) + '</span></label>'; }).join('') + '</div></div>' +
       '<details class="lanjut"' + (!pakaiTema || x.urlDemo ? ' open' : '') + '><summary>Lanjutan: gambar sendiri &amp; demo</summary>' +
       '<div class="field"><label for="e-url">URL gambar pratinjau (https)</label><input id="e-url" name="thumbUrl" type="url" value="' + (pakaiTema ? '' : esc(th)) + '" placeholder="https://…">' + errF(errors, 'thumbnail') + '<p class="hint">Jika diisi, gambar ini dipakai menggantikan tema.</p></div>' +
       '<div class="field"><label for="e-demo">URL demo lengkap (opsional)</label><input id="e-demo" name="urlDemo" type="url" value="' + esc(x.urlDemo || '') + '" placeholder="https://…">' + errF(errors, 'urlDemo') + '</div></details>' +

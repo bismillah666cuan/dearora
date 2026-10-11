@@ -34,14 +34,16 @@ window.DEARORA_SEED = {
           { t: '1× revisi gratis', ok: true } ] } }
   ],
   desain: [
-    { id: 'DSN-001', nama: 'Eternal Blossom', kategori: 'Anniversary', paket: ['basic', 'premium'], thumbnail: 'tema:blossom', urlDemo: '' },
-    { id: 'DSN-002', nama: 'Joyful Birthday Bash', kategori: 'Ulang Tahun', paket: ['basic', 'premium'], thumbnail: 'tema:confetti', urlDemo: '' },
-    { id: 'DSN-003', nama: 'Cinematic Romantique', kategori: 'Anniversary', paket: ['special'], thumbnail: 'tema:cinema', urlDemo: '' },
-    { id: 'DSN-004', nama: 'Soft Apology', kategori: 'Maaf & Rindu', paket: ['basic', 'premium'], thumbnail: 'tema:dusk', urlDemo: '' },
-    { id: 'DSN-005', nama: 'Graduation Day', kategori: 'Wisuda', paket: ['basic', 'premium'], thumbnail: 'tema:grad', urlDemo: '' },
-    { id: 'DSN-006', nama: 'Thank You Bloom', kategori: 'Terima Kasih', paket: ['basic'], thumbnail: 'tema:sage', urlDemo: '' },
-    { id: 'DSN-007', nama: 'Mama Tersayang', kategori: 'Hari Spesial', paket: ['premium'], thumbnail: 'tema:rose', urlDemo: '' },
-    { id: 'DSN-008', nama: 'Level Up Birthday', kategori: 'Ulang Tahun', paket: ['special'], thumbnail: 'tema:arcade', urlDemo: '' }
+    { id: 'DSN-001', nama: 'Cinematic Romance', kategori: 'Anniversary', paket: ['basic'], thumbnail: 'tema:cinematic', urlDemo: '' },
+    { id: 'DSN-002', nama: 'Joyful Party', kategori: 'Ulang Tahun', paket: ['basic'], thumbnail: 'tema:joyful', urlDemo: '' },
+    { id: 'DSN-003', nama: 'Cinematic Romantique', kategori: 'Anniversary', paket: ['special'], thumbnail: 'tema:cinematic', urlDemo: '' },
+    { id: 'DSN-004', nama: 'Starry Night', kategori: 'Maaf & Rindu', paket: ['basic'], thumbnail: 'tema:starry', urlDemo: '' },
+    { id: 'DSN-005', nama: 'Graduation Day', kategori: 'Wisuda', paket: ['basic'], thumbnail: 'tema:graduation', urlDemo: '' },
+    { id: 'DSN-006', nama: 'Secret Garden', kategori: 'Terima Kasih', paket: ['basic'], thumbnail: 'tema:garden', urlDemo: '' },
+    { id: 'DSN-007', nama: 'Mama Tersayang', kategori: 'Hari Spesial', paket: ['basic'], thumbnail: 'tema:mama', urlDemo: '' },
+    { id: 'DSN-008', nama: 'Level Up Birthday', kategori: 'Ulang Tahun', paket: ['special'], thumbnail: 'tema:kids', urlDemo: '' },
+    { id: 'DSN-009', nama: 'For Kids', kategori: 'Ulang Tahun', paket: ['basic'], thumbnail: 'tema:kids', urlDemo: '' },
+    { id: 'DSN-010', nama: 'Hello, Little One', kategori: 'Kelahiran', paket: ['basic'], thumbnail: 'tema:baby', urlDemo: '' }
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }

@@ -9,6 +9,13 @@ Urutan: **A (backend) → B (password admin) → C (frontend) → D (uji) → E 
 
 ---
 
+## Pembaruan desain template (gaya baru)
+1. Ganti lima file GAS: **`Kode`, `Pesanan`, `Kartu`, `Admin`, `Rutin`**, lalu **deploy versi baru**.
+2. Jalankan **`isiUlangKatalogDesain`** sekali dari editor Apps Script. Fungsi ini memperbarui sepuluh desain (ID `DSN-001` sampai `DSN-010`, termasuk kategori baru *Kelahiran*) dan tidak menyentuh desain buatan Ibu sendiri. Pesanan lama tetap aman.
+3. Timpa folder `dearora` dengan ZIP frontend terbaru (berkas baru: `js/art.js`, `js/gaya.js`, `css/gaya.css`, `css/scene.css`), isi ulang `GAS_URL`, lalu `git push`.
+4. Kunci tema lama (`blossom`, `confetti`, `cinema`, ...) otomatis dipetakan ke gaya baru, jadi desain lama di sheet tetap tampil.
+5. Opsi per desain (balon/love, bintang/awan, ikon keibuan) dipilih pembeli di langkah **Desain** dan disimpan di kolom `UrutanCerita`.
+
 ## A. Backend — Google Apps Script
 **Pembaruan terbaru (pengalaman ucapan interaktif):** ganti isi **`Kode`**, **`Pesanan`**, **`Kartu`**, **`Rutin`**, dan **`Admin`**. Berkas lain tidak berubah. Lalu jalankan **`setupAppEnvironment`** (menambah kolom `KejutanJSON`) dan **deploy versi baru**.
 

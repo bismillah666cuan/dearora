@@ -31,9 +31,9 @@
 .stage.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
 .stage .inner { margin: auto; width: 100%; max-width: 30rem; display: grid; justify-items: center; gap: 1rem; text-align: center; position: relative; }
 .stage .inner.wide { max-width: 36rem; }
-.stage.on .inner > * { animation: naik .7s ease both; }
-.stage.on .inner > *:nth-child(2) { animation-delay: .12s; } .stage.on .inner > *:nth-child(3) { animation-delay: .24s; }
-.stage.on .inner > *:nth-child(4) { animation-delay: .36s; } .stage.on .inner > *:nth-child(5) { animation-delay: .48s; }
+:where(.stage.on .inner) > * { animation: naik .7s ease both; }   /* spesifisitas nol: animasi milik elemen (melayang, kilau, jatuh) tidak tertimpa */
+:where(.stage.on .inner) > *:nth-child(2) { animation-delay: .12s; } :where(.stage.on .inner) > *:nth-child(3) { animation-delay: .24s; }
+:where(.stage.on .inner) > *:nth-child(4) { animation-delay: .36s; } :where(.stage.on .inner) > *:nth-child(5) { animation-delay: .48s; }
 @keyframes naik { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 h1:focus, .ucapan-akhir:focus { outline: none; }
 .kpd { font-size: .8125rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--tacc); margin: 0; }
@@ -49,7 +49,7 @@ h1:focus, .ucapan-akhir:focus { outline: none; }
 .stage.buka .particles { position: absolute; inset: -3.5rem -1.25rem; pointer-events: none; }
 
 /* 2. Sapaan */
-.nama-besar { font-size: clamp(3rem, 17vw, 5.75rem); line-height: 1.02; font-weight: 800; letter-spacing: -.035em; margin: 0; overflow-wrap: anywhere; position: relative; }
+.nama-besar { font-size: clamp(2.2rem, min(17vw, calc(88vw / (var(--nl, 6) * .6))), 5.75rem); line-height: 1.02; font-weight: 800; letter-spacing: -.035em; margin: 0; overflow-wrap: anywhere; position: relative; }
 .sparkle { display: inline-block; margin-left: .15em; font-size: .4em; color: var(--tacc); vertical-align: top; animation: kelip 1.6s ease-in-out infinite; }
 @keyframes kelip { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(1.35) rotate(25deg); opacity: .6; } }
 .sapa-1 { font-size: 1.5rem; font-weight: 800; margin: .25rem 0 0; } .sapa-2 { font-size: 1.0625rem; opacity: .9; margin: 0 0 .75rem; max-width: 22rem; }

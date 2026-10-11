@@ -40,7 +40,9 @@
     { key: 'Terima Kasih', judul: 'Terima Kasih & Apresiasi', icon: 'smile', tone: 'sage', tag: 'Apresiasi',
       desc: 'Ungkapkan terima kasih untuk sahabat, guru, atau siapa pun yang berarti.' },
     { key: 'Hari Spesial', judul: 'Hari Ibu & Hari Spesial', icon: 'sparkles', tone: '', tag: 'Momen Spesial',
-      desc: 'Hari Ibu, Hari Ayah, dan momen khusus lain yang layak dikenang.' }
+      desc: 'Hari Ibu, Hari Ayah, dan momen khusus lain yang layak dikenang.' },
+    { key: 'Kelahiran', judul: 'Kelahiran & Keluarga Baru', icon: 'smile', tone: 'sage', tag: 'Menyambut Si Kecil',
+      desc: 'Sambut bayi dan anggota keluarga baru dengan doa, foto, dan bintang.' }
   ];
 
   function infoKategori(key) {
@@ -55,14 +57,15 @@
     'Maaf & Rindu': { judul: 'Maaf, dan Aku Rindu', pesan: 'Maaf untuk kata-kata yang melukai. Aku rindu tawamu, dan ingin memperbaikinya pelan-pelan.' },
     'Wisuda': { judul: 'Selamat Wisuda!', pesan: 'Semua lelah, begadang, dan doa akhirnya sampai di hari ini. Kami bangga padamu.' },
     'Terima Kasih': { judul: 'Terima Kasih', pesan: 'Terima kasih sudah selalu ada, bahkan di hari-hari tersulit. Kebaikanmu lebih berarti dari yang kamu kira.' },
+    'Kelahiran': { judul: 'Selamat Datang, Si Kecil', pesan: 'Selamat datang di dunia. Semoga kamu tumbuh sehat, bahagia, dan dikelilingi cinta.' },
     'Hari Spesial': { judul: 'Untuk Orang Tersayang', pesan: 'Terima kasih untuk cinta yang tak pernah meminta balasan. Hari ini, semua doa terbaikku untukmu.' }
   };
 
   /* ---------- Tema visual desain ---------- */
-  var TEMA_VALID = ['blossom', 'confetti', 'cinema', 'dusk', 'grad', 'sage', 'rose', 'arcade'];
   function temaDari(thumbnail) {
     var m = /^tema:([a-z]+)$/.exec(String(thumbnail || ''));
-    return m && TEMA_VALID.indexOf(m[1]) >= 0 ? m[1] : 'blossom';
+    var k = m ? m[1] : 'classic';
+    return window.Gaya ? window.Gaya.kunci(k) : k;      // kunci lama (blossom, confetti, ...) dipetakan ke gaya baru
   }
   function ikonTema(tema, kategori) {
     if (tema === 'cinema' || tema === 'arcade' || tema === 'grad') return tema === 'grad' ? 'grad' : 'sparkles';
@@ -89,32 +92,29 @@
     return out + '</div>';
   }
 
-  /* ---------- Komponen: thumbnail desain ---------- */
+  /* ---------- Komponen: thumbnail desain (adegan bergerak) ---------- */
   function thumbHTML(d, semuaPaket) {
-    var tema = temaDari(d.thumbnail);
+    var key = window.Gaya ? window.Gaya.dari(d.thumbnail) : 'classic';
     var img = amanHttps(d.thumbnail);
     var tags = (d.paket || []).slice(0, 1).map(function (id) { return badgePaket(id, semuaPaket); }).join('');
-    var inner;
-    if (img) {
-      inner = '<img class="thumb-img" loading="lazy" decoding="async" src="' + esc(img) + '" alt="Pratinjau desain ' + esc(d.nama) + '">';
-    } else {
-      inner = '<div class="thumb-card"><span class="ico">' + ic(ikonTema(tema, d.kategori)) + '</span>' +
-        '<span class="t">' + esc(d.nama) + '</span><span class="bar"></span><span class="bar s"></span></div>';
-    }
-    return '<div class="design-thumb theme theme-' + tema + '">' + inner + '</div>';
+    var isi;
+    if (img) isi = '<img class="thumb-img" loading="lazy" decoding="async" src="' + esc(img) + '" alt="Pratinjau desain ' + esc(d.nama) + '">';
+    else isi = window.Gaya ? window.Gaya.adegan(key) : '';
+    return '<div class="design-thumb scene-wrap theme theme-' + key + '"><span class="badge-anim">' + ic('sparkles') + ' Interaktif</span>' + isi + '<span class="tombol-main">' + ic('play') + ' Coba demo</span></div>';
   }
 
   /* ---------- Komponen: kartu desain ---------- */
   function designCard(d, semuaPaket) {
-    var kat = infoKategori(d.kategori);
+    var kat = infoKategori(d.kategori), g = window.Gaya ? window.Gaya.ambil(window.Gaya.dari(d.thumbnail)) : {};
     var paketTags = (d.paket || []).map(function (id) { return badgePaket(id, semuaPaket); }).join('');
+    var chip = (g.fitur || []).length ? '<ul class="fitur-chip" aria-label="Keistimewaan desain">' + g.fitur.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' : '';
     return '<article class="card card-hover design-card reveal">' +
       thumbHTML(d, semuaPaket) +
       '<div class="design-meta">' +
         '<div class="tags"><span class="tag lav">' + esc(kat.judul.split(' & ')[0]) + '</span>' + paketTags + '</div>' +
-        '<h3>' + esc(d.nama) + '</h3>' +
+        '<h3>' + esc(d.nama) + '</h3>' + chip + (g.cocok ? '<p class="cocok"><strong>Cocok untuk:</strong> ' + esc(g.cocok) + '</p>' : '') +
         '<div class="design-actions">' +
-          '<button type="button" class="btn btn-quiet btn-sm" data-action="demo" data-id="' + esc(d.id) + '">' + ic('play') + ' Lihat Demo</button>' +
+          '<button type="button" class="btn btn-quiet btn-sm" data-action="demo" data-id="' + esc(d.id) + '">' + ic('play') + ' Coba Demo</button>' +
           '<a class="btn btn-secondary btn-sm" href="#/buat?desain=' + encodeURIComponent(d.id) + '">Pakai Desain</a>' +
         '</div>' +
       '</div></article>';
