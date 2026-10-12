@@ -20,6 +20,11 @@
 
   S.reg('movie', {
     nama: 'Malam Film', demo: DEMO,
+    adapt: function (f, c) {
+      var W = [['#3A1C71', '#D76D77'], ['#134E5E', '#71B280'], ['#7B2FF7', '#F107A3']], fin = f.final || {};
+      return { judul: f.judul, pemeran: c.penerima, pengirim: c.pengirim, tagline: f.tagline || 'Sebuah film pendek tentang kita, dibuat khusus untukmu.',
+        episode: (f.episode || []).map(function (e, i) { return { judul: e.judul, desk: e.desk || '', warna: W[i % 3], foto: e.foto, adegan: e.adegan }; }), final: { judul: fin.judul, foto: fin.foto, pesan: fin.pesan } };
+    },
     mulai: function (root, d) {
       var tonton = {}, finalDilihat = false, suara = null;
       function layar(html, k) { root.innerHTML = '<div class="sp-layar ' + (k || '') + '">' + html + '</div>'; return root.firstChild; }
@@ -85,7 +90,7 @@
         finalDilihat = true;
         var el = layar('<div class="mv-final"><div class="mv-cahaya" aria-hidden="true"></div><button type="button" class="mv-kembali" aria-label="Kembali">‹ Kembali</button><p class="mv-studio">FINAL</p><h1>' + esc(d.final.judul) + '</h1>' +
           '<figure class="mv-foto"><img alt="Foto pilihan" src="' + esc(S.src(d.final.foto, 2)) + '"></figure><p class="mv-pesan">' + S.kata(d.final.pesan, 7000, 90) + '</p>' +
-          '<div class="mv-btns"><button type="button" class="mv-lagi" data-a="end">↻ Putar Ending Lagi</button><button type="button" class="mv-lagi" data-a="all">Tonton Kisah Kita Lagi</button></div><p class="mv-kredit">— ' + esc(d.pengirim) + '</p></div>', 'mv-gelap');
+          '<div class="mv-btns"><button type="button" class="mv-lagi" data-a="end">↻ Putar Ending Lagi</button><button type="button" class="mv-lagi" data-a="all">Tonton Kisah Kita Lagi</button></div><p class="mv-kredit">Dibuat dengan penuh rasa oleh: ' + esc(d.pengirim) + '</p></div>', 'mv-gelap'); S.akhir();
         S.dariEl(el.querySelector('h1'), 60, ['#F4C95D', '#FFE9A8', '#fff'], { kuat: 8 });
         el.addEventListener('click', function (ev) {
           if (ev.target.closest('.mv-kembali')) beranda();

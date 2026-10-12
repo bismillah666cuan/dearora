@@ -9,29 +9,43 @@ Urutan: **A (backend) → B (password admin) → C (frontend) → D (uji) → E 
 
 ---
 
-## Desain khusus paket Special (aplikasi mini)
-Enam desain khusus ada di halaman **`/s/?d=...`** dan tampil di katalog (filter *Special*) dengan tombol **Coba Demo**:
+## Pembaruan paket (Basic / Premium / Special) dan balasan penerima
+**Ringkasan paket sekarang**
+| Paket | Desain | Isian pembeli | Link |
+|---|---|---|---|
+| **Basic** | 9 desain template + 8 jenis kejutan | Surat, kejutan akhir, foto (hingga 3) | Otomatis, acak, aktif 10 hari |
+| **Premium** | 6 desain eksklusif: Malam Film, Dearora Mall, Dunia Sahabat, Selebstyle, Soundtrack Kita, Lastlove | **Form khusus per desain** (episode, hadiah, memori, kiriman, lagu, misi), foto hingga 10 | Otomatis, acak, aktif 30 hari |
+| **Special** | Tanpa contoh: pembeli menulis ide desain | Ide desain (min. 30 karakter), foto hingga 20 + 1 video, nama link opsional | Ibu mengerjakan manual lalu menekan **Tandai selesai & aktifkan** |
 
-| Nama | Alamat demo | Isi |
-|---|---|---|
-| Malam Film | `/s/?d=movie` | Beranda episode, subtitle bertahap, adegan penutup |
-| Dearora Mall | `/s/?d=mall` | Etalase hadiah, keranjang, kupon, pengiriman fiktif, buka paket |
-| Dunia Sahabat | `/s/?d=bestie` | Peta 3 lokasi, item, lencana, peti harta |
-| Selebstyle | `/s/?d=feed` | Feed vertikal, komentar bertahap, kiriman disematkan |
-| Soundtrack Kita | `/s/?d=musik` | Playlist cerita, mode tanpa audio, Hidden Track |
-| Lastlove: Misi Cinta | `/s/?d=misi` | Briefing markas, tiga misi, kartu hero, hadiah final |
+**Cara memasang pembaruan ini (urutan)**
+1. Di Apps Script ganti isi: `Kode`, `Pesanan`, `Kartu`, `Pembayaran`, `Email`, `Portal`, `Admin`. **Tambahkan satu file baru** `Skema` (Skrip → nama `Skema`), tempel isi `Skema.gs`. Berkas ini dibuat otomatis dari `js/skema.js`; jangan diedit tangan.
+2. Jalankan **`setupAppEnvironment`** (menambah kolom `DataDesainJSON`, `TglDilihat`, `UrlDiminta` dan sheet **Balasan**), lalu **`isiUlangKatalogDesain`** (enam desain masuk Premium, dua contoh Special dinonaktifkan). Deploy versi baru.
+3. **Ubah baris Paket secara manual** di Admin → Pengaturan → Paket (data lama tidak otomatis berubah): Premium 30 hari + maks. foto 10 + tanda "Terfavorit"; Special maks. foto 20. Harga **diatur Ibu sendiri** (angka di seed hanyalah contoh). Teks fitur yang disarankan ada di bawah.
+4. Timpa folder `dearora` dengan ZIP frontend terbaru, isi ulang `GAS_URL`, lalu `git push`.
 
-**Cara membuat untuk pembeli (manual).** Semua desain membaca satu objek `DEMO` di berkas `js/sp-*.js`. Untuk pesanan nyata, salin folder `s` menjadi folder baru (misalnya `siska`), lalu isi data pembeli lewat `window.SPECIAL_DATA` di `index.html` salinan itu sebelum skrip dimuat (hanya kolom yang ingin diganti). Foto memakai alamat **https** (hosting sendiri atau Drive yang dibagikan). Lalu `git push`, tempel alamatnya saat menekan **Tandai selesai & aktifkan**.
+**Teks fitur yang disarankan**
+- Premium (tagline): *Pengalaman seperti aplikasi mini: pilih salah satu dari enam desain eksklusif.* Fitur: `+ Pilih satu dari 6 desain eksklusif`, `+ Isi sendiri: episode, hadiah, memori, kiriman, lagu, atau misi`, `+ Hingga 10 foto`, `+ Link acak dan privat, aktif 30 hari`, `+ Balasan dari penerima langsung ke akunmu`, `- Revisi`. Label sorotan: **Terfavorit**, centang "Jadikan paket sorotan" agar tampil di tengah.
+- Special (tagline): *Desain 100% custom, dikerjakan langsung oleh kami sesuai ideamu.* Fitur: `+ Desain custom sesuai ide`, `+ Hingga 20 foto dan 1 video`, `+ Boleh meminta nama pada link; bentrok otomatis diberi angka`, `+ Pembayaran penuh di muka`, `+ 1× revisi gratis`, `+ Balasan dari penerima`.
 
-Catatan penting:
-- **Soundtrack Kita:** jangan mengunggah rekaman berhak cipta tanpa izin. Pakai tautan resmi atau musik berlisensi. Tanpa audio, desain berjalan sebagai "mode cerita" dan tidak berpura-pura memutar musik.
-- **Malam Film:** suara latar opsional dibuat langsung oleh browser (nada lembut sederhana), tanpa berkas audio.
-- **Lastlove, Dunia Sahabat, Dearora Mall:** karakter, markas, dan ikon semuanya orisinal Dearora. Jangan menambahkan logo, karakter, atau aset game/toko lain.
-- Halaman `/s/` tidak diindeks mesin pencari dan tidak disimpan di cache.
+**Paket Special: alur Ibu**
+1. Pesanan dibayar penuh → status *Diproses*. Di detail pesanan Ibu melihat **ide desain**, **nama link yang dikunci** (mis. `/u/siska-2`), dan foto/video.
+2. Buat halaman kustomnya. Jika memakai folder, buat `u/siska-2/index.html` di repo (berkas ini diutamakan Vercel daripada template), lalu `git push`.
+3. Tekan **Tandai selesai & aktifkan**. Kolom alamat boleh dikosongkan (memakai `/u/nama-yang-dikunci`) atau diisi alamat lain. Masa aktif dihitung sejak saat itu dan email "Ucapanmu sudah jadi" terkirim.
+4. **Revisi 1×**: pembeli mengajukan dari portal (status kembali *Diproses*), Ibu mengerjakan lalu menekan tombol yang sama; kuota habis setelah sekali.
+5. Saat kedaluwarsa, sistem hanya menghapus foto di Drive. **Halaman kustom di repo harus Ibu hapus sendiri.**
+
+**Status "sudah dilihat" dan balasan**
+- Penerima dianggap *sudah melihat* saat mencapai slide terakhir. Di sana muncul kolom **Balas ucapan**; balasan masuk ke portal pembeli (Pesanan Saya → Detail) dan email.
+- Anti-spam: maksimal 5 balasan per ucapan per hari. Tidak ada akun untuk penerima.
+- Tampilan akhir semua desain kini berbunyi **"Dibuat dengan penuh rasa oleh: {nama pengirim}"**. Tautan "Buat ucapan seperti ini" pada kartu Basic masih ada; hapus di `js/card.js` bila tidak diinginkan.
+
+**Draf Saya.** Pembeli bisa menyimpan beberapa draf ucapan (tombol *Simpan & buat ucapan lain*) dan melanjutkannya dari panel "Draf Saya". Draf tersimpan di browser itu saja dan **foto tidak ikut tersimpan**. Riwayat ucapan yang sudah dibayar ada di portal.
+
+**Demo desain Premium** tetap bisa dicoba di katalog (tombol *Coba Demo*) dan langsung di `/s/?d=movie`, `mall`, `bestie`, `feed`, `musik`, `misi`. Catatan khusus: Soundtrack Kita hanya memutar audio bila tautannya https dan pembeli menyatakan tautan itu sah/berlisensi; tanpa audio berjalan sebagai "mode cerita". Karakter, markas, dan ikon semuanya orisinal; jangan menambahkan logo atau aset pihak lain.
 
 ## Pembaruan desain template (gaya baru)
 1. Ganti lima file GAS: **`Kode`, `Pesanan`, `Kartu`, `Admin`, `Rutin`**, lalu **deploy versi baru**.
-2. Jalankan **`isiUlangKatalogDesain`** sekali dari editor Apps Script. Fungsi ini memperbarui enam belas desain (ID `DSN-001` sampai `DSN-016`, termasuk kategori baru *Kelahiran* dan enam desain Special) dan tidak menyentuh desain buatan Ibu sendiri. Pesanan lama tetap aman.
+2. Jalankan **`isiUlangKatalogDesain`** sekali dari editor Apps Script. Fungsi ini memperbarui enam belas desain (ID `DSN-001` sampai `DSN-016`, termasuk kategori baru *Kelahiran* dan enam desain Premium) dan tidak menyentuh desain buatan Ibu sendiri. Pesanan lama tetap aman.
 3. Timpa folder `dearora` dengan ZIP frontend terbaru (berkas baru: `js/art.js`, `js/gaya.js`, `css/gaya.css`, `css/scene.css`), isi ulang `GAS_URL`, lalu `git push`.
 4. Kunci tema lama (`blossom`, `confetti`, `cinema`, ...) otomatis dipetakan ke gaya baru, jadi desain lama di sheet tetap tampil.
 5. Opsi per desain (balon/love, bintang/awan, ikon keibuan) dipilih pembeli di langkah **Desain** dan disimpan di kolom `UrutanCerita`.

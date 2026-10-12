@@ -40,6 +40,15 @@
 
   S.reg('bestie', {
     nama: 'Dunia Sahabat', demo: DEMO,
+    adapt: function (f, c) {
+      var tp = ['hati', 'bintang', 'kristal'], tp2 = ['kotak', 'hati', 'bintang'], pt = f.peti || {};
+      var k1 = (f.kenangan || []).map(function (k, i) { return { tipe: tp[i % 3], judul: k.judul, teks: k.teks, foto: k.foto }; });
+      var k2 = (f.pesanSahabat || []).map(function (k, i) { return { tipe: tp2[i % 3], judul: k.judul, teks: k.teks, foto: '' }; }), tot = k1.length + k2.length;
+      var syarat = [Math.max(1, Math.ceil(tot * 0.34)), Math.max(2, Math.ceil(tot * 0.67)), Math.max(3, tot - 1), tot];
+      return { penerima: c.penerima, pengirim: c.pengirim, syaratPulau: Math.max(1, tot - 1), pesanMisi: f.pesanMisi, avatar: { kulit: '#F2C28B', baju: f.warnaBaju || '#FF6B6B', celana: '#4B6BFF', rambut: '#5B3A29' },
+        lokasi: [{ id: 'padang', nama: 'Padang Kenangan', desk: 'Tempat menemukan foto kenangan.', warna: ['#BDEBFF', '#A7E58C'], item: k1 }, { id: 'rumah', nama: 'Rumah Persahabatan', desk: 'Tempat membaca pesan dari sahabat.', warna: ['#FFE6B8', '#FFB36B'], item: k2 }, { id: 'pulau', nama: 'Pulau Harta', desk: 'Lokasi hadiah utama.', warna: ['#8FD6FF', '#FFE08A'], item: [] }],
+        lencana: [{ nama: 'Orang Favorit', syarat: syarat[0], ikon: 'hati' }, { nama: 'Si Paling Keren', syarat: Math.max(syarat[0], syarat[1]), ikon: 'bintang' }, { nama: 'Partner Usil', syarat: Math.max(syarat[1], syarat[2]), ikon: 'kotak' }, { nama: 'Duniaku', syarat: tot, ikon: 'kristal' }], peti: { foto: pt.foto, pesan: pt.pesan } };
+    },
     mulai: function (root, d) {
       var temu = {}, lencanaBuka = {}, lokasiSkr = 'padang';
       function jml() { return Object.keys(temu).length; }
@@ -116,9 +125,9 @@
       }
 
       function akhir() {
-        var el = layar(awan() + '<div class="bw-tengah"><p class="bw-kpd">Harta karun terbuka</p><h1>' + esc(d.penerima) + '</h1><figure class="bw-foto"><img alt="Foto pilihan" src="' + esc(S.src(d.peti.foto, 3)) + '"></figure><p class="bw-pesan">' + esc(d.peti.pesan) + '</p><p class="bw-final">Kamu adalah harta karun yang sesungguhnya.</p>' +
+        var el = layar(awan() + '<div class="bw-tengah"><p class="bw-kpd">Harta karun terbuka</p><h1>' + esc(d.penerima) + '</h1><figure class="bw-foto"><img alt="Foto pilihan" src="' + esc(S.src(d.peti.foto, 3)) + '"></figure><p class="bw-pesan">' + esc(d.peti.pesan) + '</p><p class="bw-final">Kamu adalah harta karun yang sesungguhnya.</p>' + S.kredit(d.pengirim) +
           '<button type="button" class="bw-tombol" id="bwUlang">Jelajahi Dunia Sekali Lagi</button></div>', 'bw-langit bw-emas', ['#FFE08A', '#FFC4A0']);
-        S.dariEl(el.querySelector('.bw-final'), 70, ['#FFC93C', '#FF5D8F', '#5AD1FF', '#fff'], { kuat: 10 });
+        S.akhir(); S.dariEl(el.querySelector('.bw-final'), 70, ['#FFC93C', '#FF5D8F', '#5AD1FF', '#fff'], { kuat: 10 });
         el.querySelector('#bwUlang').addEventListener('click', function () { temu = {}; lencanaBuka = {}; lokasiSkr = 'padang'; sambutan(); });
       }
       sambutan();

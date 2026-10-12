@@ -25,6 +25,14 @@
 
   S.reg('mall', {
     nama: 'Dearora Mall', demo: DEMO,
+    adapt: function (f, c) {
+      var P = ['#FFE3D0', '#FFD9E4', '#FFF0C9', '#DDF1DC', '#E7DEFF', '#D7EEFF'], u = f.utama || {};
+      return { penerima: c.penerima, pengirim: c.pengirim, minimal: Math.min(3, (f.hadiah || []).length), kupon: f.kupon || 'LOVE100',
+        kuponBonus: f.kuponBonus || 'Bonus kupon: kamu boleh mengambek 1 hari, lalu wajib dipeluk. Berlaku seumur hidup.',
+        kategori: ['Cinta & Romansa', 'Doa Ulang Tahun', 'Gemas & Lucu', 'Terima Kasih', 'Pelukan & Penghibur'],
+        hadiah: (f.hadiah || []).map(function (h, i) { return { id: 'h' + i, nama: h.nama, kat: h.kat, harga: h.harga || 'Tak ternilai', ilus: h.ilus, warna: P[i % 6], desk: h.desk || '', isi: h.isi }; }),
+        utama: { judul: u.judul || 'Hadiah Utama: Sepucuk Surat', foto: u.foto, pesan: u.pesan } };
+    },
     mulai: function (root, d) {
       var pilih = [], filter = '', kuponPakai = false;
       function layar(h, k) { root.innerHTML = '<div class="sp-layar ' + (k || '') + '">' + h + '</div>'; return root.firstChild; }
@@ -94,6 +102,7 @@
         }
         function selesai() {
           el.querySelector('#mlIsi').innerHTML = '<div class="ml-akhir"><h1>Kejutanmu telah tiba!</h1><p>Terima kasih sudah membuka semua hadiah.</p><button type="button" class="ml-klaim" id="mlUlang">Belanja Hadiah Lagi</button></div>';
+          el.querySelector('.ml-akhir').insertAdjacentHTML('beforeend', S.kredit(d.pengirim)); S.akhir();
           S.dariEl(el.querySelector('.ml-akhir h1'), 60, ['#FF7A1A', '#FFB020', '#E8336D', '#fff'], { kuat: 9 });
           el.querySelector('#mlUlang').addEventListener('click', function () { pilih = []; kuponPakai = false; filter = ''; beranda(); });
         }

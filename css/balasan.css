@@ -1,0 +1,13 @@
+/* Balasan penerima (dipakai kartu Basic dan desain aplikasi mini) */
+.bl-kotak { width: min(100%, 26rem); margin: 0 auto; text-align: left; background: rgba(255, 255, 255, .96); color: #261C24; border-radius: 20px; padding: 1.1rem 1.2rem; box-shadow: 0 16px 40px -18px rgba(0, 0, 0, .55); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.bl-form { display: grid; gap: .6rem; } .bl-form h3 { margin: 0; font-size: 1.15rem; } .bl-sub { margin: 0; color: #6E616B; font-size: .875rem; }
+.bl-form input[type=text], .bl-form textarea { width: 100%; font: inherit; border: 1.5px solid #E4D6DA; border-radius: 12px; padding: .65rem .8rem; background: #fff; color: #261C24; } .bl-form textarea { resize: vertical; min-height: 5rem; }
+.bl-form input:focus, .bl-form textarea:focus { outline: 3px solid #E85D7544; border-color: #E85D75; }
+.bl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .bl-hp { position: absolute !important; left: -9999px !important; opacity: 0; height: 0; }
+.bl-kirim { min-height: 48px; border: 0; border-radius: 99px; background: #E85D75; color: #fff; font: inherit; font-weight: 800; cursor: pointer; } .bl-kirim[disabled] { opacity: .65; }
+.bl-galat { margin: 0; color: #B3261E; font-weight: 600; font-size: .875rem; } .bl-demo { margin: 0; font-size: .75rem; color: #9E8E9B; text-align: center; } .bl-ok { margin: 0; text-align: center; font-weight: 700; padding: .6rem 0; }
+.bl-fab { position: fixed; left: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); z-index: 70; min-height: 48px; padding: 0 1.1rem; border-radius: 99px; border: 0; background: #fff; color: #261C24; font: 700 .9375rem 'Plus Jakarta Sans', system-ui, sans-serif; box-shadow: 0 10px 24px -8px rgba(0, 0, 0, .5); cursor: pointer; animation: blMuncul .6s ease both; }
+@keyframes blMuncul { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.bl-lembar { position: fixed; inset: 0; z-index: 95; background: rgba(0, 0, 0, .6); display: grid; place-items: center; padding: 1rem; }
+.bl-sheet { position: relative; width: min(100%, 28rem); } .bl-tutup { position: absolute; right: -.25rem; top: -2.6rem; width: 40px; height: 40px; border-radius: 50%; border: 0; background: #fff; cursor: pointer; font-size: 1rem; }
+.balas { display: grid; justify-items: center; margin: .75rem 0; width: 100%; }

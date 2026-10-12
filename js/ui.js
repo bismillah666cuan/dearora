@@ -120,13 +120,21 @@
       '</div></article>';
   }
 
+  /** Paket yang ditandai rekomendasi ("Terfavorit"/"Terlaris") ditaruh di TENGAH agar jadi sorotan. */
+  function susunPaket(arr) {
+    var a = (arr || []).slice(), i = a.findIndex(function (p) { var f = p.fitur || {}; return !!f.rekomendasi; });
+    if (i < 0 || a.length < 3) return a;
+    var fav = a.splice(i, 1)[0]; a.splice(Math.floor(a.length / 2), 0, fav); return a;
+  }
+
   /* ---------- Komponen: kartu paket ---------- */
   function planCard(p) {
     var f = p.fitur || {};
     var id = p.id;
-    var klas = 'plan card' + (id === 'premium' || f.rekomendasi ? ' plan-premium' : '') + (id === 'special' ? ' plan-special' : '');
-    var btn = (id === 'premium' || f.rekomendasi) ? 'btn-primary' : id === 'special' ? 'btn-lavender' : 'btn-quiet';
-    var flag = f.badge ? '<span class="plan-flag">' + esc(f.badge) + '</span>' : '';
+    var fav = !!f.rekomendasi;
+    var klas = 'plan card' + (fav ? ' plan-premium plan-fav' : '') + (id === 'special' ? ' plan-special' : '');
+    var btn = fav ? 'btn-primary' : id === 'special' ? 'btn-lavender' : 'btn-quiet';
+    var flag = f.badge ? '<span class="plan-flag">' + ic('sparkles') + ' ' + esc(f.badge) + '</span>' : '';
     var list = (f.fitur || []).map(function (x) {
       return '<li class="' + (x.ok ? 'yes' : 'no') + '">' + ic(x.ok ? 'check' : 'x') +
         '<span>' + (x.ok ? '' : '<span class="sr-only">Tidak termasuk: </span>') + esc(x.t) + '</span></li>';
@@ -167,7 +175,7 @@
     esc: esc, ic: ic, rupiah: rupiah, formatMasa: formatMasa, amanHttps: amanHttps,
     KATEGORI: KATEGORI, infoKategori: infoKategori, CONTOH: CONTOH,
     temaDari: temaDari, ikonTema: ikonTema, partikel: partikel,
-    badgePaket: badgePaket, thumbHTML: thumbHTML, designCard: designCard, planCard: planCard,
+    badgePaket: badgePaket, thumbHTML: thumbHTML, designCard: designCard, planCard: planCard, susunPaket: susunPaket,
     skeletons: skeletons, errorBox: errorBox, faqList: faqList
   };
 })();

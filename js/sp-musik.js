@@ -24,6 +24,12 @@
 
   S.reg('musik', {
     nama: 'Soundtrack Kita', demo: DEMO,
+    adapt: function (f, c) {
+      var W = [['#FF9A9E', '#FAD0C4'], ['#A18CD1', '#FBC2EB'], ['#84FAB0', '#8FD3F4'], ['#F6D365', '#FDA085'], ['#FF9966', '#FF5E62'], ['#43C6AC', '#F8FFAE']], th = f.tersembunyi || {};
+      return { judul: f.judul, penerima: c.penerima, pengirim: c.pengirim, cover: ['#7B2FF7', '#F107A3'], deskripsi: f.deskripsi || '',
+        lagu: (f.lagu || []).map(function (l, i) { return { no: 'Track 0' + (i + 1), judul: l.judul, label: l.label || '', cerita: l.cerita, warna: W[i % 6], audio: l.audio || '' }; }),
+        tersembunyi: { judul: th.judul || 'Hidden Track', label: th.label || 'Untukmu saja', pesan: th.pesan }, penutup: f.penutup || 'Ada lagu yang berakhir. Tapi ada perasaan yang tinggal.' };
+    },
     mulai: function (root, d) {
       var dengar = {}, audio = null, main = false;
       var adaAudio = d.lagu.some(function (l) { return /^https:\/\//.test(l.audio || ''); });
@@ -62,9 +68,9 @@
 
       function rahasia() {
         berhenti();
-        var el = layar('<div class="sk-rahasia"><button type="button" class="sk-kembali" data-a="awal" aria-label="Kembali">‹</button><p class="sk-kpd">★ ' + esc(d.tersembunyi.judul).toUpperCase() + '</p><h2>' + esc(d.tersembunyi.label) + '</h2><button type="button" class="sk-amplop" aria-label="Buka pesan rahasia">' + ic('lock') + '<span>Ketuk untuk membuka</span></button><div class="sk-pesan" hidden><p>' + esc(d.tersembunyi.pesan) + '</p></div><p class="sk-penutup" hidden>' + esc(d.penutup) + '</p><button type="button" class="sk-play" data-a="awal" hidden>↻ Putar dari Awal</button></div>', 'sk-gelap');
+        var el = layar('<div class="sk-rahasia"><button type="button" class="sk-kembali" data-a="awal" aria-label="Kembali">‹</button><p class="sk-kpd">★ ' + esc(d.tersembunyi.judul).toUpperCase() + '</p><h2>' + esc(d.tersembunyi.label) + '</h2><button type="button" class="sk-amplop" aria-label="Buka pesan rahasia">' + ic('lock') + '<span>Ketuk untuk membuka</span></button><div class="sk-pesan" hidden><p>' + esc(d.tersembunyi.pesan) + '</p></div><p class="sk-penutup" hidden>' + esc(d.penutup) + '</p>' + S.kredit(d.pengirim) + '<button type="button" class="sk-play" data-a="awal" hidden>↻ Putar dari Awal</button></div>', 'sk-gelap');
         el.querySelector('.sk-kembali').addEventListener('click', awal);
-        el.querySelector('.sk-amplop').addEventListener('click', function (e) { e.currentTarget.hidden = true; el.querySelector('.sk-pesan').hidden = false; el.querySelector('.sk-pesan').classList.add('muncul'); S.dariEl(el.querySelector('.sk-pesan'), 50, ['#F107A3', '#7B2FF7', '#fff'], { kuat: 8 }); S.jeda(function () { var pn = el.querySelector('.sk-penutup'); pn.hidden = false; pn.classList.add('muncul'); var u = el.querySelector('.sk-play'); u.hidden = false; }, 1800); });
+        el.querySelector('.sk-amplop').addEventListener('click', function (e) { e.currentTarget.hidden = true; el.querySelector('.sk-pesan').hidden = false; el.querySelector('.sk-pesan').classList.add('muncul'); S.dariEl(el.querySelector('.sk-pesan'), 50, ['#F107A3', '#7B2FF7', '#fff'], { kuat: 8 }); S.jeda(function () { var pn = el.querySelector('.sk-penutup'); pn.hidden = false; pn.classList.add('muncul'); var u = el.querySelector('.sk-play'); u.hidden = false; S.akhir(); }, 1800); });
         el.querySelector('.sk-play').addEventListener('click', function () { dengar = {}; awal(); });
       }
       awal();

@@ -152,7 +152,7 @@
     var body;
     if (ctx.status === 'loading') body = '<div class="pricing">' + U.skeletons(3, 'sk-plan') + '</div>';
     else if (ctx.status === 'error') body = U.errorBox();
-    else body = '<div class="pricing">' + ctx.data.paket.map(U.planCard).join('') + '</div>';
+    else body = '<div class="pricing">' + U.susunPaket(ctx.data.paket).map(U.planCard).join('') + '</div>';
     return body + (tampilkanCallout ? callLinkRandom() : '');
   }
 
@@ -221,7 +221,8 @@
       U.KATEGORI.map(function (k) {
         return '<button type="button" class="chip" data-action="filter" data-k="kategori" data-v="' + esc(k.key) + '" aria-pressed="' + (fk === k.key) + '">' + esc(k.judul.split(' & ')[0]) + '</button>';
       }).join('');
-    var pakets = ((ctx.data && ctx.data.paket) || []);
+    var desainAll = (ctx.data && ctx.data.desain) || [];
+    var pakets = ((ctx.data && ctx.data.paket) || []).filter(function (p) { return desainAll.some(function (x) { return (x.paket || []).indexOf(p.id) >= 0; }); });     // paket tanpa contoh (Special) tidak jadi filter
     var pk = '<button type="button" class="chip" data-action="filter" data-k="paket" data-v="" aria-pressed="' + (!fp) + '">Semua paket</button>' +
       pakets.map(function (p) {
         return '<button type="button" class="chip" data-action="filter" data-k="paket" data-v="' + esc(p.id) + '" aria-pressed="' + (fp === p.id) + '">' + esc(p.nama) + '</button>';

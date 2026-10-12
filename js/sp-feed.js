@@ -24,6 +24,18 @@
   };
   S.reg('feed', {
     nama: 'Selebstyle', demo: DEMO,
+    adapt: function (f, c) {
+      var efek = ['zoom', 'geser', 'pudar', 'miring'], PAL = [['#FF8A5B', '#E8336D'], ['#7B2FF7', '#F107A3'], ['#2D9CDB', '#6FCF97']];
+      var posts = (f.posts || []).map(function (p, i) {
+        if (p.tipe === 'kolase') { var fs = (p.fotoKolase || []).slice(0, 4); while (fs.length < 4) fs.push(fs.length ? fs[fs.length - 1] : ''); return { tipe: 'kolase', foto: fs, efek: 'geser', suka: 120 + i * 37, caption: p.caption }; }
+        if (p.tipe === 'teks') return { tipe: 'teks', teks: p.teks || p.caption, warna: PAL[i % 3], efek: 'pudar', suka: 140 + i * 41, caption: p.caption };
+        return { tipe: 'foto', foto: p.foto, efek: efek[i % 4], suka: 100 + i * 29, caption: p.caption };
+      });
+      var kom = (f.komentar || []).filter(function (k) { return k.teks; }).map(function (k) { return { nama: k.nama || 'sahabat', teks: k.teks }; });
+      if (!kom.length) kom = [{ nama: 'sahabat.lama', teks: 'Kamu berhak bahagia.' }, { nama: 'tim.hore', teks: 'Selamat ya, kamu hebat!' }, { nama: 'si.pendiam', teks: 'Kamu pantas dicintai.' }, { nama: 'teman.dekat', teks: 'Terima kasih sudah selalu ada.' }];
+      var sm = f.sematan || {};
+      return { akun: f.akun, penerima: c.penerima, pengirim: c.pengirim, posts: posts, komentar: kom, sematan: { foto: sm.foto, caption: sm.caption, panjang: sm.panjang }, penutup: f.penutup || 'Kamu sampai di ujung feed. Tapi cerita kita belum selesai.' };
+    },
     mulai: function (root, d) {
       var suka = {}, kom = null;
       function ikon(k, n, label, aktif) { return '<button type="button" class="fd-aksi" data-a="' + k + '" aria-label="' + label + '" aria-pressed="' + !!aktif + '"><span>' + ic(k === 'suka' ? 'heart' : k === 'komen' ? 'chat' : 'send') + '</span><small>' + n + '</small></button>'; }
@@ -41,10 +53,10 @@
       }
       var daftar = d.posts.map(function (p, i) { return post(p, i, false); });
       daftar.push(post({ tipe: 'foto', foto: d.sematan.foto, efek: 'zoom', suka: 999, caption: d.sematan.caption }, d.posts.length, true));
-      daftar.push('<section class="fd-post fd-akhir" data-i="' + (d.posts.length + 1) + '"><div class="fd-hatiw" aria-hidden="true"></div><div class="fd-akhir-isi"><h1>Selesai ♥</h1><p>' + esc(d.penutup) + '</p><button type="button" class="fd-ulang" data-a="ulang">↻ Putar Ulang Hariku</button></div></section>');
+      daftar.push('<section class="fd-post fd-akhir" data-i="' + (d.posts.length + 1) + '"><div class="fd-hatiw" aria-hidden="true"></div><div class="fd-akhir-isi"><h1>Selesai ♥</h1><p>' + esc(d.penutup) + '</p>' + S.kredit(d.pengirim) + '<button type="button" class="fd-ulang" data-a="ulang">↻ Putar Ulang Hariku</button></div></section>');
       root.innerHTML = '<div class="fd-feed" id="fdFeed" tabindex="0">' + daftar.join('') + '</div><p class="fd-petunjuk" id="fdPet">Geser ke atas ▴</p>';
       var feed = root.querySelector('#fdFeed');
-      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio > .6) { e.target.classList.add('aktif'); if (e.target.dataset.i !== '0') { var pt = root.querySelector('#fdPet'); if (pt) pt.remove(); } } else e.target.classList.remove('aktif'); }); }, { root: feed, threshold: [.6] });
+      var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && e.intersectionRatio > .6) { e.target.classList.add('aktif'); if (e.target.classList.contains('fd-akhir')) S.akhir(); if (e.target.dataset.i !== '0') { var pt = root.querySelector('#fdPet'); if (pt) pt.remove(); } } else e.target.classList.remove('aktif'); }); }, { root: feed, threshold: [.6] });
       feed.querySelectorAll('.fd-post').forEach(function (x) { io.observe(x); });
       feed.querySelector('.fd-post').classList.add('aktif');
 

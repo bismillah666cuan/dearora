@@ -24,6 +24,15 @@
 
   S.reg('misi', {
     nama: 'Lastlove: Misi Cinta', demo: DEMO,
+    adapt: function (f, c) {
+      var ku = f.kuis || {}, ak = f.akhir || {}, m1 = f.misi1 || {};
+      return { penerima: c.penerima, pengirim: c.pengirim, gelar: f.gelar || 'Satu-Satunya',
+        misi: [{ judul: 'Pulihkan Memori', desk: 'Temukan foto yang disembunyikan di area pindai.', tipe: 'cari', foto: m1.foto, pesan: m1.pesan },
+          { judul: 'Perkuat Pasukan', desk: 'Buka tiga pesan tentang hal-hal yang membuatmu istimewa.', tipe: 'kartu', kartu: f.kartu },
+          { judul: 'Jaga Ikatan', desk: 'Jawab satu pertanyaan kecil untuk memperkuat ikatan.', tipe: 'kuis', soal: { q: ku.q, opsi: ku.opsi, benar: Math.max(0, (Number(ku.benar) || 1) - 1), salah: ku.salah || 'Hampir! Coba lagi ya.', betul: ku.betul || 'Tepat sekali!' } }],
+        atribut: [{ nama: 'Kebaikan', nilai: 100 }, { nama: 'Kesetiaan', nilai: 100 }, { nama: 'Keistimewaan', nilai: 'Tak Terbatas' }],
+        akhir: { foto: ak.foto, pesan: ak.pesan, penutup: ak.penutup || 'Misi selesai. Tapi kamu akan selalu jadi hadiah favoritku.' } };
+    },
     mulai: function (root, d) {
       var selesai = {}, poin = { hati: 0, bintang: 0, energi: 0 }, kartuBuka = false;
       function layar(h, k) { root.innerHTML = '<div class="sp-layar ' + (k || '') + '">' + h + '</div>'; return root.firstChild; }
@@ -101,7 +110,7 @@
         var el = layar('<div class="ms-akhir"><p class="ms-kpd">OPERASI TERAKHIR</p><div class="ms-peti" id="msPeti" aria-hidden="true"><i class="tutup"></i><i class="badan"></i></div><button type="button" class="ms-tombol besar" id="msKlaim">Klaim Hadiah Final</button><div class="ms-menang" hidden></div></div>', 'ms-gelap');
         el.querySelector('#msKlaim').addEventListener('click', function (e) {
           e.currentTarget.hidden = true; el.querySelector('#msPeti').classList.add('buka'); S.dariEl(el.querySelector('#msPeti'), 90, ['#FFB020', '#8CF3FF', '#FF5D8F', '#fff'], { kuat: 11, naik: 9 });
-          S.jeda(function () { el.querySelector('#msPeti').hidden = true; var w = el.querySelector('.ms-menang'); w.hidden = false; w.innerHTML = '<span class="ms-lencana">MISI SELESAI</span><figure><img alt="Foto pilihan" src="' + esc(S.src(d.akhir.foto, 4)) + '"></figure><p class="ms-pesan">' + esc(d.akhir.pesan) + '</p><p class="ms-menangt">' + esc(d.akhir.penutup) + '</p><button type="button" class="ms-tombol" id="msUlang">↻ Mainkan Misi Lagi</button>'; w.classList.add('muncul'); w.querySelector('#msUlang').addEventListener('click', function () { selesai = {}; poin = { hati: 0, bintang: 0, energi: 0 }; briefing(); }); }, 1400);
+          S.jeda(function () { el.querySelector('#msPeti').hidden = true; var w = el.querySelector('.ms-menang'); w.hidden = false; w.innerHTML = '<span class="ms-lencana">MISI SELESAI</span><figure><img alt="Foto pilihan" src="' + esc(S.src(d.akhir.foto, 4)) + '"></figure><p class="ms-pesan">' + esc(d.akhir.pesan) + '</p><p class="ms-menangt">' + esc(d.akhir.penutup) + '</p>' + S.kredit(d.pengirim) + '<button type="button" class="ms-tombol" id="msUlang">↻ Mainkan Misi Lagi</button>'; w.classList.add('muncul'); S.akhir(); w.querySelector('#msUlang').addEventListener('click', function () { selesai = {}; poin = { hati: 0, bintang: 0, energi: 0 }; briefing(); }); }, 1400);
         });
       }
       briefing();

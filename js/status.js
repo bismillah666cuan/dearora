@@ -104,7 +104,7 @@
         ? '<div class="link-card" style="width:100%;text-align:left"><label class="small muted" for="lnkUcapan">Link ucapanmu sudah aktif</label><div class="link-row"><input class="input" id="lnkUcapan" readonly value="' + esc(d.linkHasil) + '"><button type="button" class="btn btn-primary btn-sm" data-s="salin-link">Salin</button><a class="btn btn-secondary btn-sm" href="' + esc(d.linkHasil) + '" target="_blank" rel="noopener">Buka</a></div>' +
           (d.kedaluwarsa ? '<p class="small muted" style="margin-top:.5rem">Aktif sampai ' + esc(new Intl.DateTimeFormat('id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(d.kedaluwarsa))) + '.</p>' : '') + '</div>'
         : '<div class="callout" style="text-align:left;margin-top:.5rem"><span class="icon-tile">' + ic('clock') + '</span><div><p><strong>Selanjutnya</strong></p><p>' +
-          (special ? 'Ucapan Special dikerjakan manual dengan estimasi 1–2 hari kerja. Kami kirim email saat sudah jadi.' : 'Link ucapanmu sedang diaktifkan. Halaman ini akan menampilkannya sebentar lagi, dan link juga dikirim ke emailmu.') + '</p></div></div>') +
+          (special ? 'Ucapan Special dikerjakan manual dengan estimasi 1–2 hari kerja. ' + (d.alamatKustom ? 'Alamat yang sudah dikunci untukmu: ' + d.alamatKustom + '. ' : '') + 'Kami kirim email saat sudah jadi.' : 'Link ucapanmu sedang diaktifkan. Halaman ini akan menampilkannya sebentar lagi, dan link juga dikirim ke emailmu.') + '</p></div></div>') +
       '<div class="hero-cta" style="justify-content:center"><a class="btn btn-primary" href="#/masuk">Masuk ke Portal</a><a class="btn btn-secondary" href="#/">Kembali ke Home</a></div></div>';
   }
 

@@ -382,10 +382,10 @@
     var judul = gy.judulPenutup ? gy.judulPenutup(d) : 'Untuk dikenang, ' + d.penerima;
     var video = d.video ? '<div class="video-wrap"><iframe loading="lazy" title="Video kenangan" src="https://drive.google.com/file/d/' + encodeURIComponent(d.video) + '/preview" allow="autoplay; fullscreen" referrerpolicy="no-referrer"></iframe></div>' : '';
     var lanjutan = d.pesanPersonal ? '<p class="personal">' + esc(d.pesanPersonal) + '</p>' : '';
-    return '<section class="stage penutup" data-s="penutup" aria-label="Kenangan"><div class="inner wide"><p class="kpd">' + esc(gy.kpdPenutup || 'Kenangan') + '</p><h1 class="judul-kej" tabindex="-1">' + esc(judul) + '</h1>' + lanjutan + tambahanPenutup(d) + albumFoto(d) + video +
+    return '<section class="stage penutup" data-s="penutup" aria-label="Kenangan"><div class="inner wide"><p class="kpd">' + esc(gy.kpdPenutup || 'Kenangan') + '</p><h1 class="judul-kej" tabindex="-1">' + esc(judul) + '</h1>' + lanjutan + tambahanPenutup(d) + albumFoto(d) + video + '<div class="balas" id="balas"></div>' +
       '<p class="akhir">' + esc(gy.akhir || 'Semoga semua yang baik selalu menyertaimu.') + '</p><div class="aksi-akhir"><button type="button" class="cbtn ghost" id="ulang">' + ic('replay') + ' Putar ulang</button>' +
       '<a class="cbtn ghost" href="/" target="_blank" rel="noopener">Buat ucapan seperti ini</a></div>' +
-      '<p class="kecil">' + (d.kedaluwarsa ? 'Ucapan ini aktif sampai ' + esc(tgl(d.kedaluwarsa)) + '. ' : '') + 'Dibuat dengan rasa di <a href="/" target="_blank" rel="noopener">Dearora</a></p></div></section>';
+      '<p class="kecil">Dibuat dengan penuh rasa oleh: ' + esc(dariTeks(d)) + '</p></div></section>';
   }
 
   /* ---------------- Dekor & ambien per gaya ---------------- */
@@ -460,8 +460,14 @@
     if (i === 1) jeda(function () { dariElemen(q('.nama-besar'), 70, { kuat: 11 }); hujan(1600); }, 350);
     if (i === 2) { var env = q('#env'); if (env) env.focus({ preventScroll: true }); }
     if (i === 3) mulaiKejutan();
-    if (i === 4) { hujan(1200); mulaiPenutup(); }
+    if (i === 4) { hujan(1200); mulaiPenutup(); mulaiBalas(); }
     if (i === 1) mainkanMusik();
+  }
+  /** Slide terakhir tercapai: tandai "sudah dilihat" dan tampilkan kolom balasan untuk penerima. */
+  function mulaiBalas() {
+    var el = q('#balas'); if (!el || el.dataset.siap || !window.Balasan) return; el.dataset.siap = '1';
+    if (!demo && slug) window.Balasan.tandai(slug);
+    window.Balasan.pasang(el, { slug: slug, pengirim: dariTeks(data), demo: demo });
   }
   /** Efek khusus tahap kenangan: slideshow sinematik, garis waktu wisuda yang terisi bertahap. */
   function mulaiPenutup() {
@@ -503,7 +509,15 @@
     if (gy.special) { gk = 'classic'; gy = Gaya.G.classic; }      // desain Special memakai halaman /s/ sendiri
     opsiD = Object.assign(Gaya.opsiBawaan(gk), d.opsi || {});
   }
+  function renderDesain(kk, d) {
+    data = d; bersih(); clearInterval(slideT);
+    document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
+    Special.onAkhir = function () { if (!demo && slug && window.Balasan) window.Balasan.tandai(slug); };
+    Special.mountData(kk, { penerima: d.penerima, pengirim: dariTeks(d), foto: d.foto || [], slug: slug }, d.dataDesain);
+  }
   function render(d) {
+    var kk0 = Gaya.kunci(d.tema), gs0 = Gaya.G[kk0];
+    if (gs0 && gs0.special && d.dataDesain && window.Special && Special.ada(kk0)) { renderDesain(kk0, d); return; }
     data = d; bersih(); aktif = 0; clearInterval(slideT);
     document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
     setGaya(d);

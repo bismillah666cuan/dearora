@@ -46,7 +46,12 @@
     var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs><rect width="400" height="500" fill="url(#g)"/><circle cx="290" cy="130" r="48" fill="#fff" opacity=".55"/><path d="M0 420c70-50 130-40 200 0s150 20 200-20v100H0z" fill="#fff" opacity=".4"/><path d="M200 330S130 285 130 235a36 36 0 0 1 70-14 36 36 0 0 1 70 14c0 50-70 95-70 95z" fill="#fff" opacity=".8"/></svg>';
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
   }
-  function src(u, n) { u = String(u || ''); if (/^demo/.test(u) || !u) return foto(n || 0); return /^https:\/\//.test(u) ? u : ''; }
+  var fotoIds = [];
+  function src(u, n) {
+    u = String(u || ''); var m = /^f(\d+)$/.exec(u);
+    if (m) { var id = fotoIds[Number(m[1]) - 1]; return id ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1600' : foto(n || 0); }
+    if (/^demo/.test(u) || !u) return foto(n || 0); return /^https:\/\//.test(u) ? u : '';
+  }
   function toast(msg) {
     var t = document.createElement('div'); t.className = 'sp-toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.appendChild(t);
     setTimeout(function () { t.classList.add('hilang'); setTimeout(function () { t.remove(); }, 400); }, 2200);
@@ -59,12 +64,29 @@
     reg: function (k, def) { reg[k] = def; }, ada: function (k) { return !!reg[k]; }, daftar: function () { return Object.keys(reg); },
     esc: esc, ic: ic, reduce: reduce, rnd: rnd, pilih: pilih, confetti: confetti, dariEl: dariEl, jeda: jeda, foto: foto, src: src, toast: toast, kata: kata,
     root: function () { return $root; },
+    konteks: { slug: '', pengirim: '', demo: true }, onAkhir: null, _akhir: false,
+    kredit: function (nama) { return '<p class="sp-kredit">Dibuat dengan penuh rasa oleh: ' + esc(nama || '') + '</p>'; },
+    /** Dipanggil tiap desain saat penerima mencapai layar terakhir: tandai "dilihat" + tombol balasan. */
+    akhir: function () {
+      if (Special._akhir) return; Special._akhir = true;
+      if (Special.onAkhir) { try { Special.onAkhir(); } catch (e) { /* abaikan */ } }
+      if (window.Balasan) window.Balasan.lembar(document.body, Special.konteks);
+    },
     mount: function (k) {
-      var def = reg[k]; bersih(); parts = [];
+      var def = reg[k]; bersih(); parts = []; Special._akhir = false;
       var data = Object.assign({}, def.demo, window.SPECIAL_DATA || {});
+      Special.konteks = { slug: '', pengirim: data.pengirim || '', demo: true };
       $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
       document.title = (def.nama || 'Ucapan') + ' — Dearora';
       def.mulai($root, data, Special);
+    },
+    /** Mode nyata: data dari server. c = {penerima, pengirim, foto:[idDrive], slug}; f = isian pembeli (skema). */
+    mountData: function (k, c, f) {
+      var def = reg[k]; bersih(); parts = []; Special._akhir = false; fotoIds = c.foto || [];
+      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: false };
+      $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
+      document.title = 'Ucapan untukmu';
+      def.mulai($root, def.adapt(f || {}, c), Special);
     }
   };
   window.Special = Special;

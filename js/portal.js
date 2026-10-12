@@ -136,13 +136,19 @@
       '<section class="section" style="padding-top:2rem"><div class="container"><div class="portal" id="portalRoot"><div class="skeleton sk-card" aria-hidden="true"></div></div></div></section>';
   }
 
+  function statusDilihat(o) {
+    if (o.status !== 'Aktif' && o.status !== 'Selesai' && o.status !== 'Diproses' && o.status !== 'Kedaluwarsa') return '';
+    var lihat = o.dilihat ? '<span class="tag sage">' + ic('check') + ' Sudah dilihat penerima · ' + esc(tglJam(o.dilihat)) + '</span>' : '<span class="tag">Belum dilihat penerima</span>';
+    var bls = o.jumlahBalasan ? ' <span class="tag rose">' + ic('heart') + ' ' + o.jumlahBalasan + ' balasan</span>' : '';
+    return '<p class="small" style="margin:.5rem 0">' + lihat + bls + '</p>';
+  }
   function kartuPesanan(o) {
     var pdf = (o.status !== 'Menunggu Pembayaran' && o.status !== 'Dibatalkan' && o.status !== 'Perlu Ditinjau');
     return '<article class="card order-card">' +
-      '<div class="order-top"><div><p class="order-id">' + esc(o.orderId) + '</p><p class="small muted">Paket ' + esc(o.paket) + ' · untuk ' + esc(o.penerima) + ' · ' + esc(tgl(o.tglOrder)) + '</p></div>' + badge(o.status) + '</div>' +
-      timeline(o.paketId, o.status) +
+      '<div class="order-top"><div><p class="order-id">' + esc(o.orderId) + '</p><p class="small muted">Paket ' + esc(o.paket) + (o.desain ? ' · ' + esc(o.desain) : '') + ' · untuk ' + esc(o.penerima) + ' · ' + esc(tgl(o.tglOrder)) + '</p></div>' + badge(o.status) + '</div>' +
+      timeline(o.paketId, o.status) + statusDilihat(o) +
       (masaAktifTeks(o) ? '<p class="small" style="font-weight:600">' + esc(masaAktifTeks(o)) + '</p>' : '') +
-      (o.paketId === 'special' && o.status === 'Diproses' ? '<p class="small muted">Ucapan Special sedang dikerjakan manual. Estimasi 1–2 hari kerja.</p>' : '') +
+      (o.paketId === 'special' && o.status === 'Diproses' ? '<p class="small muted">Ucapan Special sedang dikerjakan manual. Estimasi 1–2 hari kerja.' + (o.alamatKustom ? ' Alamat yang dikunci: <strong>/u/' + esc(o.alamatKustom) + '</strong>' : '') + '</p>' : '') +
       linkKartu(o) +
       '<div class="order-act"><a class="btn btn-quiet btn-sm" href="#/pesanan?o=' + encodeURIComponent(o.orderId) + '">Detail' + (o.paketId === 'special' ? ' &amp; Revisi' : '') + '</a>' +
       (pdf ? '<button type="button" class="btn btn-quiet btn-sm" data-p="pdf" data-o="' + esc(o.orderId) + '">Unduh PDF Bukti</button>' : '') + '</div></article>';
@@ -171,6 +177,11 @@
       '<section class="section" style="padding-top:2rem"><div class="container"><div class="portal" id="detailRoot"><div class="skeleton sk-card" aria-hidden="true"></div></div></div></section>';
   }
 
+  function boxBalasan(o) {
+    if (!(o.balasan && o.balasan.length)) return o.status === 'Aktif' ? '<div class="card order-card"><h2 class="h3">Balasan penerima</h2><p class="small muted">Belum ada balasan. Setelah penerima sampai di slide terakhir, ia bisa menulis balasan yang muncul di sini.</p></div>' : '';
+    return '<div class="card order-card"><h2 class="h3">Balasan penerima (' + o.balasan.length + ')</h2><ul class="rev-list">' + o.balasan.map(function (b) {
+      return '<li><span class="tag rose">' + esc(b.nama || 'Penerima') + '</span> <span class="small muted">' + esc(tglJam(b.tgl)) + '</span><p style="margin-top:.25rem;white-space:pre-wrap">' + esc(b.pesan) + '</p></li>'; }).join('') + '</ul></div>';
+  }
   function isiDetail(o) {
     var rev = (o.revisi || []).map(function (x) {
       return '<li><span class="tag lav">' + esc(x.status) + '</span> <span class="small muted">' + esc(tglJam(x.tglMinta)) + '</span><p style="margin-top:.25rem">' + esc(x.catatan) + '</p></li>';
@@ -184,8 +195,8 @@
         (rev ? '<ul class="rev-list">' + rev + '</ul>' : '') + '</div>';
     }
     return '<article class="card order-card">' +
-      '<div class="order-top"><div><p class="order-id">' + esc(o.orderId) + '</p><p class="small muted">Paket ' + esc(o.paket) + '</p></div>' + badge(o.status) + '</div>' +
-      timeline(o.paketId, o.status) +
+      '<div class="order-top"><div><p class="order-id">' + esc(o.orderId) + '</p><p class="small muted">Paket ' + esc(o.paket) + (o.desain ? ' · ' + esc(o.desain) : '') + '</p></div>' + badge(o.status) + '</div>' +
+      timeline(o.paketId, o.status) + statusDilihat(o) +
       (masaAktifTeks(o) ? '<p class="small" style="font-weight:600">' + esc(masaAktifTeks(o)) + '</p>' : '') +
       (o.paketId === 'special' && o.status === 'Diproses' ? '<p class="small muted">Ucapan Special sedang dikerjakan. Estimasi 1–2 hari kerja. Kami kirim email saat selesai.</p>' : '') +
       linkKartu(o) +
@@ -196,7 +207,7 @@
       '<div class="sum-row"><dt>Pembayaran</dt><dd>Rp ' + esc(U.rupiah(o.nominal)) + ' · ' + esc(o.statusBayar) + (o.tglBayar ? ' · ' + esc(tglJam(o.tglBayar)) : '') + '</dd></div>' +
       '<div class="sum-row"><dt>Dipesan</dt><dd>' + esc(tglJam(o.tglOrder)) + '</dd></div></dl>' +
       '<div class="order-act">' + ((o.status !== 'Menunggu Pembayaran' && o.status !== 'Dibatalkan' && o.status !== 'Perlu Ditinjau') ? '<button type="button" class="btn btn-quiet btn-sm" data-p="pdf" data-o="' + esc(o.orderId) + '">Unduh PDF Bukti</button>' : '') +
-      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxRevisi;
+      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxBalasan(o) + boxRevisi;
   }
 
   async function afterDetail(main, c) {
