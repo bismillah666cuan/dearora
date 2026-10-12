@@ -242,7 +242,8 @@
     var ds = desainTerpilih(); if (!ds || !window.Gaya) return '';
     var key = Gaya.dari(ds.thumbnail), g = Gaya.G[key]; if (!g) return '';
     var h = '<div class="opsi-desain"><p class="small" style="font-weight:800;margin-bottom:.25rem">Tentang desain ' + esc(ds.nama) + '</p>' +
-      '<p class="small muted" style="margin-bottom:.75rem">' + esc(g.cocok || '') + (g.petunjuk ? ' ' + esc(g.petunjuk) : '') + '</p>';
+      '<p class="small muted" style="margin-bottom:.75rem">' + esc(g.cocok || '') + (g.petunjuk ? ' ' + esc(g.petunjuk) : '') + '</p>' +
+      (g.brief ? '<div class="notice" style="margin-bottom:.75rem"><strong>Yang perlu kamu siapkan untuk desain ini:</strong><ul class="stack small" style="list-style:disc;padding-left:1.1rem;margin-top:.4rem">' + g.brief.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul><p class="small" style="margin-top:.4rem">Tuliskan atau tempel bahan-bahan ini di kolom catatan pada langkah berikutnya. Desain Special dikerjakan manual dalam 1–2 hari kerja.</p></div>' : '');
     Object.keys(g.opsi || {}).forEach(function (nm) {
       var o = g.opsi[nm], cur = ST.opsiDesain[nm];
       h += '<fieldset class="field" style="margin-bottom:.5rem"><legend>' + esc(o.label) + '</legend><div class="opt-list">';

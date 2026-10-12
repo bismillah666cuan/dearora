@@ -43,7 +43,13 @@ window.DEARORA_SEED = {
     { id: 'DSN-007', nama: 'Mama Tersayang', kategori: 'Hari Spesial', paket: ['basic'], thumbnail: 'tema:mama', urlDemo: '' },
     { id: 'DSN-008', nama: 'Level Up Birthday', kategori: 'Ulang Tahun', paket: ['special'], thumbnail: 'tema:kids', urlDemo: '' },
     { id: 'DSN-009', nama: 'For Kids', kategori: 'Ulang Tahun', paket: ['basic'], thumbnail: 'tema:kids', urlDemo: '' },
-    { id: 'DSN-010', nama: 'Hello, Little One', kategori: 'Kelahiran', paket: ['basic'], thumbnail: 'tema:baby', urlDemo: '' }
+    { id: 'DSN-010', nama: 'Hello, Little One', kategori: 'Kelahiran', paket: ['basic'], thumbnail: 'tema:baby', urlDemo: '' },
+    { id: 'DSN-011', nama: 'Malam Film', kategori: 'Anniversary', paket: ['special'], thumbnail: 'tema:movie', urlDemo: '' },
+    { id: 'DSN-012', nama: 'Dearora Mall', kategori: 'Hari Spesial', paket: ['special'], thumbnail: 'tema:mall', urlDemo: '' },
+    { id: 'DSN-013', nama: 'Dunia Sahabat', kategori: 'Terima Kasih', paket: ['special'], thumbnail: 'tema:bestie', urlDemo: '' },
+    { id: 'DSN-014', nama: 'Selebstyle', kategori: 'Hari Spesial', paket: ['special'], thumbnail: 'tema:feed', urlDemo: '' },
+    { id: 'DSN-015', nama: 'Soundtrack Kita', kategori: 'Maaf & Rindu', paket: ['special'], thumbnail: 'tema:musik', urlDemo: '' },
+    { id: 'DSN-016', nama: 'Lastlove: Misi Cinta', kategori: 'Ulang Tahun', paket: ['special'], thumbnail: 'tema:misi', urlDemo: '' }
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }

@@ -146,15 +146,15 @@
     if (!state.data) return;
     var d = state.data.desain.filter(function (x) { return x.id === id; })[0];
     if (!d) return;
-    var tema = U.temaDari(d.thumbnail), kat = d.kategori;
+    var tema = U.temaDari(d.thumbnail), kat = d.kategori, gs = window.Gaya && Gaya.G[tema], khusus = !!(gs && gs.special);
     var tags = (d.paket || []).map(function (p) { return U.badgePaket(p, state.data.paket); }).join(' ');
     var urlDemoLengkap = U.amanHttps(d.urlDemo);
     $dialog.innerHTML =
       '<div class="modal-box">' +
         '<div class="modal-bar"><div><strong id="demoTitle">' + esc(d.nama) + '</strong><small>Demo interaktif · data contoh</small></div>' +
         '<button type="button" class="icon-btn" data-action="close-demo" aria-label="Tutup demo">' + ic('x') + '</button></div>' +
-        '<div class="demo-stage"><iframe class="demo-frame" id="demoFrame" title="Demo ucapan: ' + esc(d.nama) + '" src="' + esc(urlDemo(tema, kat, 'kado')) + '"></iframe></div>' +
-        '<div class="demo-jenis" role="group" aria-label="Coba jenis kejutan"><span class="small muted">Coba kejutan:</span>' + DEMO_JENIS.map(function (j, i) { return '<button type="button" class="chip' + (i === 0 ? ' on' : '') + '" data-demo-j="' + j[0] + '" aria-pressed="' + (i === 0) + '">' + esc(j[1]) + '</button>'; }).join('') + '</div>' +
+        '<div class="demo-stage"><iframe class="demo-frame" id="demoFrame" title="Demo ucapan: ' + esc(d.nama) + '" src="' + esc(khusus ? gs.demoUrl : urlDemo(tema, kat, 'kado')) + '"></iframe></div>' +
+        (khusus ? '<div class="demo-jenis"><span class="small muted">Desain khusus paket Special: dikerjakan manual sesuai ceritamu.</span></div>' : '<div class="demo-jenis" role="group" aria-label="Coba jenis kejutan"><span class="small muted">Coba kejutan:</span>' + DEMO_JENIS.map(function (j, i) { return '<button type="button" class="chip' + (i === 0 ? ' on' : '') + '" data-demo-j="' + j[0] + '" aria-pressed="' + (i === 0) + '">' + esc(j[1]) + '</button>'; }).join('') + '</div>') +
         '<div class="modal-foot"><div style="display:flex;flex-wrap:wrap;gap:.375rem;justify-content:center"><span class="tag lav">' + esc(kat.split(' & ')[0]) + '</span>' + tags + '</div>' +
           '<a class="btn btn-primary" data-action="close-demo" href="#/buat?desain=' + encodeURIComponent(d.id) + '">Pakai Desain Ini</a>' +
           (urlDemoLengkap ? '<a class="btn btn-secondary" href="' + esc(urlDemoLengkap) + '" target="_blank" rel="noopener noreferrer">Buka Demo Lengkap</a>' : '') +

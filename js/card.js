@@ -500,6 +500,7 @@
   var terpasang = false;
   function setGaya(d) {
     gk = Gaya.kunci(d.tema); gy = Gaya.G[gk] || {};
+    if (gy.special) { gk = 'classic'; gy = Gaya.G.classic; }      // desain Special memakai halaman /s/ sendiri
     opsiD = Object.assign(Gaya.opsiBawaan(gk), d.opsi || {});
   }
   function render(d) {

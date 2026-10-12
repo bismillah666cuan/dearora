@@ -10,7 +10,7 @@
   function e(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
   var ALIAS = { blossom: 'classic', confetti: 'joyful', cinema: 'cinematic', dusk: 'starry', grad: 'graduation', sage: 'garden', rose: 'mama', arcade: 'kids' };
-  var URUT = ['cinematic', 'joyful', 'graduation', 'mama', 'garden', 'kids', 'baby', 'starry', 'classic'];
+  var URUT = ['cinematic', 'joyful', 'graduation', 'mama', 'garden', 'kids', 'baby', 'starry', 'classic', 'movie', 'mall', 'bestie', 'feed', 'musik', 'misi'];
   var G = {};
 
   /* ------------ Cinematic Romance ------------ */
@@ -148,6 +148,28 @@
     }
   };
 
+
+  /* ------------ Desain khusus paket Special (aplikasi mini; halaman /s/) ------------ */
+  function sp(nama, kat, warna, cocok, fitur, brief, kunci) { return { special: true, demoUrl: '/s/?d=' + kunci, nama: nama, kat: kat, warna: warna, cocok: cocok, fitur: fitur, brief: brief, gelap: true }; }
+  G.movie = sp('Malam Film', 'Anniversary', ['#0B0B10', '#E8336D'], 'Pasangan, anniversary, dan kenangan bersama: penerima menjadi pemeran utama film pendek.',
+    ['Beranda episode ala layanan streaming', 'Subtitle & narasi muncul bertahap', 'Bebas memilih episode + adegan penutup'],
+    ['Judul film dan nama pemeran', 'Poster (foto)', '3–4 episode: foto atau video, narasi tiap adegan, judul dan deskripsi pendek', 'Pesan penutup (paling panjang)'], 'movie');
+  G.mall = sp('Dearora Mall', 'Hari Spesial', ['#FF7A1A', '#FFB020'], 'Ulang tahun dan ucapan manis: penerima mendapat paket kejutan dari toko online fiktif.',
+    ['Etalase hadiah, keranjang, dan kupon', 'Status pengiriman fiktif bergerak', 'Buka paket: hadiah satu per satu'],
+    ['Nama penerima', 'Pilihan hadiah/ucapan (misal: pelukan, surat cinta, apresiasi)', 'Isi tiap hadiah: teks, foto, atau kupon', 'Kode kupon (opsional) dan pesan final'], 'mall');
+  G.bestie = sp('Dunia Sahabat', 'Terima Kasih', ['#8FD6FF', '#A7E58C'], 'Sahabat dan persahabatan: dunia petualangan orisinal bergaya blok.',
+    ['Karakter blok & peta dengan 3 lokasi', 'Kumpulkan memori dan lencana', 'Peti harta karun berisi pesan utama'],
+    ['Nama dan warna avatar/dunia', 'Daftar lokasi', 'Foto kenangan dan pesan di tiap item', 'Lencana dan hadiah final'], 'bestie');
+  G.feed = sp('Selebstyle', 'Hari Spesial', ['#E8336D', '#FF8A5B'], 'Ulang tahun dan pujian manis: feed vertikal seperti membuka aplikasi sosial.',
+    ['Langsung masuk feed, geser ke atas', 'Komentar manis muncul bertahap', 'Kiriman "Disematkan untukmu"'],
+    ['Nama akun (misal @for.rani)', 'Foto atau video tiap kiriman beserta caption', 'Komentar pilihan (atau pakai template)', 'Kiriman yang disematkan dan pesan panjangnya'], 'feed');
+  G.musik = sp('Soundtrack Kita', 'Maaf & Rindu', ['#7B2FF7', '#F107A3'], 'Rindu dan romantis: playlist berisi lagu-lagu yang mewakili kenangan.',
+    ['Playlist cerita dengan visualizer lembut', 'Tiap lagu punya kisah personal', 'Hidden Track sebagai kejutan'],
+    ['Judul playlist, cover, dan deskripsi', '4–6 lagu: judul, cover, alasan memilihnya', 'Tautan audio yang SAH (opsional, tidak boleh mengunggah musik berhak cipta)', 'Pesan Hidden Track'], 'musik');
+  G.misi = sp('Lastlove: Misi Cinta', 'Ulang Tahun', ['#0A141C', '#FFB020'], 'Pecinta game strategi: briefing markas, tiga misi, dan kartu hero.',
+    ['Briefing markas orisinal', 'Tiga misi + hadiah di tiap misi', 'Kartu hero berisi atribut lucu'],
+    ['Nama komandan dan gelar', 'Foto tersembunyi dan pesannya', 'Tiga pesan penguat dan satu pertanyaan kuis', 'Hadiah final (pesan atau foto)'], 'misi');
+
   /* ------------ Classic (bawaan lama) ------------ */
   G.classic = {
     nama: 'Classic Blossom', kat: 'Anniversary', warna: ['#FFE0E8', '#D84A6E'],
@@ -167,7 +189,13 @@
     kids: function () { return P('sc-mt', A.matahari()) + P('sc-awan a1', A.awan(true, '#fff')) + P('sc-awan a2', A.awan(true, '#fff')) + P('sc-beruang', A.beruang('#C89B6D')); },
     baby: function () { return P('sc-bulan-b', A.bulan()) + P('sc-mobil', '<i class="t1"><b>' + A.bintang('#FFD76A') + '</b></i><i class="t2"><b>' + A.awan(false, '#fff') + '</b></i><i class="t3"><b>' + A.bintang('#FFB3C7') + '</b></i>') + P('sc-hello', 'Hello, Little One'); },
     starry: function () { var b = '', i; for (i = 0; i < 14; i++) b += P('sc-bint', '', 'left:' + ((i * 37) % 92 + 3) + '%;top:' + ((i * 53) % 70 + 6) + '%;animation-delay:-' + (i * 0.37).toFixed(2) + 's'); return b + P('sc-jatuh', '') + P('sc-bulan-s', A.bulan()) + P('sc-rasi', '<svg viewBox="0 0 100 60" aria-hidden="true"><path d="M8 46L30 22 52 34 72 12 92 28" fill="none" stroke="#B8A9FF" stroke-width="1.2" stroke-dasharray="3 3"/></svg>'); },
-    classic: function () { return P('sc-hati', A.hati('#D84A6E')) + P('sc-doodle d1', A.kilau('#F78DA7')); }
+    classic: function () { return P('sc-hati', A.hati('#D84A6E')) + P('sc-doodle d1', A.kilau('#F78DA7')); },
+    movie: function () { return P('sc-mv-poster', '<i>Cerita<br>Kita</i>') + P('sc-mv-judul', 'CERITAKITA') + P('sc-mv-eps e1', '1') + P('sc-mv-eps e2', '2') + P('sc-mv-eps e3', '3') + P('sc-mv-play', '▶ Tonton'); },
+    mall: function () { return P('sc-ml-bar', 'Dearora Mall') + P('sc-ml-banner', 'Paket Spesial!') + P('sc-ml-p p1', A.hati('#E8336D')) + P('sc-ml-p p2', A.bintang('#FFB020')) + P('sc-ml-p p3', A.hati('#FF7A1A')) + P('sc-ml-p p4', A.bintang('#E8336D')) + P('sc-ml-troli', '3'); },
+    bestie: function () { return P('sc-bs-bukit', '') + P('sc-bs-item i1', A.hati('#FF5D8F')) + P('sc-bs-item i2', A.bintang('#FFC93C')) + P('sc-bs-av', '<i></i><b></b>') + P('sc-bs-hud', '<u></u>'); },
+    feed: function () { return P('sc-fd-layar', '<em>Kamu itu<br>bikin hari seru</em>') + P('sc-fd-aksi', '<i></i><i></i><i></i>') + P('sc-fd-akun', '@for.rani') + P('sc-fd-kom k1', 'Kamu berhak bahagia') + P('sc-fd-kom k2', 'Selamat ulang tahun!'); },
+    musik: function () { return P('sc-mk-cover', A.hati('#fff')) + P('sc-mk-viz', '<i></i><i></i><i></i><i></i><i></i><i></i><i></i>') + P('sc-mk-judul', 'Playlist untukmu') + P('sc-mk-play', '▶'); },
+    misi: function () { return P('sc-ms-radar', '') + P('sc-ms-hero', '<i></i><b></b>') + P('sc-ms-misi', '<i class="a"></i><i class="b"></i><i class="c"></i>') + P('sc-ms-judul', 'MISI SPESIAL'); }
   };
 
   var Gaya = {

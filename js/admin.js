@@ -298,7 +298,7 @@
   }
 
 /* ---------------- Pengaturan ---------------- */
-  var SW = { cinematic: ['#0A0810', '#E3BE7B'], joyful: ['#FFF3B0', '#FF6B6B'], graduation: ['#0F1F3D', '#D4AF55'], mama: ['#FFF3E4', '#C98C88'], garden: ['#E6F6D3', '#3F9A55'], kids: ['#BFE6FF', '#FFB020'], baby: ['#DCEBFF', '#7FA8E6'], starry: ['#0C1033', '#B8A9FF'], classic: ['#FFE0E8', '#D84A6E'] };
+  var SW = { cinematic: ['#0A0810', '#E3BE7B'], joyful: ['#FFF3B0', '#FF6B6B'], graduation: ['#0F1F3D', '#D4AF55'], mama: ['#FFF3E4', '#C98C88'], garden: ['#E6F6D3', '#3F9A55'], kids: ['#BFE6FF', '#FFB020'], baby: ['#DCEBFF', '#7FA8E6'], starry: ['#0C1033', '#B8A9FF'], classic: ['#FFE0E8', '#D84A6E'], movie: ['#0B0B10', '#E8336D'], mall: ['#FF7A1A', '#FFB020'], bestie: ['#8FD6FF', '#A7E58C'], feed: ['#E8336D', '#FF8A5B'], musik: ['#7B2FF7', '#F107A3'], misi: ['#0A141C', '#FFB020'] };
   var SW_LAMA = { blossom: 'classic', confetti: 'joyful', cinema: 'cinematic', dusk: 'starry', grad: 'graduation', sage: 'garden', rose: 'mama', arcade: 'kids' };
   function swKey(t) { return SW[t] ? t : (SW_LAMA[t] || 'classic'); }
   var tabAktif = 'paket', filterDesain = { q: '', k: '' };
