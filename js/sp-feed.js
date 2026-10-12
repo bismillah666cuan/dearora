@@ -34,7 +34,7 @@
       var kom = (f.komentar || []).filter(function (k) { return k.teks; }).map(function (k) { return { nama: k.nama || 'sahabat', teks: k.teks }; });
       if (!kom.length) kom = [{ nama: 'sahabat.lama', teks: 'Kamu berhak bahagia.' }, { nama: 'tim.hore', teks: 'Selamat ya, kamu hebat!' }, { nama: 'si.pendiam', teks: 'Kamu pantas dicintai.' }, { nama: 'teman.dekat', teks: 'Terima kasih sudah selalu ada.' }];
       var sm = f.sematan || {};
-      return { akun: f.akun, penerima: c.penerima, pengirim: c.pengirim, posts: posts, komentar: kom, sematan: { foto: sm.foto, caption: sm.caption, panjang: sm.panjang }, penutup: f.penutup || 'Kamu sampai di ujung feed. Tapi cerita kita belum selesai.' };
+      return { akun: String(f.akun || c.penerima || 'kamu').replace(/^@+/, '').trim(), penerima: c.penerima, pengirim: c.pengirim, posts: posts, komentar: kom, sematan: { foto: sm.foto, caption: sm.caption, panjang: sm.panjang }, penutup: f.penutup || 'Kamu sampai di ujung feed. Tapi cerita kita belum selesai.' };
     },
     mulai: function (root, d) {
       var suka = {}, kom = null;

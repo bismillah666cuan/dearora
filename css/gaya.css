@@ -292,3 +292,7 @@
   .huruf, .ikon-mama li { animation: none; } .edu::after { transition: none; }
   .gerbang .pintu { transition-duration: .001ms; }
 }
+
+/* Balon / hati melayang yang bisa disentuh */
+.ambien .mel.tap { pointer-events: auto; cursor: pointer; touch-action: manipulation; }
+.mel.tap.pecah { scale: 1.8; opacity: 0; transition: scale .18s ease-out, opacity .18s ease-out; }

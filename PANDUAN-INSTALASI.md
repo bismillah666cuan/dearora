@@ -178,3 +178,10 @@ Desain yang dipilih **bukan** penyebabnya: desain hanya menentukan tampilan. Per
 - Sheet `Pesanan` dan `Akun` berisi data pribadi. Jangan bagikan akses Spreadsheet, termasuk folder `backup`.
 - Kuota email Gmail biasa ±100/hari. Pantau sheet `EmailLog` dan kartu "Perhatian" di Ringkasan admin.
 - Teks Syarat & Ketentuan dan Kebijakan Privasi disusun dari draf PRD; mohon ditinjau sebelum rilis.
+
+
+## Pembaruan kecil (setelah fase 9)
+- **Selebstyle:** kolom *Username penerima* bebas diisi apa saja (spasi dan simbol boleh) dan hanya jadi tampilan; kosong = memakai nama penerima. Jalankan ulang tempel `Skema.gs` terbaru ke Apps Script (file `Skema`, ganti isinya) lalu deploy versi baru.
+- **Pilihan musik** kini berupa menu dropdown (menampilkan satu lagu terpilih + pemutar pratinjau), aman untuk puluhan sampai ratusan lagu. Ada catatan bahwa musik bebas hak cipta. **Pastikan hanya memasukkan musik yang memang bebas hak cipta atau berlisensi** agar catatan itu benar.
+- **Demo desain** punya tombol *Tampilan HP* dan *Tampilan Desktop* (tombol tampil di layar lebar).
+- **Efek suara** disesuaikan interaksi: balon melayang di desain Joyful bisa diketuk dan meletus; membuka amplop/surat berbunyi kertas; konfeti berbunyi letupan konfeti; kado, lilin, benih, kuis, dan lainnya punya bunyi masing-masing.

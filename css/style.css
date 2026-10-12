@@ -770,3 +770,10 @@ details.sk-opsional { border: 1px dashed var(--border); border-radius: var(--r);
 
 .chat-list { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .6rem; max-height: 24rem; overflow-y: auto; } .chat-list li { padding: .65rem .85rem; border-radius: 14px; } .chat-list p { margin: .25rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .chat-pem { background: var(--canvas); border: 1px solid var(--border); margin-right: 1.5rem; } .chat-adm { background: var(--badge); border: 1px solid #F2C9D3; margin-left: 1.5rem; }
+
+/* ---------- Demo: tampilan HP vs Desktop ---------- */
+.demo-mode { display: flex; gap: .4rem; justify-content: center; padding: .6rem 1rem 0; } .demo-mode .chip.on { background: var(--badge); border-color: var(--primary); color: var(--primary-deep); }
+dialog.modal.demo-desk { width: min(100vw - 1rem, 1100px); max-width: min(100vw - 1rem, 1100px); }
+dialog.modal.demo-desk .demo-frame { width: 100%; height: min(58vh, 560px); border-radius: .75rem; }
+dialog.modal.demo-desk .demo-stage { padding: 1rem; }
+@media (max-width: 700px) { .demo-mode { display: none; } }

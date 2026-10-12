@@ -35,7 +35,7 @@
     }
     raf = parts.length ? requestAnimationFrame(putar) : 0; if (!raf) c.clearRect(0, 0, innerWidth, innerHeight);
   }
-  function dariEl(el, n, pal, o) { if (!el) return; if (window.Suara && n >= 20) window.Suara.pop(); var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, pal, o); }
+  function dariEl(el, n, pal, o) { if (!el) return; if (window.Suara && n >= 20) window.Suara.konfeti(); var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, pal, o); }
   function jeda(fn, ms) { var t = setTimeout(fn, reduce ? Math.min(ms, 40) : ms); timers.push(t); return t; }
   function bersih() { timers.forEach(clearTimeout); timers = []; }
 

@@ -61,7 +61,7 @@
         var s = sheet('<button type="button" class="ml-x" data-tutup aria-label="Tutup">' + ic('x') + '</button><div class="ml-det-img" style="background:' + h.warna + '">' + ILUS[h.ilus]() + '</div><h2>' + esc(h.nama) + '</h2><p class="ml-harga">' + esc(h.harga) + '</p><p>' + esc(h.desk) + '</p><p class="ml-tag">Kategori: ' + esc(h.kat) + '</p>' +
           '<button type="button" class="ml-klaim' + (on ? ' sudah' : '') + '">' + (on ? 'Sudah di Keranjang' : 'Klaim Hadiah Ini') + '</button>');
         s.querySelector('.ml-klaim').addEventListener('click', function () {
-          if (pilih.indexOf(id) < 0) { pilih.push(id); if (window.Suara) window.Suara.sukses(); S.dariEl(s.querySelector('.ml-klaim'), 22, ['#FF7A1A', '#FFB020', '#fff'], { kuat: 6 }); S.toast('Masuk keranjang digital'); }
+          if (pilih.indexOf(id) < 0) { pilih.push(id); if (window.Suara) window.Suara.ding(); S.dariEl(s.querySelector('.ml-klaim'), 22, ['#FF7A1A', '#FFB020', '#fff'], { kuat: 6 }); S.toast('Masuk keranjang digital'); }
           s.remove(); beranda();
         });
       }

@@ -39,6 +39,14 @@
     sukses: function () { [523, 659, 784].forEach(function (f, i) { nada(f, i * 0.07, 0.5, 'sine', 0.13); }); nada(1047, 0.22, 0.6, 'triangle', 0.1); },
     salah: function () { nada(280, 0, 0.18, 'sawtooth', 0.07, 200); nada(210, 0.12, 0.25, 'sawtooth', 0.06, 150); },
     pop: function () { if (!batas('pop', 120)) return; desis(0, 0.12, 0.2, 2800, 800, 0.8); nada(420, 0, 0.1, 'sine', 0.12, 130); },
+    /** Kertas dibuka / amplop: gemerisik beberapa kali. */
+    kertas: function () { desis(0, 0.1, 0.17, 3600, 1700, 0.6); desis(0.08, 0.14, 0.15, 2500, 5200, 0.8); desis(0.22, 0.09, 0.11, 4300, 2400, 0.7); nada(880, 0.34, 0.35, 'sine', 0.06); },
+    /** Balon meletus: letupan tajam + dentum rendah. */
+    balon: function () { if (!batas('balon', 70)) return; desis(0, 0.07, 0.4, 3400, 800, 0.5); nada(190, 0, 0.13, 'sine', 0.28, 55); },
+    /** Konfeti / party popper: letupan lalu kerlip. */
+    konfeti: function () { if (!batas('konfeti', 150)) return; desis(0, 0.1, 0.28, 2600, 700, 0.7); nada(520, 0, 0.08, 'triangle', 0.12, 200); [1568, 2093, 1760].forEach(function (f, i) { nada(f, 0.07 + i * 0.05, 0.25, 'sine', 0.05); }); },
+    whoosh: function () { desis(0, 0.3, 0.14, 400, 2600, 0.8); },
+    ding: function () { nada(1320, 0, 0.4, 'sine', 0.14); nada(1976, 0.02, 0.5, 'sine', 0.08); },
     gosok: function () { if (!batas('gosok', 85)) return; desis(0, 0.1, 0.1, 2400 + Math.random() * 900, 1400, 0.7); },
     tumbuh: function () { nada(330, 0, 0.22, 'sine', 0.14, 660); nada(660, 0.08, 0.25, 'sine', 0.1, 990); nada(1320, 0.22, 0.2, 'triangle', 0.06); },
     tiup: function () { desis(0, 0.5, 0.2, 1200, 300, 0.6); },

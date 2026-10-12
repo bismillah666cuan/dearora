@@ -77,7 +77,7 @@
     if (!raf) c.clearRect(0, 0, innerWidth, innerHeight);
   }
   function snd(n, a) { if (window.Suara && window.Suara[n]) window.Suara[n](a); }
-  function dariElemen(el, n, opsi) { if (!el) return; if (n >= 20) snd('pop'); var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, opsi); }
+  function dariElemen(el, n, opsi) { if (!el) return; if (n >= 20) snd('konfeti'); var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, opsi); }
 
   /* ---------------- Teks bawaan ---------------- */
   var SAPAAN = {
@@ -167,7 +167,7 @@
   function bukaSurat(d) {
     var env = q('#env'); if (!env || env.classList.contains('open')) return;
     var K = gy.lambat || 1;
-    snd('buka'); env.classList.add('open'); q('#suratHint').hidden = true; q('#suratPetunjuk').hidden = true; dariElemen(env, 26, { kuat: 7 });
+    snd('kertas'); env.classList.add('open'); q('#suratHint').hidden = true; q('#suratPetunjuk').hidden = true; dariElemen(env, 26, { kuat: 7 });
     jeda(function () { env.classList.add('rise'); }, 450 * K);
     jeda(function () { env.classList.add('fall'); }, 1150 * K);
     jeda(function () {
@@ -418,6 +418,14 @@
     var el = document.createElement('span'); el.className = 'mel ' + kind;
     el.style.cssText = '--x:' + o.x.toFixed(1) + '%;--s:' + o.s.toFixed(0) + 'px;--d:' + o.d.toFixed(1) + 's;--dx:' + (o.dx || 0).toFixed(0) + 'px;--rot:' + (o.rot || 0).toFixed(0) + 'deg';
     el.innerHTML = svg; amb.appendChild(el); el.addEventListener('animationend', function () { el.remove(); });
+    if (o.tap) {                                              // balon / hati yang bisa dipecahkan atau disentuh
+      el.classList.add('tap');
+      el.addEventListener('pointerdown', function (ev) {
+        ev.stopPropagation(); if (el.classList.contains('pecah')) return;
+        if (o.tap === 'love') snd('hati', Math.random()); else snd('balon');
+        el.style.animationPlayState = 'paused'; el.classList.add('pecah'); setTimeout(function () { el.remove(); }, 200);
+      });
+    }
   }
   function ulang(fn, ms) { ambT.push(setInterval(fn, ms)); }
   function stopAmbien() { ambT.forEach(clearInterval); ambT = []; }
@@ -425,7 +433,7 @@
     stopAmbien(); if (reduce) return;
     var PAL = ['#FF6B6B', '#FFC93C', '#FF5FA2', '#7BDFF2', '#B79CFF', '#6BD6A0'];
     if (gk === 'joyful') {
-      ulang(function () { var love = opsiD.dekor === 'love'; mel('naik', love ? Art.hati(pilih(PAL)) : Art.balon(pilih(PAL)), { x: rnd(2, 92), s: love ? rnd(22, 40) : rnd(36, 58), d: rnd(9, 14), dx: rnd(-60, 60), rot: rnd(-20, 20) }); }, 950);
+      ulang(function () { var love = opsiD.dekor === 'love'; mel('naik', love ? Art.hati(pilih(PAL)) : Art.balon(pilih(PAL)), { x: rnd(2, 92), s: love ? rnd(22, 40) : rnd(36, 58), d: rnd(9, 14), dx: rnd(-60, 60), rot: rnd(-20, 20), tap: love ? 'love' : 'balon' }); }, 950);
       ulang(function () { confetti(rnd(40, innerWidth - 40), rnd(80, innerHeight * 0.5), 14, { kuat: 7 }); }, 7000);
     } else if (gk === 'mama') {
       ulang(function () { mel('turun', Art.kelopak(pilih(['#E8A7A2', '#D9A5A0', '#F1C9C4', '#C9B38C'])), { x: rnd(2, 94), s: rnd(14, 24), d: rnd(11, 17), dx: rnd(-90, 90), rot: rnd(200, 520) }); }, 2100);

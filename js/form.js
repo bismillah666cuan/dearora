@@ -327,6 +327,7 @@
   function skHTML(bagian, jalur) {
     var utama = [], opsi = [];
     bagian.forEach(function (f) { ((f.tipe === 'teks' || f.tipe === 'area' || f.tipe === 'cek') && !f.wajib ? opsi : utama).push(f); });
+    if (!utama.length) { utama = opsi; opsi = []; }                 // bila semua kolom opsional, tampilkan langsung (jangan disembunyikan)
     var h = utama.map(function (f) { return skField(f, jalur ? jalur + '.' + f.k : f.k); }).join('');
     if (opsi.length) {
       var terbuka = opsi.some(function (f) { var p = (jalur ? jalur + '.' : '') + f.k, v = getPath(ST, 'dataDesain.' + p); return (errors.sk || {})[p] || (f.tipe === 'cek' ? v : String(v || '').trim() && String(v) !== String(f.bawaan || '')); });
@@ -383,8 +384,11 @@
   };
   function musikHTML() {
     var d = data(); if (!musikAda()) return '';
-    return '<fieldset class="field" style="margin-top:1.25rem"><legend>Musik latar (opsional)</legend><div class="opt-list">' + radio('musikId', '', 'Tanpa musik', '', !ST.musikId) +
-      d.musik.map(function (m) { var u = m.fileUrl && /^https:\/\//.test(m.fileUrl) ? m.fileUrl : ''; return radio('musikId', m.id, m.judul, '', ST.musikId === m.id) + (u ? '<audio class="audio" controls preload="none" src="' + esc(u) + '" aria-label="Pratinjau ' + esc(m.judul) + '"></audio>' : ''); }).join('') + '</div></fieldset>';
+    var cur = d.musik.filter(function (m) { return m.id === ST.musikId; })[0], url = cur && cur.fileUrl && /^https:\/\//.test(cur.fileUrl) ? cur.fileUrl : '';
+    return '<div class="field" style="margin-top:1.25rem"><label for="musikId">Musik latar <span class="muted small">(opsional)</span></label>' +
+      '<select class="input" id="musikId" data-k="musikId"><option value="">Tanpa musik</option>' + d.musik.map(function (m) { return '<option value="' + esc(m.id) + '"' + (ST.musikId === m.id ? ' selected' : '') + '>' + esc(m.judul) + '</option>'; }).join('') + '</select>' +
+      (url ? '<audio class="audio" controls preload="none" src="' + esc(url) + '" aria-label="Pratinjau ' + esc(cur.judul) + '" style="margin-top:.6rem"></audio>' : '') +
+      '<p class="hint">' + ic('check') + ' Semua musik di daftar ini bebas hak cipta (no copyright), jadi aman dipakai di ucapanmu. Tekan putar untuk mencoba.</p></div>';
   }
   function skValidasi(sk) {
     var e = {}, kosong = function (v) { return String(v == null ? '' : v).trim() === ''; };
@@ -895,6 +899,7 @@
       return;
     }
     var k = el.dataset && el.dataset.k; if (!k) return;
+    if (k === 'musikId' && el.tagName === 'SELECT') { ST.musikId = el.value; paint(); var sm = document.getElementById('musikId'); if (sm) sm.focus({ preventScroll: true }); simpanDraf(); return; }
     if (k === 'desainId' && el.checked && window.Gaya) { var dd = data().desain.filter(function (x) { return x.id === el.value; })[0]; ST.opsiDesain = dd ? Gaya.opsiBawaan(Gaya.dari(dd.thumbnail)) : {}; ST.desainId = el.value; ST.dataDesain = {}; ST._skKunci = ''; }
     if (el.type === 'checkbox') { ST[k] = el.checked; if (errors[k]) { delete errors[k]; paint(); document.getElementById(k).focus(); } return; }
     if (el.type !== 'radio') return;

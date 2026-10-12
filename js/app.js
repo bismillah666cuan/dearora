@@ -153,6 +153,7 @@
       '<div class="modal-box">' +
         '<div class="modal-bar"><div><strong id="demoTitle">' + esc(d.nama) + '</strong><small>Demo interaktif · data contoh</small></div>' +
         '<button type="button" class="icon-btn" data-action="close-demo" aria-label="Tutup demo">' + ic('x') + '</button></div>' +
+        '<div class="demo-mode" role="group" aria-label="Ukuran tampilan demo"><button type="button" class="chip on" data-demo-m="hp" aria-pressed="true">Tampilan HP</button><button type="button" class="chip" data-demo-m="desk" aria-pressed="false">Tampilan Desktop</button></div>' +
         '<div class="demo-stage"><iframe class="demo-frame" id="demoFrame" title="Demo ucapan: ' + esc(d.nama) + '" src="' + esc(khusus ? gs.demoUrl : urlDemo(tema, kat, 'kado')) + '"></iframe></div>' +
         (khusus ? '<div class="demo-jenis"><span class="small muted">Desain khusus paket Special: dikerjakan manual sesuai ceritamu.</span></div>' : '<div class="demo-jenis" role="group" aria-label="Coba jenis kejutan"><span class="small muted">Coba kejutan:</span>' + DEMO_JENIS.map(function (j, i) { return '<button type="button" class="chip' + (i === 0 ? ' on' : '') + '" data-demo-j="' + j[0] + '" aria-pressed="' + (i === 0) + '">' + esc(j[1]) + '</button>'; }).join('') + '</div>') +
         '<div class="modal-foot"><div style="display:flex;flex-wrap:wrap;gap:.375rem;justify-content:center"><span class="tag lav">' + esc(kat.split(' & ')[0]) + '</span>' + tags + '</div>' +
@@ -161,7 +162,7 @@
           '<p class="small">Ini hanya contoh dengan nama dan pesan fiktif.</p></div>' +
       '</div>';
     $dialog.setAttribute('aria-labelledby', 'demoTitle');
-    $dialog._tema = tema; $dialog._kat = kat;
+    $dialog.classList.remove('demo-desk'); $dialog._tema = tema; $dialog._kat = kat;
     if (typeof $dialog.showModal === 'function') $dialog.showModal(); else $dialog.setAttribute('open', '');
     $dialog._pemicu = pemicu;
   }
@@ -171,6 +172,12 @@
 
   /* ---------------- Event (delegasi) ---------------- */
   document.addEventListener('click', function (ev) {
+    var mode = ev.target.closest('[data-demo-m]');
+    if (mode && $dialog.open) {
+      var desk = mode.dataset.demoM === 'desk'; $dialog.classList.toggle('demo-desk', desk);
+      $dialog.querySelectorAll('[data-demo-m]').forEach(function (c) { c.classList.toggle('on', c === mode); c.setAttribute('aria-pressed', c === mode ? 'true' : 'false'); });
+      return;
+    }
     var chip = ev.target.closest('[data-demo-j]');
     if (chip && $dialog.open) {
       var fr = document.getElementById('demoFrame'); if (fr) fr.src = urlDemo($dialog._tema, $dialog._kat, chip.dataset.demoJ);

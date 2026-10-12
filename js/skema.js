@@ -39,7 +39,7 @@
       { k: 'peti', tipe: 'objek', label: 'Peti harta karun (pesan utama)', item: [F('foto', 'Foto pilihan'), A('pesan', 'Pesan utama', 600, { wajib: true })] }
     ] },
     feed: { nama: 'Selebstyle', bagian: [
-      T('akun', 'Nama akun penerima', 24, { wajib: true, pola: '^[a-z0-9._]+$', hint: 'Huruf kecil, angka, titik, atau garis bawah. Mis. for.rani' }),
+      T('akun', 'Username penerima', 30, { hint: 'Nama ini dipakai sebagai username penerima di tampilan Selebstyle. Boleh nama apa saja. Kosongkan untuk memakai nama penerima.' }),
       { k: 'posts', tipe: 'daftar', label: 'Kiriman di feed', hint: 'Geser ke atas untuk melihat kiriman berikutnya. 2 sampai 5 kiriman.', min: 2, maks: 5, namaItem: 'Kiriman', item: [
         { k: 'tipe', tipe: 'pilih', label: 'Jenis kiriman', opsi: [['foto', 'Satu foto'], ['kolase', 'Kolase beberapa foto'], ['teks', 'Pesan singkat']], bawaan: 'foto' },
         F('foto', 'Foto (untuk jenis satu foto)'), { k: 'fotoKolase', tipe: 'daftarfoto', label: 'Foto kolase (untuk jenis kolase, hingga 4)', maks: 4 },
