@@ -76,7 +76,8 @@
     raf = parts.length ? requestAnimationFrame(putar) : 0;
     if (!raf) c.clearRect(0, 0, innerWidth, innerHeight);
   }
-  function dariElemen(el, n, opsi) { if (!el) return; var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, opsi); }
+  function snd(n, a) { if (window.Suara && window.Suara[n]) window.Suara[n](a); }
+  function dariElemen(el, n, opsi) { if (!el) return; if (n >= 20) snd('pop'); var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, opsi); }
 
   /* ---------------- Teks bawaan ---------------- */
   var SAPAAN = {
@@ -166,7 +167,7 @@
   function bukaSurat(d) {
     var env = q('#env'); if (!env || env.classList.contains('open')) return;
     var K = gy.lambat || 1;
-    env.classList.add('open'); q('#suratHint').hidden = true; q('#suratPetunjuk').hidden = true; dariElemen(env, 26, { kuat: 7 });
+    snd('buka'); env.classList.add('open'); q('#suratHint').hidden = true; q('#suratPetunjuk').hidden = true; dariElemen(env, 26, { kuat: 7 });
     jeda(function () { env.classList.add('rise'); }, 450 * K);
     jeda(function () { env.classList.add('fall'); }, 1150 * K);
     jeda(function () {
@@ -201,7 +202,7 @@
     if (!opsi.tetapArena) ar.classList.add('selesai');
     f.innerHTML = (opsi.tetapArena ? '' : '<p class="kpd">Untukmu</p><p class="ucapan-akhir">' + esc(teks) + '</p>') + polaroid(data, 0, 'kecil') +
       '<button type="button" class="cbtn" data-go="4">Lihat kenangan kita ' + ic('arrow') + '</button>';
-    f.hidden = false; requestAnimationFrame(function () { f.classList.add('show'); });
+    snd('sukses'); f.hidden = false; requestAnimationFrame(function () { f.classList.add('show'); });
     var s = q('#subKej'); if (s) s.hidden = true;
     var h = f.querySelector('.ucapan-akhir'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
     dariElemen(f, 70, { kuat: 11 }); hujan(1800);
@@ -211,7 +212,7 @@
   KEJ.kado = { siap: function (ar, k) {
     ar.innerHTML = '<button type="button" class="gift" id="gift" aria-label="Ketuk untuk membuka kado"><span class="g-glow"></span><span class="g-box"><i class="g-pita-v"></i><i class="g-pita-h"></i></span><span class="g-lid"><i class="g-pita-v"></i></span><span class="g-bow"><i></i><i></i></span></button>';
     var g = q('#gift'); g.addEventListener('click', function () {
-      if (g.classList.contains('buka')) return; g.classList.add('buka'); dariElemen(g, 60, { kuat: 10, naik: 8 });
+      if (g.classList.contains('buka')) return; snd('hadiah'); g.classList.add('buka'); dariElemen(g, 60, { kuat: 10, naik: 8 });
       jeda(function () { selesaiKejutan(k.ucapan); }, 1000);
     });
   } };
@@ -226,7 +227,7 @@
       ar.querySelectorAll('.opsi').forEach(function (b) { b.addEventListener('click', function () { jawab(Number(b.dataset.n)); }); });
     }
     function jawab(n) {
-      var s = k.soal[i], betul = n === s.benar;
+      var s = k.soal[i], betul = n === s.benar; snd(betul ? 'sukses' : 'salah'); snd(betul ? 'sukses' : 'salah');
       ar.querySelectorAll('.opsi').forEach(function (b, x) { b.disabled = true; if (x === s.benar) b.classList.add('benar'); else if (x === n) b.classList.add('salah'); });
       var r = q('#kResp'); r.textContent = betul ? s.rb : s.rs; r.className = 'k-resp ' + (betul ? 'ok' : 'no') + ' tampil';
       if (betul) dariElemen(q('.opsi.benar'), 26, { kuat: 7 });
@@ -251,7 +252,7 @@
       x.fillStyle = 'rgba(80,70,100,.35)'; x.font = '700 15px system-ui, sans-serif'; x.textAlign = 'center'; x.fillText('Gosok di sini', r.width / 2, r.height / 2 + 5);
       x.fillStyle = '#000'; x.globalCompositeOperation = 'destination-out';      // warna harus OPAK agar benar-benar menghapus
       var gambar = false, hitung = 0;
-      function titik(ev) { var b = c.getBoundingClientRect(); x.beginPath(); x.arc(ev.clientX - b.left, ev.clientY - b.top, 24, 0, 6.3); x.fill(); if (++hitung % 6 === 0) cek(); }
+      function titik(ev) { snd('gosok'); var b = c.getBoundingClientRect(); x.beginPath(); x.arc(ev.clientX - b.left, ev.clientY - b.top, 24, 0, 6.3); x.fill(); if (++hitung % 6 === 0) cek(); }
       function cek() {
         var im = x.getImageData(0, 0, c.width, c.height).data, bening = 0, total = 0;
         for (var p = 3; p < im.length; p += 4 * 37) { total++; if (im[p] < 40) bening++; }
@@ -288,7 +289,7 @@
     ar.innerHTML = '<div class="kode"><span class="k-kunci">' + ic('lock') + '</span><form id="fKode" novalidate>' + (tanpaKode ? '' : '<label for="inKode" class="sr-only">Kode rahasia</label><input id="inKode" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="30" placeholder="Ketik kode…">') +
       '<p class="k-galat" id="kGalat" role="alert" hidden></p><button type="submit" class="cbtn">' + (tanpaKode ? 'Buka pesan' : 'Buka kunci') + '</button></form></div>';
     var f = q('#fKode'), inp = q('#inKode'); if (inp) inp.focus({ preventScroll: true });
-    function buka(teks) { q('.kode').classList.add('terbuka'); dariElemen(q('.kode'), 30, { kuat: 8 }); jeda(function () { selesaiKejutan(teks); }, 700); }
+    function buka(teks) { snd('kunci'); q('.kode').classList.add('terbuka'); dariElemen(q('.kode'), 30, { kuat: 8 }); jeda(function () { selesaiKejutan(teks); }, 700); }
     f.addEventListener('submit', async function (ev) {
       ev.preventDefault(); var b = f.querySelector('button'), g = q('#kGalat'), pw = inp ? inp.value : ''; g.hidden = true; b.disabled = true; var asli = b.textContent; b.textContent = 'Memeriksa…';
       try {
@@ -296,7 +297,7 @@
         var r = await API.post('unlockSecret', { k: slug, password: pw }, { timeout: 20000 });
         if (r.success) { buka(r.data.pesan); return; }
         throw { pesan: r.message || 'Kode belum tepat.' };
-      } catch (e) { g.hidden = false; g.textContent = e && e.pesan ? e.pesan : 'Koneksi bermasalah. Coba lagi.'; f.classList.remove('goyang'); void f.offsetWidth; f.classList.add('goyang'); b.disabled = false; b.textContent = asli; }
+      } catch (e) { snd('salah'); g.hidden = false; g.textContent = e && e.pesan ? e.pesan : 'Koneksi bermasalah. Coba lagi.'; f.classList.remove('goyang'); void f.offsetWidth; f.classList.add('goyang'); b.disabled = false; b.textContent = asli; }
     });
   } };
 
@@ -307,7 +308,7 @@
     ar.innerHTML = '<div class="cake"><div class="candles">' + c + '</div><div class="tier t2"><i class="drip"></i></div><div class="tier t1"><i class="drip"></i></div><div class="plate"></div></div>';
     ar.querySelectorAll('.candle').forEach(function (b) {
       b.addEventListener('click', function () {
-        if (b.classList.contains('padam')) return; b.classList.add('padam'); padam++; dariElemen(b, 10, { kuat: 4 });
+        if (b.classList.contains('padam')) return; snd('tiup'); b.classList.add('padam'); padam++; dariElemen(b, 10, { kuat: 4 });
         if (padam === n) jeda(function () { selesaiKejutan(k.ucapan); }, 700);
       });
     });
@@ -324,7 +325,7 @@
     ar.innerHTML = '<div class="taman" id="taman"><div class="t-pesan" id="tPesan" role="status" aria-live="polite">Ketuk benihnya…</div><div class="t-slot">' + tot + '</div><div class="t-ucapan" id="tUcapan" hidden></div></div>';
     ar.querySelectorAll('.slot').forEach(function (b) {
       b.addEventListener('click', function () {
-        if (b.classList.contains('mekar')) return; b.classList.add('mekar'); mekar++; dariElemen(b, 18, { kuat: 6, naik: 6 });
+        if (b.classList.contains('mekar')) return; snd('tumbuh'); b.classList.add('mekar'); mekar++; dariElemen(b, 18, { kuat: 6, naik: 6 });
         var m = q('#tPesan'); m.classList.remove('baru'); void m.offsetWidth; m.textContent = k.bunga[Number(b.dataset.n)]; m.classList.add('baru');
         if (mekar === n) {
           jeda(function () {
@@ -345,7 +346,7 @@
       '<p class="c-kal" id="cKal" role="status" aria-live="polite">Ketuk hatinya!</p><div class="c-bar" aria-hidden="true"><span id="cBar"></span></div><p class="c-hit" id="cHit">0 / ' + T + '</p></div>';
     var h = q('#hati'), bar = q('#cBar'), kal = q('#cKal'), hit = q('#cHit'), selesai = false;
     h.addEventListener('click', function (ev) {
-      if (selesai) return; t++; var s = 1 + (t / T) * 0.9; h.style.setProperty('--s', s.toFixed(3)); bar.style.width = Math.round(t / T * 100) + '%'; hit.textContent = t + ' / ' + T;
+      if (selesai) return; t++; snd('hati', t / T); var s = 1 + (t / T) * 0.9; h.style.setProperty('--s', s.toFixed(3)); bar.style.width = Math.round(t / T * 100) + '%'; hit.textContent = t + ' / ' + T;
       kal.textContent = t >= T ? 'Penuh sekali!' : k.kalimat[(t - 1) % k.kalimat.length]; h.classList.remove('denyut'); void h.offsetWidth; h.classList.add('denyut');
       var r = h.getBoundingClientRect(); confetti(ev.clientX || r.left + r.width / 2, ev.clientY || r.top + r.height / 2, 8, { kuat: 5, naik: 3 });
       if (t >= T) { selesai = true; h.disabled = true; jeda(function () { selesaiKejutan(k.ucapan); }, 600); }
@@ -384,7 +385,7 @@
     var lanjutan = d.pesanPersonal ? '<p class="personal">' + esc(d.pesanPersonal) + '</p>' : '';
     return '<section class="stage penutup" data-s="penutup" aria-label="Kenangan"><div class="inner wide"><p class="kpd">' + esc(gy.kpdPenutup || 'Kenangan') + '</p><h1 class="judul-kej" tabindex="-1">' + esc(judul) + '</h1>' + lanjutan + tambahanPenutup(d) + albumFoto(d) + video + '<div class="balas" id="balas"></div>' +
       '<p class="akhir">' + esc(gy.akhir || 'Semoga semua yang baik selalu menyertaimu.') + '</p><div class="aksi-akhir"><button type="button" class="cbtn ghost" id="ulang">' + ic('replay') + ' Putar ulang</button>' +
-      '<a class="cbtn ghost" href="/" target="_blank" rel="noopener">Buat ucapan seperti ini</a></div>' +
+      '</div>' +
       '<p class="kecil">Dibuat dengan penuh rasa oleh: ' + esc(dariTeks(d)) + '</p></div></section>';
   }
 
@@ -467,7 +468,7 @@
   function mulaiBalas() {
     var el = q('#balas'); if (!el || el.dataset.siap || !window.Balasan) return; el.dataset.siap = '1';
     if (!demo && slug) window.Balasan.tandai(slug);
-    window.Balasan.pasang(el, { slug: slug, pengirim: dariTeks(data), demo: demo });
+    window.Balasan.pasang(el, { slug: slug, pengirim: dariTeks(data), demo: demo, tema: gk });
   }
   /** Efek khusus tahap kenangan: slideshow sinematik, garis waktu wisuda yang terisi bertahap. */
   function mulaiPenutup() {
@@ -513,7 +514,7 @@
     data = d; bersih(); clearInterval(slideT);
     document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
     Special.onAkhir = function () { if (!demo && slug && window.Balasan) window.Balasan.tandai(slug); };
-    Special.mountData(kk, { penerima: d.penerima, pengirim: dariTeks(d), foto: d.foto || [], slug: slug }, d.dataDesain);
+    Special.mountData(kk, { penerima: d.penerima, pengirim: dariTeks(d), foto: d.foto || [], slug: slug, musik: d.musik || null }, d.dataDesain);
   }
   function render(d) {
     var kk0 = Gaya.kunci(d.tema), gs0 = Gaya.G[kk0];
@@ -529,8 +530,9 @@
     document.title = 'Ucapan untukmu — Dearora';
     var b = q('#btnBuka'); if (b && !d._demo) b.focus({ preventScroll: true });
     mulaiGaya();
+    if (window.Suara) window.Suara.pasangTombol();
     if (!terpasang) {
-      terpasang = true;
+      terpasang = true; if (window.Suara) window.Suara.otomatis($root);
       $root.addEventListener('click', function (ev) {
         var go = ev.target.closest('[data-go]');
         if (go) {

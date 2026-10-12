@@ -182,6 +182,14 @@
     return '<div class="card order-card"><h2 class="h3">Balasan penerima (' + o.balasan.length + ')</h2><ul class="rev-list">' + o.balasan.map(function (b) {
       return '<li><span class="tag rose">' + esc(b.nama || 'Penerima') + '</span> <span class="small muted">' + esc(tglJam(b.tgl)) + '</span><p style="margin-top:.25rem;white-space:pre-wrap">' + esc(b.pesan) + '</p></li>'; }).join('') + '</ul></div>';
   }
+  function boxChat(o) {
+    if (o.paketId !== 'special') return '';
+    var l = (o.chat || []).map(function (c) { return '<li class="chat-' + (c.peran === 'admin' ? 'adm' : 'pem') + '"><b>' + (c.peran === 'admin' ? 'Tim admin' : 'Kamu') + '</b> <span class="small muted">' + esc(tglJam(c.tgl)) + '</span><p>' + esc(c.pesan) + '</p></li>'; }).join('');
+    return '<div class="card order-card" id="boxChat"><h2 class="h3">Chat dengan admin</h2>' +
+      '<p class="small muted">Gunakan chat ini untuk mengarahkan desain Special: warna, urutan foto, atau hal yang masih kurang jelas.</p>' + (l ? '<ul class="chat-list">' + l + '</ul>' : '<p class="small muted">Belum ada pesan.</p>') +
+      (o.chatAktif ? '<div class="field" style="margin-top:1rem"><label for="chatIsi">Tulis pesan</label><textarea class="input textarea" id="chatIsi" rows="3" maxlength="1000"></textarea></div><p class="err" id="chatErr" role="alert" hidden></p><button type="button" class="btn btn-primary btn-sm" data-p="chat-kirim" data-o="' + esc(o.orderId) + '">Kirim</button>' :
+        '<p class="small" style="margin-top:.75rem">Chat sudah ditutup karena pesanan selesai dan jatah revisi habis.</p>') + '</div>';
+  }
   function isiDetail(o) {
     var rev = (o.revisi || []).map(function (x) {
       return '<li><span class="tag lav">' + esc(x.status) + '</span> <span class="small muted">' + esc(tglJam(x.tglMinta)) + '</span><p style="margin-top:.25rem">' + esc(x.catatan) + '</p></li>';
@@ -207,7 +215,7 @@
       '<div class="sum-row"><dt>Pembayaran</dt><dd>Rp ' + esc(U.rupiah(o.nominal)) + ' · ' + esc(o.statusBayar) + (o.tglBayar ? ' · ' + esc(tglJam(o.tglBayar)) : '') + '</dd></div>' +
       '<div class="sum-row"><dt>Dipesan</dt><dd>' + esc(tglJam(o.tglOrder)) + '</dd></div></dl>' +
       '<div class="order-act">' + ((o.status !== 'Menunggu Pembayaran' && o.status !== 'Dibatalkan' && o.status !== 'Perlu Ditinjau') ? '<button type="button" class="btn btn-quiet btn-sm" data-p="pdf" data-o="' + esc(o.orderId) + '">Unduh PDF Bukti</button>' : '') +
-      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxBalasan(o) + boxRevisi;
+      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxChat(o) + boxBalasan(o) + boxRevisi;
   }
 
   async function afterDetail(main, c) {
@@ -241,6 +249,17 @@
         }
       } catch (e) { toast('Koneksi bermasalah, coba lagi'); }
       b.disabled = false; b.textContent = asli; return;
+    }
+    if (a === 'chat-kirim') {
+      var ci = $('chatIsi'), ce = $('chatErr'), pesan = (ci.value || '').trim();
+      if (!pesan) { ce.hidden = false; ce.textContent = 'Tulis pesan terlebih dahulu.'; ci.focus(); return; }
+      b.disabled = true; b.textContent = 'Mengirim…'; ce.hidden = true;
+      try {
+        var rc = await A.panggil('chatKirim', { orderId: b.dataset.o, pesan: pesan });
+        if (!rc.success) { ce.hidden = false; ce.textContent = rc.message || 'Pesan belum terkirim.'; b.disabled = false; b.textContent = 'Kirim'; return; }
+        $('detailRoot').innerHTML = isiDetail(rc.data); var bx = $('boxChat'); if (bx) bx.scrollIntoView({ block: 'nearest' });
+      } catch (e) { ce.hidden = false; ce.textContent = 'Koneksi bermasalah. Coba lagi.'; b.disabled = false; b.textContent = 'Kirim'; }
+      return;
     }
     if (a === 'revisi') {
       var ta = $('revCatatan'), err = $('revErr'), cat = (ta.value || '').trim();

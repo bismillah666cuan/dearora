@@ -86,16 +86,16 @@
           ar.innerHTML = '<div class="ms-grid">' + pes + '</div><p class="ms-petunjuk" id="msP" role="status">Ketuk area untuk memindai. Bacalah petunjuk suhunya.</p>';
           ar.addEventListener('click', function (e) {
             var b = e.target.closest('.ms-pindai'); if (!b || b.disabled) return; var k = Number(b.dataset.k), jr = Math.abs(k % 3 - sasaran % 3) + Math.abs(Math.floor(k / 3) - Math.floor(sasaran / 3)); b.disabled = true;
-            if (k === sasaran) { b.classList.add('temu'); b.innerHTML = '<img alt="Foto memori" src="' + esc(S.src(m.foto, 2)) + '">'; ar.querySelector('#msP').textContent = 'Memori ditemukan!'; S.jeda(function () { hadiah(i, m.pesan, b); }, 900); }
+            if (k === sasaran) { b.classList.add('temu'); if (window.Suara) window.Suara.sukses(); b.innerHTML = '<img alt="Foto memori" src="' + esc(S.src(m.foto, 2)) + '">'; ar.querySelector('#msP').textContent = 'Memori ditemukan!'; S.jeda(function () { hadiah(i, m.pesan, b); }, 900); }
             else { b.classList.add(jr === 1 ? 'hangat' : 'dingin'); b.querySelector('span').textContent = jr === 1 ? 'HANGAT' : 'DINGIN'; ar.querySelector('#msP').textContent = jr === 1 ? 'Hangat! Memorinya sudah dekat.' : 'Dingin… coba area lain.'; }
           });
         } else if (m.tipe === 'kartu') {
           var buka = 0;
           ar.innerHTML = '<div class="ms-kartu3">' + m.kartu.map(function (t, k) { return '<button type="button" class="ms-flip" data-k="' + k + '" aria-label="Kartu ' + (k + 1) + '"><span class="dep">KARTU ' + (k + 1) + '<br>ketuk untuk membuka</span><span class="bel">' + esc(t) + '</span></button>'; }).join('') + '</div>';
-          ar.addEventListener('click', function (e) { var b = e.target.closest('.ms-flip'); if (!b || b.classList.contains('buka')) return; b.classList.add('buka'); buka++; if (buka === m.kartu.length) S.jeda(function () { hadiah(i, 'Pasukan menguat. Itulah alasan semua orang beruntung punya kamu.', b); }, 1300); });
+          ar.addEventListener('click', function (e) { var b = e.target.closest('.ms-flip'); if (!b || b.classList.contains('buka')) return; b.classList.add('buka'); buka++; if (window.Suara) window.Suara.buka(); if (buka === m.kartu.length) S.jeda(function () { hadiah(i, 'Pasukan menguat. Itulah alasan semua orang beruntung punya kamu.', b); }, 1300); });
         } else {
           ar.innerHTML = '<p class="ms-tanya">' + esc(m.soal.q) + '</p><div class="ms-opsi">' + m.soal.opsi.map(function (o, k) { return '<button type="button" class="ms-op" data-k="' + k + '">' + esc(o) + '</button>'; }).join('') + '</div><p class="ms-petunjuk" id="msP" role="status"></p>';
-          ar.addEventListener('click', function (e) { var b = e.target.closest('.ms-op'); if (!b) return; var ok = Number(b.dataset.k) === m.soal.benar; ar.querySelector('#msP').textContent = ok ? m.soal.betul : m.soal.salah; b.classList.add(ok ? 'benar' : 'salah'); if (ok) { ar.querySelectorAll('.ms-op').forEach(function (x) { x.disabled = true; }); S.jeda(function () { hadiah(i, m.soal.betul, b); }, 900); } });
+          ar.addEventListener('click', function (e) { var b = e.target.closest('.ms-op'); if (!b) return; var ok = Number(b.dataset.k) === m.soal.benar; ar.querySelector('#msP').textContent = ok ? m.soal.betul : m.soal.salah; if (window.Suara) window.Suara[ok ? 'sukses' : 'salah'](); b.classList.add(ok ? 'benar' : 'salah'); if (ok) { ar.querySelectorAll('.ms-op').forEach(function (x) { x.disabled = true; }); S.jeda(function () { hadiah(i, m.soal.betul, b); }, 900); } });
         }
       }
 

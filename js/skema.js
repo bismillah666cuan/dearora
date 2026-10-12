@@ -66,6 +66,33 @@
       { k: 'akhir', tipe: 'objek', label: 'Hadiah final', item: [F('foto', 'Foto pilihan'), A('pesan', 'Pesan utama', 700, { wajib: true }), T('penutup', 'Kalimat kemenangan', 120, { bawaan: 'Misi selesai. Tapi kamu akan selalu jadi hadiah favoritku.' })] }
     ] }
   };
+
+  /* Contoh isian: dipakai tombol "Isi dengan contoh" supaya pembeli tinggal mengubah (foto dipilih sendiri). */
+  SKEMA.movie.contoh = { judul: 'Cerita Kita', episode: [
+    { judul: 'Awal Kita Bertemu', desk: 'Hari ketika semuanya dimulai.', foto: '', adegan: ['Semuanya berawal dari hari yang biasa saja.', 'Kamu datang tanpa rencana, dan duniaku ikut berubah.'] },
+    { judul: 'Kenangan Favorit Kita', desk: 'Potongan hari yang tak mau kulupakan.', foto: '', adegan: ['Ada tawa yang pecah di tempat yang paling tidak pantas.', 'Kalau ada tombol ulang, aku memilih hari-hari itu.'] }],
+    final: { judul: 'Yang Terbaik Belum Datang', foto: '', pesan: 'Terima kasih sudah menjadi tokoh utama di cerita ini. Banyak adegan yang belum kita tulis, dan aku ingin menulisnya bersamamu.' } };
+  SKEMA.mall.contoh = { hadiah: [
+    { nama: 'Satu Pelukan Gratis', kat: 'Pelukan & Penghibur', harga: 'Tukar kapan saja', ilus: 'hati', desk: 'Berlaku di mana saja, tanpa syarat.', isi: 'Kapan pun kamu butuh pelukan, tinggal bilang. Tidak ada batas penukaran.' },
+    { nama: 'Seribu Ciuman', kat: 'Cinta & Romansa', harga: 'Tak ternilai', ilus: 'bintang', desk: 'Dikirim bertahap, sebanyak yang kamu mau.', isi: 'Kupon ini bisa kamu tukar satu per satu. Stoknya bertambah setiap kamu tersenyum.' },
+    { nama: 'Surat Cinta Kecil', kat: 'Cinta & Romansa', harga: 'Gratis selamanya', ilus: 'surat', desk: 'Sepucuk surat pendek yang ditulis dari hati.', isi: 'Hari-hariku lebih ringan karena ada kamu. Itu saja, tapi itu banyak.' }],
+    utama: { judul: 'Hadiah Utama: Sepucuk Surat', foto: '', pesan: 'Semua hadiah tadi hanya pembuka. Hadiah yang sebenarnya: aku bersyukur sekali mengenalmu.' } };
+  SKEMA.bestie.contoh = { pesanMisi: 'Ada banyak memori tersembunyi di dunia ini. Temukan hampir semuanya untuk membuka Pulau Harta!',
+    kenangan: [{ judul: 'Hari pertama kita', teks: 'Waktu kita masih canggung, siapa sangka jadi sedekat ini.', foto: '' }, { judul: 'Tertawa sampai lupa waktu', teks: 'Itu salah satu hari terbaikku.', foto: '' }],
+    pesanSahabat: [{ judul: 'Untuk hari yang berat', teks: 'Kalau kamu lelah, ingat ada aku yang siap mendengarkan.' }, { judul: 'Hal yang kusyukuri', teks: 'Terima kasih sudah menjadi sahabat yang tulus.' }],
+    peti: { foto: '', pesan: 'Harta karun yang sesungguhnya bukan di peti ini. Harta karun itu kamu.' } };
+  SKEMA.feed.contoh = { posts: [
+    { tipe: 'foto', foto: '', fotoKolase: [], teks: '', caption: 'Hari itu kita belum tahu bakal sedekat ini. Kenangan yang selalu kuputar ulang.' },
+    { tipe: 'teks', foto: '', fotoKolase: [], teks: 'Kamu itu orang yang bikin hari-hari biasa terasa seru.', caption: 'Pesan singkat, tapi sungguh-sungguh.' }],
+    komentar: [{ nama: 'sahabat.lama', teks: 'Kamu berhak bahagia.' }, { nama: 'tim.hore', teks: 'Selamat ya, kamu hebat!' }],
+    sematan: { foto: '', caption: 'Dari semua orang di dunia ini, aku bersyukur mengenalmu.', panjang: 'Kalau kamu membaca sampai sini, aku ingin bilang: terima kasih sudah menjadi kamu apa adanya. Semoga semua hal baik menemukanmu.' } };
+  SKEMA.musik.contoh = { deskripsi: 'Setiap lagu di sini adalah satu potongan cerita kita.',
+    lagu: [{ judul: 'Awal Mula', label: 'The Beginning', cerita: 'Lagu ini mengingatkanku pada hari pertama kita ngobrol.', audio: '' }, { judul: 'Kenangan Favorit Kita', label: 'Our Favorite Memory', cerita: 'Malam saat kita bicara berjam-jam sampai lupa waktu.', audio: '' }, { judul: 'Saat Aku Rindu', label: 'When I Miss You', cerita: 'Setiap jarak terasa jauh, aku memutar lagu ini.', audio: '' }],
+    tersembunyi: { judul: 'Hidden Track', label: 'Untukmu saja', pesan: 'Ini lagu yang tidak pernah kuberitahukan ke siapa pun. Isinya sederhana: terima kasih sudah ada.' } };
+  SKEMA.misi.contoh = { misi1: { foto: '', pesan: 'Memori berhasil dipulihkan: hari itu kamu tertawa lepas.' },
+    kartu: ['Kamu peduli tanpa pernah minta dilihat.', 'Kamu bikin orang lain merasa aman dan diterima.', 'Kamu bertahan, bahkan saat hari terasa berat.'],
+    kuis: { q: 'Siapa yang paling beruntung mengenalmu?', opsi: ['Aku, tentu saja', 'Semua orang di sekitarmu', 'Dunia ini'], benar: 1, betul: 'Tepat sekali. Aku pemenangnya.', salah: 'Jawaban menarik, tapi aku tetap yang paling beruntung. Coba lagi!' },
+    akhir: { foto: '', pesan: 'Semua misi tadi hanya cara untuk bilang satu hal: kamu berharga, dan aku sangat bersyukur ada kamu.', penutup: 'Misi selesai. Tapi kamu akan selalu jadi hadiah favoritku.' } };
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();

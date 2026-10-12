@@ -35,7 +35,7 @@
     }
     raf = parts.length ? requestAnimationFrame(putar) : 0; if (!raf) c.clearRect(0, 0, innerWidth, innerHeight);
   }
-  function dariEl(el, n, pal, o) { if (!el) return; var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, pal, o); }
+  function dariEl(el, n, pal, o) { if (!el) return; if (window.Suara && n >= 20) window.Suara.pop(); var r = el.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, n, pal, o); }
   function jeda(fn, ms) { var t = setTimeout(fn, reduce ? Math.min(ms, 40) : ms); timers.push(t); return t; }
   function bersih() { timers.forEach(clearTimeout); timers = []; }
 
@@ -75,7 +75,8 @@
     mount: function (k) {
       var def = reg[k]; bersih(); parts = []; Special._akhir = false;
       var data = Object.assign({}, def.demo, window.SPECIAL_DATA || {});
-      Special.konteks = { slug: '', pengirim: data.pengirim || '', demo: true };
+      Special.konteks = { slug: '', pengirim: data.pengirim || '', demo: true, tema: k };
+      if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
       document.title = (def.nama || 'Ucapan') + ' — Dearora';
       def.mulai($root, data, Special);
@@ -83,10 +84,22 @@
     /** Mode nyata: data dari server. c = {penerima, pengirim, foto:[idDrive], slug}; f = isian pembeli (skema). */
     mountData: function (k, c, f) {
       var def = reg[k]; bersih(); parts = []; Special._akhir = false; fotoIds = c.foto || [];
-      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: false };
+      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: false, tema: k };
+      if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
       document.title = 'Ucapan untukmu';
       def.mulai($root, def.adapt(f || {}, c), Special);
+      if (c.musik && k !== 'musik') Special.pasangMusik(c.musik);
+    },
+    /** Musik latar pilihan pembeli: mulai setelah sentuhan pertama, ada tombol putar/jeda. */
+    pasangMusik: function (m) {
+      var u = String((m && m.url) || ''); if (!/^https:\/\//.test(u) || document.querySelector('.musik-btn')) return;
+      var a = new Audio(u); a.loop = true; a.volume = 0.5; var b = document.createElement('button'); b.type = 'button'; b.className = 'musik-btn';
+      function set(on) { b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', (on ? 'Jeda musik: ' : 'Putar musik: ') + (m.judul || '')); b.textContent = on ? '❚❚' : '♪'; }
+      set(false); document.body.appendChild(b);
+      var mulai = function () { document.removeEventListener('pointerdown', mulai, true); a.play().then(function () { set(true); }, function () { set(false); }); };
+      document.addEventListener('pointerdown', mulai, true);
+      b.addEventListener('click', function (e) { e.stopPropagation(); document.removeEventListener('pointerdown', mulai, true); if (a.paused) a.play().then(function () { set(true); }, function () { set(false); }); else { a.pause(); set(false); } });
     }
   };
   window.Special = Special;

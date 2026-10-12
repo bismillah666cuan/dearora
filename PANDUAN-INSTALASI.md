@@ -28,18 +28,32 @@ Urutan: **A (backend) → B (password admin) → C (frontend) → D (uji) → E 
 - Special (tagline): *Desain 100% custom, dikerjakan langsung oleh kami sesuai ideamu.* Fitur: `+ Desain custom sesuai ide`, `+ Hingga 20 foto dan 1 video`, `+ Boleh meminta nama pada link; bentrok otomatis diberi angka`, `+ Pembayaran penuh di muka`, `+ 1× revisi gratis`, `+ Balasan dari penerima`.
 
 **Paket Special: alur Ibu**
-1. Pesanan dibayar penuh → status *Diproses*. Di detail pesanan Ibu melihat **ide desain**, **nama link yang dikunci** (mis. `/u/siska-2`), dan foto/video.
-2. Buat halaman kustomnya. Jika memakai folder, buat `u/siska-2/index.html` di repo (berkas ini diutamakan Vercel daripada template), lalu `git push`.
-3. Tekan **Tandai selesai & aktifkan**. Kolom alamat boleh dikosongkan (memakai `/u/nama-yang-dikunci`) atau diisi alamat lain. Masa aktif dihitung sejak saat itu dan email "Ucapanmu sudah jadi" terkirim.
-4. **Revisi 1×**: pembeli mengajukan dari portal (status kembali *Diproses*), Ibu mengerjakan lalu menekan tombol yang sama; kuota habis setelah sekali.
-5. Saat kedaluwarsa, sistem hanya menghapus foto di Drive. **Halaman kustom di repo harus Ibu hapus sendiri.**
+1. Pembeli memilih nama alamat (bagian depan saja, akhiran `.vercel.app` tetap). Bila nama sudah dipakai pesanan Special lain, sistem menambahkan angka (`laiba-2`). Sistem **tidak bisa memeriksa ketersediaan di Vercel**, jadi cek saat membuat proyeknya.
+2. Pesanan dibayar penuh → status *Diproses*. Di detail pesanan Ibu melihat **ide desain**, **alamat yang dikunci**, foto/video, dan panel **Chat dengan pembeli**. Tulis pesan untuk memastikan warna, urutan foto, dll. Pembeli menerima email dan membalas dari portal.
+3. Buat halaman di proyek Vercel terpisah, lalu tekan **Tandai selesai & aktifkan**. Kolom alamat sudah terisi alamat yang dikunci; ubah bila nama di Vercel berbeda (mis. karena bentrok).
+4. **Revisi 1×**: pembeli mengajukan dari portal, Ibu mengerjakan lalu menekan tombol yang sama.
+5. **Chat otomatis ditutup** setelah pesanan selesai dan jatah revisi habis (riwayatnya tetap terbaca).
+6. Halaman Special buatan Ibu sendiri tidak otomatis mengirim status "dilihat" dan balasan; fitur itu hanya ada di halaman bawaan sistem (Basic dan Premium).
+7. Saat kedaluwarsa, sistem hanya menghapus foto di Drive. Proyek Vercel dan repo Ibu harus dihapus sendiri.
+
+**Pengaturan baru di Admin → Pengaturan → Umum:** `KONTAK_WA`, `KONTAK_JAM` (tampil di menu Kontak) dan `DOMAIN_SPECIAL` (bawaan `vercel.app`). Baris ini ditambahkan otomatis saat menjalankan `setupAppEnvironment`.
+
+**Kategori desain** kini bebas: di editor desain, pilih kategori yang ada atau ketik yang baru (mis. Ulang Tahun Pernikahan). Kategori baru otomatis menjadi filter di katalog.
+
+**Musik tanpa unggah ke GitHub.** Admin → Pengaturan → Musik: tempel tautan langsung berkas mp3 (`https://…mp3`). Tautan berbagi Google Drive/Dropbox diubah otomatis ke tautan unduh. Berkas Drive yang besar kadang tidak bisa diputar; hosting audio langsung lebih andal. Pembeli Basic dan Premium memilih musik pada langkah desain (Basic) atau di bagian terakhir isian desain (Premium). Gunakan musik yang berlisensi atau milik sendiri. Ubah teks fitur paket bila ingin mengiklankan musik latar.
+
+**Riwayat pesanan.** Detail pesanan punya **Hapus dari riwayat** (permanen: baris pesanan, foto di Drive, chat, balasan, catatan bayar). Pesanan Dibayar/Diproses tidak bisa dihapus, yang Aktif butuh konfirmasi. Di daftar pesanan ada **Bersihkan riwayat** untuk semua yang Kedaluwarsa/Dibatalkan.
+
+**Privasi pembeli.** Akun pembeli (kode redeem, password, sesi) dihapus otomatis setelah semua ucapannya kedaluwarsa dan masa tenggang lewat. Pada pesanan itu nama, WhatsApp, dan email juga dikosongkan; nomor pesanan, paket, nominal, dan tanggal tetap untuk pembukuan.
+
+**Efek suara.** Dibuat langsung oleh browser (tanpa berkas audio), baru berbunyi setelah layar disentuh, dan penerima bisa mematikannya lewat tombol di kiri bawah.
 
 **Status "sudah dilihat" dan balasan**
 - Penerima dianggap *sudah melihat* saat mencapai slide terakhir. Di sana muncul kolom **Balas ucapan**; balasan masuk ke portal pembeli (Pesanan Saya → Detail) dan email.
-- Anti-spam: maksimal 5 balasan per ucapan per hari. Tidak ada akun untuk penerima.
-- Tampilan akhir semua desain kini berbunyi **"Dibuat dengan penuh rasa oleh: {nama pengirim}"**. Tautan "Buat ucapan seperti ini" pada kartu Basic masih ada; hapus di `js/card.js` bila tidak diinginkan.
+- Balasan hanya bisa dikirim **sekali** per ucapan; setelah itu tombolnya tidak muncul lagi. Tidak ada akun untuk penerima.
+- Tampilan akhir semua desain kini berbunyi **"Dibuat dengan penuh rasa oleh: {nama pengirim}"**. Promosi "Buat ucapan seperti ini" sudah dihapus dari kartu; hanya "Putar ulang" yang tersisa.
 
-**Draf Saya.** Pembeli bisa menyimpan beberapa draf ucapan (tombol *Simpan & buat ucapan lain*) dan melanjutkannya dari panel "Draf Saya". Draf tersimpan di browser itu saja dan **foto tidak ikut tersimpan**. Riwayat ucapan yang sudah dibayar ada di portal.
+**Draf Saya.** Pembeli bisa menyimpan beberapa draf ucapan (tombol *Simpan & buat ucapan lain*) dan melanjutkannya dari panel "Draf Saya". Draf, **termasuk foto dan video**, tersimpan otomatis di browser itu saja (tidak pindah antarperangkat). Riwayat ucapan yang sudah dibayar ada di portal.
 
 **Demo desain Premium** tetap bisa dicoba di katalog (tombol *Coba Demo*) dan langsung di `/s/?d=movie`, `mall`, `bestie`, `feed`, `musik`, `misi`. Catatan khusus: Soundtrack Kita hanya memutar audio bila tautannya https dan pembeli menyatakan tautan itu sah/berlisensi; tanpa audio berjalan sebagai "mode cerita". Karakter, markas, dan ikon semuanya orisinal; jangan menambahkan logo atau aset pihak lain.
 

@@ -88,7 +88,7 @@
 
   function kategori(ctx, judulLengkap) {
     var d = (ctx.data && ctx.data.desain) || [];
-    var cards = U.KATEGORI.map(function (k) {
+    var cards = U.daftarKategori(ctx.data && ctx.data.desain).map(function (k) {
       var n = d.filter(function (x) { return x.kategori === k.key; }).length;
       var info = ctx.status === 'ready' ? (n + ' desain') : 'Lihat desain';
       return '<a class="card card-hover cat-card reveal" href="#/contoh-desain?kategori=' + encodeURIComponent(k.key) + '">' +
@@ -165,7 +165,7 @@
   }
 
   var LANGKAH = [
-    { i: 'card', t: 'Pilih Paket & Desain', p: 'Tentukan paket, lalu pilih desain dari contoh atau ceritakan ide sendiri.', tag: 'Langkah 1' },
+    { i: 'card', t: 'Pilih Paket & Desain', p: 'Tentukan paket, lalu pilih desainnya. Mau yang 100% sesuai idemu? Pilih paket Special.', tag: 'Langkah 1' },
     { i: 'pencil', t: 'Tulis Surat & Pilih Kejutan', p: 'Tulis suratmu, pilih jenis kejutan, lalu unggah foto-foto terbaik.', tag: 'Langkah 2' },
     { i: 'zap', t: 'Pembayaran Otomatis', p: 'Bayar lewat QRIS, VA, atau e-wallet. Kode redeem langsung kamu terima.', tag: 'Langkah 3' },
     { i: 'link', t: 'Link Jadi & Bagikan', p: 'Pantau progres di portal, lalu bagikan link ucapan ke orang spesialmu.', tag: 'Langkah 4' }
@@ -218,7 +218,7 @@
     var fk = q.kategori || '';
     var fp = (q.paket || '').toLowerCase();
     var kats = '<button type="button" class="chip" data-action="filter" data-k="kategori" data-v="" aria-pressed="' + (!fk) + '">Semua</button>' +
-      U.KATEGORI.map(function (k) {
+      U.daftarKategori(ctx.data && ctx.data.desain).map(function (k) {
         return '<button type="button" class="chip" data-action="filter" data-k="kategori" data-v="' + esc(k.key) + '" aria-pressed="' + (fk === k.key) + '">' + esc(k.judul.split(' & ')[0]) + '</button>';
       }).join('');
     var desainAll = (ctx.data && ctx.data.desain) || [];
@@ -244,7 +244,8 @@
       '<div class="filters"><div><p class="filter-label">Kategori</p><div class="chip-row">' + kats + '</div></div>' +
       '<div><p class="filter-label">Paket</p><div class="chip-row">' + pk + '</div></div></div>' + body +
       '<div class="callout"><span class="icon-tile">' + ic('pencil') + '</span><div><p><strong>Punya ide sendiri?</strong></p>' +
-      '<p>Tidak menemukan yang pas? Saat memesan, pilih "Saya punya ide sendiri" dan ceritakan konsep, warna, serta mood yang kamu inginkan.</p></div></div>' +
+      '<p>Tidak menemukan yang pas? Pesan <strong>paket Special</strong>, ceritakan konsep, warna, dan mood yang kamu inginkan, lalu kami kerjakan khusus untukmu.</p>' +
+      '<p style="margin-top:.75rem"><a class="btn btn-primary btn-sm" href="#/buat?paket=special">Pesan Paket Special</a></p></div></div>'
       '</div></section>';
   }
 
@@ -293,6 +294,17 @@
       '<p>Masa aktif dihitung sejak link aktif (' + esc(daftarMasa(ctx)) +
       '). Setelah itu link dan berkas dinonaktifkan otomatis dan tidak dapat dipulihkan.</p></div></div>' +
       '</div></section>' + ctaBand();
+  }
+
+  function waLink(no) { var n = String(no || '').replace(/\D/g, ''); if (!n) return ''; if (n.charAt(0) === '0') n = '62' + n.slice(1); return 'https://wa.me/' + n; }
+  function kontakHalaman(ctx) {
+    var c = (ctx.data && ctx.data.config) || {}, em = c.KONTAK_EMAIL, wa = c.KONTAK_WA, jam = c.KONTAK_JAM;
+    var kartu = '';
+    if (em) kartu += '<a class="card card-hover kontak-kartu" href="mailto:' + esc(em) + '"><span class="icon-tile">' + ic('mail') + '</span><div><strong>Email</strong><span>' + esc(em) + '</span></div></a>';
+    if (wa) kartu += '<a class="card card-hover kontak-kartu" href="' + esc(waLink(wa)) + '" target="_blank" rel="noopener"><span class="icon-tile">' + ic('phone') + '</span><div><strong>WhatsApp</strong><span>' + esc(wa) + '</span></div></a>';
+    var isi = kartu ? '<div class="kontak-grid">' + kartu + '</div>' + (jam ? '<p class="kontak-jam">' + ic('clock') + ' ' + esc(jam) + '</p>' : '') : '<div class="state-box"><p>Kontak belum diatur. Silakan kembali beberapa saat lagi.</p></div>';
+    return kepalaHalaman('Kontak', 'Hubungi Kami', 'Ada pertanyaan soal pesanan, pembayaran, atau desain? Tulis ke kami, kami balas secepatnya.') +
+      '<section class="section" style="padding-top:2.5rem"><div class="container" style="max-width:40rem">' + isi + '<p class="small muted" style="margin-top:1.5rem">Untuk pesanan yang sudah dibayar, sebutkan <strong>nomor pesanan</strong> (diawali DRA-) agar lebih cepat dibantu.</p></div></section>';
   }
 
   function faqHalaman(ctx) {
@@ -352,6 +364,7 @@
       'paket': { judul: 'Paket & Harga', view: paketHalaman, nav: 'paket' },
       'cara-kerja': { judul: 'Cara Kerja', view: caraKerjaHalaman, nav: 'cara-kerja' },
       'faq': { judul: 'FAQ', view: faqHalaman, nav: 'faq' },
+      'kontak': { judul: 'Kontak', view: kontakHalaman, nav: 'kontak' },
       'privasi': { judul: 'Kebijakan Privasi', view: privasi, nav: '' },
       'syarat': { judul: 'Syarat & Ketentuan', view: syarat, nav: '' },
       'buat': { judul: 'Buat Ucapan', view: function (c) { return window.Form.view(c); }, nav: 'buat', after: function (m, c) { window.Form.after(m, c); }, jagaState: true },

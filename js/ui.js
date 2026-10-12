@@ -45,6 +45,12 @@
       desc: 'Sambut bayi dan anggota keluarga baru dengan doa, foto, dan bintang.' }
   ];
 
+  /** Kategori bawaan + kategori baru yang dibuat admin pada desain (urutan: bawaan dulu). */
+  function daftarKategori(desain) {
+    var hasil = KATEGORI.slice(), ada = {}; hasil.forEach(function (k) { ada[k.key] = true; });
+    (desain || []).forEach(function (d) { var k = String(d.kategori || '').trim(); if (k && !ada[k]) { ada[k] = true; hasil.push({ key: k, judul: k, icon: 'sparkles', tone: '', tag: 'Baru', desc: 'Desain untuk momen ' + k + '.' }); } });
+    return hasil;
+  }
   function infoKategori(key) {
     for (var i = 0; i < KATEGORI.length; i++) if (KATEGORI[i].key === key) return KATEGORI[i];
     return { key: key, judul: key, icon: 'heart', tone: '', tag: '', desc: '' };
@@ -173,7 +179,7 @@
 
   window.UI = {
     esc: esc, ic: ic, rupiah: rupiah, formatMasa: formatMasa, amanHttps: amanHttps,
-    KATEGORI: KATEGORI, infoKategori: infoKategori, CONTOH: CONTOH,
+    KATEGORI: KATEGORI, daftarKategori: daftarKategori, infoKategori: infoKategori, CONTOH: CONTOH,
     temaDari: temaDari, ikonTema: ikonTema, partikel: partikel,
     badgePaket: badgePaket, thumbHTML: thumbHTML, designCard: designCard, planCard: planCard, susunPaket: susunPaket,
     skeletons: skeletons, errorBox: errorBox, faqList: faqList

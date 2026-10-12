@@ -72,7 +72,7 @@
       }
       root.addEventListener('click', function (e) {
         var b = e.target.closest('[data-a]'); if (!b) return; var a = b.dataset.a;
-        if (a === 'suka') { var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); var sm = b.querySelector('small'); sm.textContent = String(Number(sm.textContent) + (on ? 1 : -1)); if (on) S.dariEl(b, 14, ['#FF3B6E', '#FF8FB1', '#fff'], { kuat: 5, naik: 3 }); }
+        if (a === 'suka') { var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); var sm = b.querySelector('small'); sm.textContent = String(Number(sm.textContent) + (on ? 1 : -1)); if (on && window.Suara) window.Suara.hati(.5); if (on) S.dariEl(b, 14, ['#FF3B6E', '#FF8FB1', '#fff'], { kuat: 5, naik: 3 }); }
         else if (a === 'komen') komentar(b); else if (a === 'bagi') S.toast('Link ucapan disalin. Bagikan ke siapa saja!'); else if (a === 'lagi') panjang();
         else if (a === 'ulang') feed.scrollTo({ top: 0, behavior: S.reduce ? 'auto' : 'smooth' });
       });

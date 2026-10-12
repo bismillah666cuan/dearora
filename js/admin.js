@@ -177,7 +177,7 @@
   function simpanCariKeUrl() { history.replaceState(null, '', '#/pesanan' + qs({ q: cari.q, status: cari.status, paket: cari.paket, hal: cari.hal > 1 ? String(cari.hal) : '' })); }
   function viewPesanan(my, q) {
     cari = { q: q.q || '', status: q.status || '', paket: q.paket || '', hal: Math.max(1, Number(q.hal) || 1) };
-    document.getElementById('main').innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Pesanan</h1><button class="btn sm" data-a="csv">' + ic('dl') + ' Ekspor CSV</button></div>' +
+    document.getElementById('main').innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Pesanan</h1><div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn sm" data-a="bersih-riwayat" title="Hapus semua pesanan Kedaluwarsa dan Dibatalkan">' + ic('x') + ' Bersihkan riwayat</button><button class="btn sm" data-a="csv">' + ic('dl') + ' Ekspor CSV</button></div></div>' +
       '<div class="filters"><div class="wide"><label class="sr" for="fq">Cari</label><input id="fq" type="search" placeholder="Cari ID, nama, email, WhatsApp…" value="' + esc(cari.q) + '"></div>' +
       '<div><label class="sr" for="fs">Status</label><select id="fs"><option value="">Semua status</option>' + STATUS.map(function (s) { return '<option' + (s === cari.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select></div>' +
       '<div><label class="sr" for="fp">Paket</label><select id="fp"><option value="">Semua paket</option>' + ['basic', 'premium', 'special'].map(function (p) { return '<option value="' + p + '"' + (p === cari.paket ? ' selected' : '') + '>' + p.charAt(0).toUpperCase() + p.slice(1) + '</option>'; }).join('') + '</select></div></div>' +
@@ -189,6 +189,13 @@
   function kv(label, nilai) { return '<div><dt>' + esc(label) + '</dt><dd>' + (nilai === '' || nilai == null ? '<span class="muted">-</span>' : nilai) + '</dd></div>'; }
   function waLink(wa) { var n = String(wa).replace(/^0/, '62').replace(/\D/g, ''); return n.length > 6 ? '<a href="https://wa.me/' + esc(n) + '" target="_blank" rel="noopener noreferrer">' + esc(wa) + '</a>' : esc(wa); }
 
+  function panelChat(d) {
+    if (d.pesanan.PaketID !== 'special') return '';
+    var daftar = (d.chat || []).map(function (c) { return '<li class="chat-' + (c.peran === 'admin' ? 'adm' : 'pem') + '"><b>' + (c.peran === 'admin' ? 'Admin' : 'Pembeli') + '</b> <span class="muted small">' + esc(tglJam(c.tgl)) + '</span><p>' + esc(c.pesan) + '</p></li>'; }).join('');
+    return '<div class="card" style="margin-top:1rem" id="panelChat"><h2>Chat dengan pembeli</h2>' + (daftar ? '<ul class="chat-list">' + daftar + '</ul>' : '<p class="muted">Belum ada percakapan. Pembeli bisa menulis dari portal, dan Ibu bisa memulai di sini untuk mengarahkan desainnya.</p>') +
+      (d.chatAktif ? '<div class="field" style="margin-top:.75rem"><label class="sr" for="chatIsi">Pesan</label><textarea id="chatIsi" rows="3" maxlength="1000" placeholder="Tulis pesan untuk pembeli (mis. konfirmasi warna, urutan foto)…"></textarea></div><button class="btn primary sm" data-a="chat-kirim">Kirim pesan</button> <span class="small muted">Pembeli menerima email pemberitahuan.</span>' :
+        '<p class="small muted" style="margin-top:.75rem">Chat ditutup: pesanan sudah selesai dan jatah revisi habis. Riwayat tetap bisa dibaca.</p>') + '</div>';
+  }
   function aksiDetail(d) {
     var o = d.pesanan, s = o.Status, b = [], hidup = ['Aktif', 'Selesai', 'Diproses'].indexOf(s) >= 0, dihapus = !!o.TglDihapus;
     if (o.PaketID !== 'special' && s === 'Dibayar') b.push('<button class="btn primary" data-a="aktifkan-oto">' + ic('check') + ' Aktifkan sekarang</button>');
@@ -198,6 +205,7 @@
     if (hidup) b.push('<button class="btn danger" data-a="nonaktif">Nonaktifkan link</button>');
     if (['Menunggu Pembayaran', 'Dibayar', 'Diproses', 'Perlu Ditinjau'].indexOf(s) >= 0) b.push('<button class="btn danger" data-a="batalkan">Batalkan pesanan</button>');
     if (d.akun || o.NamaPembeli) b.push('<button class="btn" data-a="kirim">Kirim ulang email</button>');
+    if (['Dibayar', 'Diproses'].indexOf(s) < 0) b.push('<button class="btn danger" data-a="hapus">' + ic('x') + ' Hapus dari riwayat</button>');
     return '<div class="actions">' + b.join('') + '</div>';
   }
 
@@ -227,7 +235,7 @@
     return '<div class="page-h"><div><h1 tabindex="-1" id="h1">' + esc(o.OrderID) + '</h1><p class="muted small">Paket ' + esc(d.paket) + ' · dipesan ' + esc(tglJam(o.TglOrder)) + '</p></div>' + badge(o.Status) + '</div>' +
       (o.Status === 'Dibayar' && o.PaketID !== 'special' ? '<p class="banner" role="alert">' + ic('alert') + '<span>Pembayaran sudah masuk tetapi link ucapan belum aktif. Tekan <strong>Aktifkan sekarang</strong>; jika gagal, alasannya akan ditampilkan.</span></p>' : '') +
       (o.Status === 'Perlu Ditinjau' ? '<p class="banner bad" role="alert">' + ic('alert') + '<span>Pembayaran perlu ditinjau (nominal tidak cocok atau dibayar setelah dibatalkan). Cek catatan pembayaran di bawah.</span></p>' : '') +
-      '<div class="card"><h2>Tindakan</h2>' + aksiDetail(d) + '</div>' +
+      '<div class="card"><h2>Tindakan</h2>' + aksiDetail(d) + '</div>' + panelChat(d) +
       '<div class="grid two" style="margin-top:1rem"><div class="card"><h2>Pembeli</h2><dl class="kv">' + kv('Nama', esc(o.NamaPembeli)) + kv('WhatsApp', waLink(o.WhatsApp)) + kv('Email', '<a href="mailto:' + esc(o.Email) + '">' + esc(o.Email) + '</a>') +
       kv('Kode redeem', d.akun ? '<span class="mono">' + esc(d.akun.kodeRedeem) + '</span> ' + (d.akun.punyaPassword ? '<span class="badge ok">Password dibuat</span>' : '<span class="badge warn">Belum dipakai</span>') + ' <span class="badge">' + esc(d.akun.status) + '</span>' : '') + kv('Akun lama', o.AkunTertaut === 'ya' ? 'Ya (ditautkan)' : 'Tidak') + '</dl></div>' +
       '<div class="card"><h2>Ucapan</h2><dl class="kv">' + kv('Tautan', o.LinkHasil ? '<a href="' + esc(o.LinkHasil) + '" target="_blank" rel="noopener noreferrer">' + esc(o.LinkHasil) + '</a>' : '') + kv('Aktif', o.TglAktif ? esc(tglJam(o.TglAktif)) : '') + kv('Berakhir', o.TglKedaluwarsa ? esc(tglJam(o.TglKedaluwarsa)) : '') + kv('Berkas dihapus', dihapus ? esc(tglJam(o.TglDihapus)) : '') + '</dl></div></div>' +
@@ -274,6 +282,15 @@
     } else if (a === 'kirim') {
       v = await tanya({ judul: 'Kirim ulang email', fields: [{ name: 'jenis', label: 'Jenis email', type: 'select', opsi: [['tanda-terima', 'Tanda terima (+ kode redeem)'], ['ucapan-jadi', 'Ucapan sudah jadi (link)']] }], ya: 'Kirim' });
       if (!v) return; hasil = await call('adminKirimUlang', { orderId: id, jenis: v.jenis });
+    } else if (a === 'chat-kirim') {
+      var isi = (document.getElementById('chatIsi') || {}).value || '';
+      if (isi.trim().length < 1) { toast('Tulis pesan terlebih dahulu'); return; }
+      hasil = await call('adminChatKirim', { orderId: id, pesan: isi });
+      if (hasil && hasil.success) { detailSaatIni = hasil.data; document.getElementById('detailIsi').innerHTML = isiDetail(hasil.data); toast('Pesan terkirim'); var ch = document.getElementById('panelChat'); if (ch) ch.scrollIntoView({ block: 'nearest' }); } else toast((hasil && hasil.message) || 'Gagal'); return;
+    } else if (a === 'hapus') {
+      v = await tanya({ judul: 'Hapus pesanan dari riwayat?', teks: 'Seluruh data pesanan ini dihapus PERMANEN: isi ucapan, foto/video di Drive, chat, balasan, dan catatan pembayaran. Tindakan ini tidak bisa dibatalkan.' + (d.pesanan.Status === 'Aktif' ? ' Ucapan ini masih AKTIF; link akan langsung mati.' : ''), bahaya: true, ya: 'Hapus permanen' });
+      if (!v) return; hasil = await call('adminHapusPesanan', { orderId: id, pastikan: true });
+      if (hasil && hasil.success) { toast('Pesanan dihapus'); location.hash = '#/pesanan'; } else toast((hasil && hasil.message) || 'Gagal'); return;
     } else if (a === 'catatan') {
       hasil = await call('adminCatatan', { orderId: id, catatan: document.getElementById('cat').value });
       toast(hasil.success ? 'Catatan disimpan' : hasil.message); return;
@@ -330,7 +347,7 @@
   function isiFormDesain(x, data, errors) {
     var sel = String(x.paket || '').split(',').map(function (s) { return s.trim().toLowerCase(); }), th = String(x.thumbnail || 'tema:blossom'), pakaiTema = /^tema:/.test(th);
     return '<div class="row-2"><div class="field"><label for="e-nama">Nama desain</label><input id="e-nama" name="nama" type="text" value="' + esc(x.nama || '') + '" maxlength="60">' + errF(errors, 'nama') + '</div>' +
-      '<div class="field"><label for="e-kat">Kategori</label><select id="e-kat" name="kategori">' + data.kategori.map(function (k) { return '<option' + (k === x.kategori ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select>' + errF(errors, 'kategori') + '</div></div>' +
+      '<div class="field"><label for="e-kat">Kategori</label><input id="e-kat" name="kategori" type="text" list="dlKat" maxlength="30" autocomplete="off" value="' + esc(x.kategori || '') + '" placeholder="Pilih atau ketik kategori baru"><datalist id="dlKat">' + data.kategori.map(function (k) { return '<option value="' + esc(k) + '"></option>'; }).join('') + '</datalist><p class="hint">Pilih yang sudah ada, atau ketik kategori baru (mis. Ulang Tahun Pernikahan).</p>' + errF(errors, 'kategori') + '</div></div>' +
       '<fieldset class="field" style="border:0;padding:0;margin:0 0 .875rem"><legend>Tersedia di paket</legend><div class="actions">' + data.paket.map(function (p) { return '<label class="chk"><input type="checkbox" name="paket" value="' + esc(p.id) + '"' + (sel.indexOf(p.id) >= 0 ? ' checked' : '') + '> ' + esc(p.nama) + '</label>'; }).join('') + '</div>' + errF(errors, 'paket') + '</fieldset>' +
       '<div class="field"><label for="e-tema">Tampilan (tema bawaan)</label><div class="tema-pilih">' + data.tema.map(function (t) { var c = SW[t] || ['#eee', '#999']; return '<label class="tema-opt"><input type="radio" name="tema" value="' + esc(t) + '"' + (pakaiTema && swKey(th.slice(5)) === t ? ' checked' : (!x.id && t === 'cinematic' ? ' checked' : '')) + '><span class="sw" style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')"></span><span class="small">' + esc(t) + '</span></label>'; }).join('') + '</div></div>' +
       '<details class="lanjut"' + (!pakaiTema || x.urlDemo ? ' open' : '') + '><summary>Lanjutan: gambar sendiri &amp; demo</summary>' +
@@ -340,7 +357,7 @@
   }
   function isiFormMusik(m, errors) {
     return '<div class="field"><label for="e-judul">Judul</label><input id="e-judul" name="judul" type="text" value="' + esc(m.judul || '') + '" maxlength="80">' + errF(errors, 'judul') + '</div>' +
-      '<div class="field"><label for="e-file">Berkas</label><input id="e-file" name="fileUrl" type="text" value="' + esc(m.fileUrl || '') + '" placeholder="assets/musik/nama.mp3">' + errF(errors, 'fileUrl') + '<p class="hint">Unggah mp3 berlisensi ke folder <span class="mono">assets/musik/</span> di proyek (lewat GitHub), lalu tulis jalurnya di sini.</p></div>' +
+      '<div class="field"><label for="e-file">Tautan audio</label><input id="e-file" name="fileUrl" type="text" value="' + esc(m.fileUrl || '') + '" placeholder="https://…/lagu.mp3">' + errF(errors, 'fileUrl') + '<p class="hint">Unggah mp3 berlisensi ke folder <span class="mono">assets/musik/</span> di proyek (lewat GitHub), lalu tulis jalurnya di sini.</p></div>' +
       '<label class="chk"><input name="aktif" type="checkbox"' + (m.aktif ? ' checked' : '') + '> Tampil sebagai pilihan musik</label>';
   }
 
@@ -502,13 +519,19 @@
     if (a === 'tambah') { bukaEditor(b.dataset.j, ''); return; }
     if (a === 'tutup-editor') { tutupEditor(); return; }
     if (a === 'hal-' || a === 'hal+') { cari.hal = Math.max(1, cari.hal + (a === 'hal+' ? 1 : -1)); simpanCariKeUrl(); muatDaftar(run); window.scrollTo(0, 0); return; }
+    if (a === 'bersih-riwayat') {
+      var vb = await tanya({ judul: 'Bersihkan riwayat?', teks: 'Semua pesanan berstatus Kedaluwarsa dan Dibatalkan dihapus permanen beserta berkas, chat, dan balasannya. Pesanan aktif atau yang sedang dikerjakan tidak disentuh.', bahaya: true, ya: 'Bersihkan' });
+      if (!vb) return; b.disabled = true;
+      try { var rb = await call('adminHapusRiwayat', {}); toast(rb.success ? rb.data.dihapus + ' pesanan dihapus' : rb.message); if (rb.success) viewPesanan(run, { q: '', status: '', paket: '', hal: 1 }); } catch (e) { /* sesi */ }
+      b.disabled = false; return;
+    }
     if (a === 'csv') {
       b.disabled = true;
       try { var r = await call('adminExportCsv', { status: cari.status, paket: cari.paket }); if (r.success) { unduh(r.data.nama, r.data.csv); toast(r.data.jumlah + ' baris diekspor'); } else toast(r.message); }
       catch (e) { /* sesi berakhir ditangani call */ }
       b.disabled = false; return;
     }
-    if (detailSaatIni && document.getElementById('detailIsi') && ['special', 'aktifkan-oto', 'setujui', 'tolak', 'batalkan', 'nonaktif', 'perpanjang', 'kirim', 'catatan'].indexOf(a) >= 0) {
+    if (detailSaatIni && document.getElementById('detailIsi') && ['special', 'aktifkan-oto', 'setujui', 'tolak', 'batalkan', 'nonaktif', 'perpanjang', 'kirim', 'catatan', 'chat-kirim', 'hapus'].indexOf(a) >= 0) {
       b.disabled = true; try { await aksiPesanan(a); } catch (e) { if (e.message !== 'sesi') toast('Koneksi bermasalah'); } b.disabled = false;
     }
   });

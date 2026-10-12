@@ -754,3 +754,19 @@ dialog.modal { width: min(100vw - 1rem, 460px); }
 .draf-panel { margin-bottom: 1rem; display: grid; gap: .6rem; } .draf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
 .draf-list li { display: flex; align-items: center; gap: .5rem; padding: .6rem .75rem; border: 1px solid var(--border); border-radius: var(--r); background: #fff; } .draf-list li.on { border-color: var(--primary); background: var(--badge); }
 .draf-list li > div { flex: 1; min-width: 0; display: grid; } .draf-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .draf-list small { color: var(--muted); }
+
+/* ---------- Isi Desain bertahap ---------- */
+.simpan-info { display: flex; align-items: center; gap: .4rem; font-size: .8125rem; color: var(--muted); margin: -.25rem 0 .75rem; } .simpan-info .icon { width: 14px; height: 14px; color: #2E7D32; }
+.sk-langkah { list-style: none; margin: 0 0 1rem; padding: 0; display: flex; gap: .35rem; overflow-x: auto; }
+.sk-langkah li { display: flex; align-items: center; gap: .35rem; flex: none; padding: .3rem .65rem; border-radius: 99px; background: var(--canvas); border: 1px solid var(--border); font-size: .75rem; font-weight: 700; color: var(--muted); }
+.sk-langkah li .no { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 1px solid var(--border); font-size: .6875rem; } .sk-langkah li .no .icon { width: 12px; height: 12px; }
+.sk-langkah li.on { background: var(--badge); border-color: var(--primary); color: var(--primary-deep); } .sk-langkah li.on .no { background: var(--primary); color: #fff; border-color: var(--primary); } .sk-langkah li.lalu .no { background: #2E7D32; color: #fff; border-color: #2E7D32; }
+.sk-judul { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; } .sk-judul h2 { margin: 0; }
+details.sk-opsional { border: 1px dashed var(--border); border-radius: var(--r); padding: 0 .85rem; margin: .5rem 0 1rem; background: #fff; } details.sk-opsional summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; font-size: .875rem; color: var(--muted); } details.sk-opsional[open] { padding-bottom: .5rem; }
+
+/* ---------- Halaman Kontak ---------- */
+.kontak-grid { display: grid; gap: 1rem; } .kontak-kartu { display: flex; align-items: center; gap: 1rem; padding: 1.25rem; text-decoration: none; color: inherit; } .kontak-kartu > div { display: grid; } .kontak-kartu strong { font-size: 1.0625rem; } .kontak-kartu span:not(.icon-tile) { color: var(--muted); word-break: break-all; }
+.kontak-jam { display: flex; align-items: center; gap: .5rem; justify-content: center; margin-top: 1.25rem; color: var(--muted); font-weight: 600; } .kontak-jam .icon { width: 18px; height: 18px; }
+
+.chat-list { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .6rem; max-height: 24rem; overflow-y: auto; } .chat-list li { padding: .65rem .85rem; border-radius: 14px; } .chat-list p { margin: .25rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.chat-pem { background: var(--canvas); border: 1px solid var(--border); margin-right: 1.5rem; } .chat-adm { background: var(--badge); border: 1px solid #F2C9D3; margin-left: 1.5rem; }
