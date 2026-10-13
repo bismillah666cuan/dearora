@@ -119,8 +119,10 @@
     var op = Gaya.opsiBawaan(gkd);
     if (qs.get('dekor')) op.dekor = qs.get('dekor');
     if (qs.get('ikon')) op.ikon = qs.get('ikon').split(',').slice(0, 4);
-    return { paket: 'basic', tema: gkd, kategori: dm.kat || 'Ulang Tahun', penerima: dm.penerima, dari: { tipe: 'nama', nilai: dm.dari }, pesan: dm.pesan,
+    var hasil = { paket: 'basic', tema: gkd, kategori: dm.kat || 'Ulang Tahun', penerima: dm.penerima, dari: { tipe: 'nama', nilai: dm.dari }, pesan: dm.pesan,
       pesanPersonal: '', foto: ['demo:0', 'demo:1', 'demo:2'], video: '', musik: null, amplop: false, rahasia: j === 'kode', perluPassword: j === 'kode', pembuka: 'judul', kedaluwarsa: '', kejutan: KEJ_DEMO[j], opsi: op, _demo: true };
+    if (g0.special && window.SKEMA && window.SKEMA[gkd] && window.SKEMA[gkd].contoh) { hasil.paket = 'premium'; hasil.dataDesain = JSON.parse(JSON.stringify(window.SKEMA[gkd].contoh)); }   // demo Premium = 5 slide + halaman konsep
+    return hasil;
   }
 
   /* ---------------- Ilustrasi ---------------- */

@@ -49,7 +49,7 @@
   var fotoIds = [];
   function src(u, n) {
     u = String(u || ''); var m = /^f(\d+)$/.exec(u);
-    if (m) { var id = fotoIds[Number(m[1]) - 1]; return id ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1600' : foto(n || 0); }
+    if (m) { var id = fotoIds[Number(m[1]) - 1]; if (/^demo/.test(String(id || ''))) return foto(Number(String(id).split(':')[1]) || n || 0); return id ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w1600' : foto(n || 0); }
     if (/^demo/.test(u) || !u) return foto(n || 0); return /^https:\/\//.test(u) ? u : '';
   }
   function toast(msg) {
