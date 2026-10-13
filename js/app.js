@@ -166,6 +166,14 @@
     if (typeof $dialog.showModal === 'function') $dialog.showModal(); else $dialog.setAttribute('open', '');
     $dialog._pemicu = pemicu;
   }
+  /** Mode desktop: skala bingkai 1280×720 agar muat di jendela (tanpa terpotong). */
+  function aturDemoDesk() {
+    if (!$dialog.classList.contains('demo-desk')) return;
+    var st = $dialog.querySelector('.demo-stage'); if (!st) return;
+    var k = Math.min((st.clientWidth - 24) / 1280, (window.innerHeight - 260) / 720, 1);
+    $dialog.style.setProperty('--demo-k', k.toFixed(3)); $dialog.style.setProperty('--demo-h', Math.round(720 * k) + 'px');
+  }
+  window.addEventListener('resize', aturDemoDesk);
   function tutupDemo() {
     if ($dialog.open) { if (typeof $dialog.close === 'function') $dialog.close(); else $dialog.removeAttribute('open'); }
   }
@@ -174,7 +182,7 @@
   document.addEventListener('click', function (ev) {
     var mode = ev.target.closest('[data-demo-m]');
     if (mode && $dialog.open) {
-      var desk = mode.dataset.demoM === 'desk'; $dialog.classList.toggle('demo-desk', desk);
+      var desk = mode.dataset.demoM === 'desk'; $dialog.classList.toggle('demo-desk', desk); aturDemoDesk();
       $dialog.querySelectorAll('[data-demo-m]').forEach(function (c) { c.classList.toggle('on', c === mode); c.setAttribute('aria-pressed', c === mode ? 'true' : 'false'); });
       return;
     }

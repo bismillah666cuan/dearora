@@ -774,6 +774,7 @@ details.sk-opsional { border: 1px dashed var(--border); border-radius: var(--r);
 /* ---------- Demo: tampilan HP vs Desktop ---------- */
 .demo-mode { display: flex; gap: .4rem; justify-content: center; padding: .6rem 1rem 0; } .demo-mode .chip.on { background: var(--badge); border-color: var(--primary); color: var(--primary-deep); }
 dialog.modal.demo-desk { width: min(100vw - 1rem, 1100px); max-width: min(100vw - 1rem, 1100px); }
-dialog.modal.demo-desk .demo-frame { width: 100%; height: min(58vh, 560px); border-radius: .75rem; }
-dialog.modal.demo-desk .demo-stage { padding: 1rem; }
+/* Mode desktop: demo dirender pada ukuran layar komputer sungguhan (1280×720) lalu diperkecil agar muat, sehingga tidak terpotong dan tidak perlu menggulir. */
+dialog.modal.demo-desk .demo-stage { display: block; position: relative; padding: 0; height: calc(var(--demo-h, 560px) + 2rem); }
+dialog.modal.demo-desk .demo-frame { position: absolute; top: 1rem; left: 50%; width: 1280px; height: 720px; max-width: none; margin-left: -640px; border-radius: .5rem; transform-origin: top center; transform: scale(var(--demo-k, .8)); }
 @media (max-width: 700px) { .demo-mode { display: none; } }
