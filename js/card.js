@@ -16,7 +16,7 @@
   var data = null, slug = '', demo = false, audio = null, aktif = 0, stages = [], timers = [], ambT = [];
   var gk = 'classic', gy = {}, opsiD = {};
   var NAMA_TAHAP = ['buka', 'sapa', 'surat', 'kejutan', 'penutup'];
-  var konsep = '', konsepSelesai = false;
+  var konsep = '', konsepSelesai = false, skin = '';
 
   /* ---------------- Util ---------------- */
   function q(s) { return $root.querySelector(s); }
@@ -518,8 +518,8 @@
   var terpasang = false;
   function setGaya(d) {
     gk = Gaya.kunci(d.tema); gy = Gaya.G[gk] || {};
-    konsep = ''; konsepSelesai = false;
-    if (gy.special) { konsep = gk; gk = gy.dasar || 'classic'; gy = Gaya.G[gk] || Gaya.G.classic; }      // desain Premium: 5 slide Basic + halaman konsep tambahan
+    konsep = ''; konsepSelesai = false; skin = '';
+    if (gy.special) { skin = gy.skin || ''; konsep = gk; gk = gy.dasar || 'classic'; gy = Gaya.G[gk] || Gaya.G.classic; }      // desain Premium: 5 slide Basic + halaman konsep tambahan
     opsiD = Object.assign(Gaya.opsiBawaan(gk), d.opsi || {});
   }
   /** Halaman konsep Premium (film, toko online, dll.) dibuka di antara surat dan kejutan, lalu kembali ke alur utama. */
@@ -531,7 +531,7 @@
     data = d; bersih(); aktif = 0; clearInterval(slideT);
     document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
     setGaya(d);
-    $root.className = 'card-root theme theme-' + gk + ' g-' + gk + (gy.gelap ? ' g-gelap' : '');
+    $root.className = 'card-root theme theme-' + (skin || gk) + ' g-' + gk + (skin ? ' g-' + skin + ' skin-premium' : '') + (gy.gelap || skin ? ' g-gelap' : '');
     $root.innerHTML = '<div class="dekor" aria-hidden="true">' + dekorHTML() + '</div><div class="ambien" aria-hidden="true"></div><div class="tirai" aria-hidden="true"></div>' + pasangTitik() + tBuka(d) + tSapa(d) + tSurat(d) + tKejutan(d) + tPenutup(d);
     stages = Array.prototype.slice.call($root.querySelectorAll('.stage'));
     stages.forEach(function (s, i) { if (i) { s.setAttribute('inert', ''); s.setAttribute('aria-hidden', 'true'); } });

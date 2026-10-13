@@ -74,8 +74,17 @@
       Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: false, tema: k };
       host.className = 'konsep-host sp-root sp-' + k; host.innerHTML = '';
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
-      def.mulai(host, def.adapt(f || {}, c), Special);
-      if (c.musik && k !== 'musik') Special.pasangMusik(c.musik);
+      var mulaiDesain = function () { host.innerHTML = ''; def.mulai(host, def.adapt(f || {}, c), Special); if (c.musik && k !== 'musik') Special.pasangMusik(c.musik); };
+      var kata = String((f && f.transisi) || '').trim();
+      if (kata) Special.jembatan(host, k, kata, mulaiDesain); else mulaiDesain();
+    },
+    /** Layar penyambung bertema antara alur Basic dan desain Premium; teks diisi pembeli. */
+    jembatan: function (host, k, kata, lanjut) {
+      var T = { movie: ['DEARORA PICTURES PRESENTS', 'Mulai Film ▶'], mall: ['DEARORA MALL · PROMO SPESIAL', 'Mulai Belanja 🛍'], bestie: ['LEVEL BARU TERBUKA', 'Mulai Petualangan ▶'], feed: ['STORY BARU UNTUKMU', 'Buka Feed'], musik: ['♪ NOW PLAYING', 'Putar Sekarang ▶'], misi: ['MISI BARU MASUK', 'Terima Misi ▶'] }[k] || ['', 'Mulai'];
+      host.innerHTML = '<div class="jb jb-' + k + '"><div class="jb-in"><p class="jb-kicker">' + esc(T[0]) + '</p><h1 class="jb-teks" tabindex="-1">' + esc(kata) + '</h1><button type="button" class="jb-mulai">' + esc(T[1]) + '</button></div></div>';
+      var b = host.querySelector('.jb-mulai'); if (window.Suara) window.Suara.sukses();
+      b.addEventListener('click', function () { if (window.Suara) window.Suara.buka(); host.classList.add('jb-keluar'); setTimeout(function () { host.classList.remove('jb-keluar'); lanjut(); }, 260); });
+      var h = host.querySelector('.jb-teks'); if (h) h.focus({ preventScroll: true });
     },
     akhir: function () {
       if (Special._embed) {                                   // sisipan: tampilkan tombol lanjut ke kejutan, tanpa balasan/penanda dilihat

@@ -250,3 +250,33 @@ button { font: inherit; cursor: pointer; }
 .konsep-host { z-index: 70; }
 .konsep-lanjut { position: fixed; left: 50%; bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 75; min-height: 52px; padding: 0 1.6rem; border: 0; border-radius: 99px; background: #fff; color: #1b1b22; font: 800 1rem 'Plus Jakarta Sans', system-ui, sans-serif; box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .6); cursor: pointer; animation: konsepMuncul .6s ease both; }
 @keyframes konsepMuncul { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* ---------- Layar penyambung (jembatan) antara alur Basic dan desain Premium ---------- */
+.konsep-host.jb-keluar { opacity: 0; transition: opacity .26s ease; }
+.jb { position: absolute; inset: 0; display: grid; place-items: center; padding: 2rem 1.5rem; text-align: center; overflow: hidden; animation: jbMasuk .9s ease both; }
+@keyframes jbMasuk { from { opacity: 0; } to { opacity: 1; } }
+.jb-in { max-width: 28rem; display: grid; gap: 1.5rem; justify-items: center; }
+.jb-kicker { margin: 0; font-size: .75rem; letter-spacing: .32em; font-weight: 700; opacity: .85; }
+.jb-teks { margin: 0; font-size: clamp(1.6rem, 6.2vw, 2.4rem); line-height: 1.3; outline: none; animation: jbTeks 1.4s ease .25s both; }
+@keyframes jbTeks { from { opacity: 0; transform: translateY(14px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+.jb-mulai { min-height: 52px; padding: 0 1.7rem; border: 0; cursor: pointer; font: 800 1rem 'Plus Jakarta Sans', system-ui, sans-serif; animation: jbTeks 1s ease 1.2s both; }
+.jb-movie { background: radial-gradient(ellipse at 50% 40%, #2A0E1E, #050407 75%); color: #F4E8D3; font-family: 'Cormorant Garamond', Georgia, serif; }
+.jb-movie::before, .jb-movie::after { content: ""; position: absolute; left: 0; right: 0; height: 9%; background: #000; } .jb-movie::before { top: 0; } .jb-movie::after { bottom: 0; }
+.jb-movie .jb-kicker { color: #E8C46E; font-family: 'Bebas Neue', Impact, sans-serif; letter-spacing: .4em; } .jb-movie .jb-teks { font-style: italic; font-weight: 600; color: #fff; text-shadow: 0 0 30px #E8336D88; }
+.jb-movie .jb-mulai { background: transparent; color: #fff; border: 1px solid #E8336D; border-radius: 4px; letter-spacing: .12em; text-transform: uppercase; box-shadow: 0 0 24px #E8336D55; }
+.jb-mall { background: linear-gradient(180deg, #FF6A13 0 30%, #FFF3E6 30%); color: #2B1B10; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.jb-mall .jb-in { background: #fff; padding: 2rem 1.5rem; border-radius: 24px; box-shadow: 0 24px 50px -24px #FF6A13; border-top: 8px solid #FF6A13; } .jb-mall .jb-kicker { color: #E8500A; } .jb-mall .jb-teks { color: #2B1B10; font-weight: 800; }
+.jb-mall .jb-mulai { background: linear-gradient(135deg, #FF6A13, #FF3D2E); color: #fff; border-radius: 12px; box-shadow: 0 12px 24px -10px #FF3D2E; }
+.jb-bestie { background: linear-gradient(180deg, #8FD6FF 0, #BDEBFF 58%, #A7E58C 58%, #7ACB5F); color: #1D3557; font-family: 'Fredoka', sans-serif; }
+.jb-bestie .jb-in { background: #fff; border: 4px solid #1D3557; border-radius: 22px; box-shadow: 0 8px 0 #1D3557; padding: 1.8rem 1.4rem; } .jb-bestie .jb-teks { font-weight: 700; } .jb-bestie .jb-kicker { color: #E8500A; }
+.jb-bestie .jb-mulai { background: #FFC93C; color: #1D3557; border: 3px solid #1D3557; border-radius: 16px; box-shadow: 0 5px 0 #1D3557; font-family: inherit; }
+.jb-feed { background: linear-gradient(160deg, #14141A, #2A1220); color: #fff; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.jb-feed .jb-kicker { color: #FF8A5B; } .jb-feed .jb-teks { font-weight: 800; background: linear-gradient(90deg, #FF8A5B, #FF4D79); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.jb-feed .jb-mulai { background: #fff; color: #111; border-radius: 99px; }
+.jb-musik { background: radial-gradient(circle at 30% 10%, #5B1FA8, #2A1050 50%, #140A26); color: #F6EEFF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.jb-musik .jb-kicker { color: #F107A3; } .jb-musik .jb-teks { font-weight: 800; } .jb-musik .jb-in::before { content: ""; width: 120px; height: 44px; background: repeating-linear-gradient(90deg, #F107A3 0 8px, transparent 8px 16px); -webkit-mask: linear-gradient(90deg, #000, #000); animation: jbEq 1.1s ease-in-out infinite alternate; transform-origin: bottom; }
+@keyframes jbEq { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+.jb-musik .jb-mulai { background: linear-gradient(135deg, #F107A3, #7B2FF7); color: #fff; border-radius: 99px; box-shadow: 0 14px 28px -10px #F107A3; }
+.jb-misi { background: radial-gradient(ellipse at 50% 0, #123A4D, #0A1B26 60%, #060D14); color: #E6F4F8; font-family: 'Rajdhani', sans-serif; }
+.jb-misi .jb-in { border: 1px solid #8CF3FF; padding: 2rem 1.5rem; border-radius: 6px; box-shadow: 0 0 40px #8CF3FF22, inset 0 0 0 5px #0A1B26, inset 0 0 0 6px #8CF3FF55; } .jb-misi .jb-kicker { color: #8CF3FF; } .jb-misi .jb-teks { text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+.jb-misi .jb-mulai { background: #0C2F3C; color: #8CF3FF; border: 2px solid #8CF3FF; border-radius: 6px; text-transform: uppercase; letter-spacing: .1em; font-family: inherit; }

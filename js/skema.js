@@ -14,6 +14,7 @@
 
   var SKEMA = {
     movie: { nama: 'Malam Film', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Selamat datang di kisah kita" atau "Kamu artis satu-satunya di hidupku". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
       T('judul', 'Judul film', 40, { wajib: true, bawaan: 'Cerita Kita', hint: 'Mis. "Cerita Kita" atau "Kisah Dua Orang".' }),
       T('tagline', 'Kalimat pengantar film', 120, { bawaan: 'Sebuah film pendek tentang kita, dibuat khusus untukmu.' }),
       { k: 'episode', tipe: 'daftar', label: 'Episode', hint: 'Episode 1 sampai 3. Episode Final (penutup) diisi di bawah.', min: 1, maks: 3, namaItem: 'Episode', item: [
@@ -23,6 +24,7 @@
         T('judul', 'Judul final', 50, { wajib: true, bawaan: 'Yang Terbaik Belum Datang' }), F('foto', 'Foto pilihan'), A('pesan', 'Pesan personal (paling panjang)', 700, { wajib: true })] }
     ] },
     mall: { nama: 'Dearora Mall', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Yuk, belanja dengan penuh cinta". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
       { k: 'hadiah', tipe: 'daftar', label: 'Hadiah (produk di etalase)', hint: 'Pilih 3 sampai 6 hadiah. Penerima memilih sendiri mana yang diklaim.', min: 3, maks: 6, namaItem: 'Hadiah', item: [
         T('nama', 'Nama hadiah', 40, { wajib: true, hint: 'Mis. Satu Pelukan Gratis' }),
         { k: 'kat', tipe: 'pilih', label: 'Kategori', opsi: KAT_MALL.map(function (x) { return [x, x]; }), bawaan: KAT_MALL[0] },
@@ -32,6 +34,7 @@
       { k: 'utama', tipe: 'objek', label: 'Hadiah utama (selalu terakhir)', item: [T('judul', 'Judul', 50, { bawaan: 'Hadiah Utama: Sepucuk Surat' }), F('foto', 'Foto pilihan'), A('pesan', 'Surat atau pesan utama', 700, { wajib: true })] }
     ] },
     bestie: { nama: 'Dunia Sahabat', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Petualangan persahabatan kita dimulai sekarang". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
       A('pesanMisi', 'Pesan pembuka misi', 220, { wajib: true, bawaan: 'Ada banyak memori tersembunyi di dunia ini. Temukan hampir semuanya untuk membuka Pulau Harta!' }),
       { k: 'warnaBaju', tipe: 'pilih', label: 'Warna baju avatar', opsi: [['#FF6B6B', 'Merah'], ['#4B6BFF', 'Biru'], ['#35A66B', 'Hijau'], ['#FFC93C', 'Kuning'], ['#9B6BFF', 'Ungu']], bawaan: '#FF6B6B' },
       { k: 'kenangan', tipe: 'daftar', label: 'Padang Kenangan: foto dan cerita', min: 2, maks: 3, namaItem: 'Kenangan', item: [T('judul', 'Judul', 40, { wajib: true }), A('teks', 'Cerita', 200, { wajib: true }), F('foto', 'Foto')] },
@@ -39,6 +42,7 @@
       { k: 'peti', tipe: 'objek', label: 'Peti harta karun (pesan utama)', item: [F('foto', 'Foto pilihan'), A('pesan', 'Pesan utama', 600, { wajib: true })] }
     ] },
     feed: { nama: 'Selebstyle', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Ada cerita baru khusus untukmu". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
       T('akun', 'Username penerima', 30, { hint: 'Nama ini dipakai sebagai username penerima di tampilan Selebstyle. Boleh nama apa saja. Kosongkan untuk memakai nama penerima.' }),
       { k: 'posts', tipe: 'daftar', label: 'Kiriman di feed', hint: 'Geser ke atas untuk melihat kiriman berikutnya. 2 sampai 5 kiriman.', min: 2, maks: 5, namaItem: 'Kiriman', item: [
         { k: 'tipe', tipe: 'pilih', label: 'Jenis kiriman', opsi: [['foto', 'Satu foto'], ['kolase', 'Kolase beberapa foto'], ['teks', 'Pesan singkat']], bawaan: 'foto' },
@@ -49,6 +53,7 @@
       T('penutup', 'Kalimat penutup feed', 200, { bawaan: 'Kamu sampai di ujung feed. Tapi cerita kita belum selesai.' })
     ] },
     musik: { nama: 'Soundtrack Kita', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Putar lagu-lagu yang mengingatkanku padamu". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
       T('judul', 'Judul playlist', 60, { wajib: true, bawaan: 'Lagu-Lagu yang Mengingatkanku Padamu' }), A('deskripsi', 'Deskripsi playlist', 200),
       { k: 'lagu', tipe: 'daftar', label: 'Lagu', hint: '3 sampai 6 lagu. Urutannya membentuk alur cerita.', min: 3, maks: 6, namaItem: 'Lagu', item: [
         T('judul', 'Judul lagu', 60, { wajib: true }), T('label', 'Label kecil', 40, { hint: 'Mis. Awal Mula, Saat Aku Rindu' }), A('cerita', 'Kenapa lagu ini dipilih', 240, { wajib: true }),
@@ -58,6 +63,7 @@
       T('penutup', 'Kalimat penutup', 160, { bawaan: 'Ada lagu yang berakhir. Tapi ada perasaan yang tinggal.' })
     ] },
     misi: { nama: 'Lastlove: Misi Cinta', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Misi spesial untukmu telah dimulai". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
       T('gelar', 'Gelar hero untuk penerima', 30, { wajib: true, bawaan: 'Satu-Satunya', hint: 'Mis. Satu-Satunya, Sahabat Terbaik' }),
       { k: 'misi1', tipe: 'objek', label: 'Misi 1: Pulihkan Memori (foto tersembunyi)', item: [F('foto', 'Foto yang disembunyikan'), A('pesan', 'Pesan setelah foto ditemukan', 200, { wajib: true })] },
       { k: 'kartu', tipe: 'daftarteks', label: 'Misi 2: tiga pesan tentang hal yang membuatnya istimewa', min: 3, maks: 3, maksTeks: 120 },
@@ -68,28 +74,28 @@
   };
 
   /* Contoh isian: dipakai tombol "Isi dengan contoh" supaya pembeli tinggal mengubah (foto dipilih sendiri). */
-  SKEMA.movie.contoh = { judul: 'Cerita Kita', episode: [
+  SKEMA.movie.contoh = { transisi: 'Selamat datang di kisah kita. Kamu adalah artis satu-satunya di hidupku.', judul: 'Cerita Kita', episode: [
     { judul: 'Awal Kita Bertemu', desk: 'Hari ketika semuanya dimulai.', foto: '', adegan: ['Semuanya berawal dari hari yang biasa saja.', 'Kamu datang tanpa rencana, dan duniaku ikut berubah.'] },
     { judul: 'Kenangan Favorit Kita', desk: 'Potongan hari yang tak mau kulupakan.', foto: '', adegan: ['Ada tawa yang pecah di tempat yang paling tidak pantas.', 'Kalau ada tombol ulang, aku memilih hari-hari itu.'] }],
     final: { judul: 'Yang Terbaik Belum Datang', foto: '', pesan: 'Terima kasih sudah menjadi tokoh utama di cerita ini. Banyak adegan yang belum kita tulis, dan aku ingin menulisnya bersamamu.' } };
-  SKEMA.mall.contoh = { hadiah: [
+  SKEMA.mall.contoh = { transisi: 'Hari ini toko buka khusus untukmu. Yuk, belanja dengan penuh cinta.', hadiah: [
     { nama: 'Satu Pelukan Gratis', kat: 'Pelukan & Penghibur', harga: 'Tukar kapan saja', ilus: 'hati', desk: 'Berlaku di mana saja, tanpa syarat.', isi: 'Kapan pun kamu butuh pelukan, tinggal bilang. Tidak ada batas penukaran.' },
     { nama: 'Seribu Ciuman', kat: 'Cinta & Romansa', harga: 'Tak ternilai', ilus: 'bintang', desk: 'Dikirim bertahap, sebanyak yang kamu mau.', isi: 'Kupon ini bisa kamu tukar satu per satu. Stoknya bertambah setiap kamu tersenyum.' },
     { nama: 'Surat Cinta Kecil', kat: 'Cinta & Romansa', harga: 'Gratis selamanya', ilus: 'surat', desk: 'Sepucuk surat pendek yang ditulis dari hati.', isi: 'Hari-hariku lebih ringan karena ada kamu. Itu saja, tapi itu banyak.' }],
     utama: { judul: 'Hadiah Utama: Sepucuk Surat', foto: '', pesan: 'Semua hadiah tadi hanya pembuka. Hadiah yang sebenarnya: aku bersyukur sekali mengenalmu.' } };
-  SKEMA.bestie.contoh = { pesanMisi: 'Ada banyak memori tersembunyi di dunia ini. Temukan hampir semuanya untuk membuka Pulau Harta!',
+  SKEMA.bestie.contoh = { transisi: 'Petualangan persahabatan kita dimulai sekarang. Siap menemukan semua kenangan?', pesanMisi: 'Ada banyak memori tersembunyi di dunia ini. Temukan hampir semuanya untuk membuka Pulau Harta!',
     kenangan: [{ judul: 'Hari pertama kita', teks: 'Waktu kita masih canggung, siapa sangka jadi sedekat ini.', foto: '' }, { judul: 'Tertawa sampai lupa waktu', teks: 'Itu salah satu hari terbaikku.', foto: '' }],
     pesanSahabat: [{ judul: 'Untuk hari yang berat', teks: 'Kalau kamu lelah, ingat ada aku yang siap mendengarkan.' }, { judul: 'Hal yang kusyukuri', teks: 'Terima kasih sudah menjadi sahabat yang tulus.' }],
     peti: { foto: '', pesan: 'Harta karun yang sesungguhnya bukan di peti ini. Harta karun itu kamu.' } };
-  SKEMA.feed.contoh = { posts: [
+  SKEMA.feed.contoh = { transisi: 'Ada cerita baru khusus untukmu. Geser, dan lihat apa yang kusimpan.', posts: [
     { tipe: 'foto', foto: '', fotoKolase: [], teks: '', caption: 'Hari itu kita belum tahu bakal sedekat ini. Kenangan yang selalu kuputar ulang.' },
     { tipe: 'teks', foto: '', fotoKolase: [], teks: 'Kamu itu orang yang bikin hari-hari biasa terasa seru.', caption: 'Pesan singkat, tapi sungguh-sungguh.' }],
     komentar: [{ nama: 'sahabat.lama', teks: 'Kamu berhak bahagia.' }, { nama: 'tim.hore', teks: 'Selamat ya, kamu hebat!' }],
     sematan: { foto: '', caption: 'Dari semua orang di dunia ini, aku bersyukur mengenalmu.', panjang: 'Kalau kamu membaca sampai sini, aku ingin bilang: terima kasih sudah menjadi kamu apa adanya. Semoga semua hal baik menemukanmu.' } };
-  SKEMA.musik.contoh = { deskripsi: 'Setiap lagu di sini adalah satu potongan cerita kita.',
+  SKEMA.musik.contoh = { transisi: 'Ada lagu-lagu yang mengingatkanku padamu. Putar satu per satu.', deskripsi: 'Setiap lagu di sini adalah satu potongan cerita kita.',
     lagu: [{ judul: 'Awal Mula', label: 'The Beginning', cerita: 'Lagu ini mengingatkanku pada hari pertama kita ngobrol.', audio: '' }, { judul: 'Kenangan Favorit Kita', label: 'Our Favorite Memory', cerita: 'Malam saat kita bicara berjam-jam sampai lupa waktu.', audio: '' }, { judul: 'Saat Aku Rindu', label: 'When I Miss You', cerita: 'Setiap jarak terasa jauh, aku memutar lagu ini.', audio: '' }],
     tersembunyi: { judul: 'Hidden Track', label: 'Untukmu saja', pesan: 'Ini lagu yang tidak pernah kuberitahukan ke siapa pun. Isinya sederhana: terima kasih sudah ada.' } };
-  SKEMA.misi.contoh = { misi1: { foto: '', pesan: 'Memori berhasil dipulihkan: hari itu kamu tertawa lepas.' },
+  SKEMA.misi.contoh = { transisi: 'Misi spesial untukmu telah dimulai. Hanya kamu yang bisa menyelesaikannya.', misi1: { foto: '', pesan: 'Memori berhasil dipulihkan: hari itu kamu tertawa lepas.' },
     kartu: ['Kamu peduli tanpa pernah minta dilihat.', 'Kamu bikin orang lain merasa aman dan diterima.', 'Kamu bertahan, bahkan saat hari terasa berat.'],
     kuis: { q: 'Siapa yang paling beruntung mengenalmu?', opsi: ['Aku, tentu saja', 'Semua orang di sekitarmu', 'Dunia ini'], benar: 1, betul: 'Tepat sekali. Aku pemenangnya.', salah: 'Jawaban menarik, tapi aku tetap yang paling beruntung. Coba lagi!' },
     akhir: { foto: '', pesan: 'Semua misi tadi hanya cara untuk bilang satu hal: kamu berharga, dan aku sangat bersyukur ada kamu.', penutup: 'Misi selesai. Tapi kamu akan selalu jadi hadiah favoritku.' } };

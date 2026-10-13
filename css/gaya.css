@@ -296,3 +296,58 @@
 /* Balon / hati melayang yang bisa disentuh */
 .ambien .mel.tap { pointer-events: auto; cursor: pointer; touch-action: manipulation; }
 .mel.tap.pecah { scale: 1.8; opacity: 0; transition: scale .18s ease-out, opacity .18s ease-out; }
+
+/* ==========================================================================
+   SKIN PREMIUM — lima slide (pembuka → ucapan → surat → kejutan → kenangan) memakai warna, font,
+   dan bingkai desain Premium yang dipilih, bukan tampilan Basic. Struktur slide tetap, tampilannya berbeda.
+   ========================================================================== */
+.theme-pmovie { --t1: #0B0B10; --t2: #1B0A14; --tink: #F4F1EA; --tacc: #E8336D; }
+.theme-pmall  { --t1: #FFF3E6; --t2: #FFE0C2; --tink: #2B1B10; --tacc: #FF6A13; }
+.theme-pbestie { --t1: #BDEBFF; --t2: #D9F5C8; --tink: #1D3557; --tacc: #FFB400; }
+.theme-pfeed  { --t1: #14141A; --t2: #26121C; --tink: #FFFFFF; --tacc: #FF4D79; }
+.theme-pmusik { --t1: #1B0F33; --t2: #3A1466; --tink: #F6EEFF; --tacc: #F107A3; }
+.theme-pmisi  { --t1: #08141C; --t2: #0E2A38; --tink: #E6F4F8; --tacc: #8CF3FF; }
+.skin-premium .dekor, .skin-premium .ambien > * { display: none; }                     /* dekor Basic (kelopak, bintang) tidak dipakai */
+.skin-premium .kecil { opacity: .8; font-size: .8125rem; }
+
+/* --- Malam Film: layar bioskop, subtitle emas, huruf judul tegas --- */
+.card-root.g-pmovie { background: radial-gradient(ellipse at 50% 30%, #2A0E1E 0%, #0E0A12 60%, #050407 100%); font-family: 'Cormorant Garamond', Georgia, serif; }
+.g-pmovie .stage .inner h1 { font-family: 'Bebas Neue', Impact, sans-serif; font-weight: 400; letter-spacing: .12em; text-transform: uppercase; color: #fff; text-shadow: 0 0 24px #E8336D88; }
+.g-pmovie .stage .inner p, .g-pmovie .stage .inner .t-pesan { font-style: italic; color: #F4E8D3; }
+.g-pmovie .nama-besar { font-family: 'Bebas Neue', Impact, sans-serif; letter-spacing: .14em; color: #E8C46E; }
+.g-pmovie .cbtn { background: transparent; color: #fff; border: 1px solid #E8336D; border-radius: 4px; letter-spacing: .14em; text-transform: uppercase; box-shadow: 0 0 22px #E8336D55; }
+
+/* --- Dearora Mall: toko online — kartu putih, banner oranye, tombol CTA --- */
+.card-root.g-pmall { background: linear-gradient(180deg, #FF6A13 0, #FF6A13 84px, #FFF3E6 84px, #FFE0C2 100%); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.g-pmall::before { content: "DEARORA MALL  ·  Gratis Ongkir Cinta"; position: fixed; top: 0; left: 0; right: 0; height: 56px; display: flex; align-items: center; justify-content: center; z-index: 40; background: #FF6A13; color: #fff; font-weight: 800; font-size: .8125rem; letter-spacing: .08em; }
+.g-pmall .stage .inner { background: #fff; color: #2B1B10; border-radius: 22px; padding: 1.75rem 1.4rem; box-shadow: 0 18px 40px -22px rgba(255, 106, 19, .6); border-top: 6px solid #FF6A13; }
+.g-pmall .stage .inner h1 { color: #E8500A; font-weight: 800; }
+.g-pmall .cbtn { background: linear-gradient(135deg, #FF6A13, #FF3D2E); color: #fff; border: 0; border-radius: 12px; font-weight: 800; box-shadow: 0 10px 22px -10px #FF3D2E; }
+.g-pmall .cbtn.ghost { background: #fff; color: #E8500A; border: 2px solid #FF6A13; box-shadow: none; }
+
+/* --- Dunia Sahabat: dunia blok — langit biru, bingkai tebal bergaya game --- */
+.card-root.g-pbestie { background: linear-gradient(180deg, #8FD6FF 0, #BDEBFF 55%, #A7E58C 55%, #7ACB5F 100%); font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif; }
+.g-pbestie .stage .inner { background: #fff; color: #1D3557; border: 4px solid #1D3557; border-radius: 20px; box-shadow: 0 8px 0 #1D3557; padding: 1.6rem 1.3rem; }
+.g-pbestie .stage .inner h1 { color: #1D3557; font-weight: 700; text-shadow: 3px 3px 0 #FFC93C; }
+.g-pbestie .cbtn { background: #FFC93C; color: #1D3557; border: 3px solid #1D3557; border-radius: 16px; box-shadow: 0 5px 0 #1D3557; font-weight: 700; font-family: inherit; }
+.g-pbestie .cbtn:active { transform: translateY(4px); box-shadow: 0 1px 0 #1D3557; }
+
+/* --- Selebstyle: aplikasi sosial — gelap, gradien merah muda, kartu bulat --- */
+.card-root.g-pfeed { background: linear-gradient(160deg, #14141A 0%, #2A1220 100%); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.g-pfeed .stage .inner { background: #1E1E26; color: #fff; border-radius: 26px; border: 1px solid #ffffff1f; padding: 1.6rem 1.3rem; }
+.g-pfeed .stage .inner h1 { background: linear-gradient(90deg, #FF8A5B, #FF4D79); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; }
+.g-pfeed .cbtn { background: linear-gradient(135deg, #FF8A5B, #E8336D); color: #fff; border: 0; border-radius: 99px; font-weight: 700; }
+
+/* --- Soundtrack Kita: ungu gradien, nuansa pemutar musik --- */
+.card-root.g-pmusik { background: radial-gradient(circle at 30% 10%, #5B1FA8 0, #2A1050 45%, #140A26 100%); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.g-pmusik .stage .inner { background: rgba(255, 255, 255, .07); border: 1px solid #ffffff2b; border-radius: 28px; backdrop-filter: blur(8px); padding: 1.6rem 1.3rem; }
+.g-pmusik .stage .inner h1 { color: #fff; font-weight: 800; letter-spacing: -.01em; }
+.g-pmusik .stage .inner h1::before { content: "♪ "; color: #F107A3; }
+.g-pmusik .cbtn { background: linear-gradient(135deg, #F107A3, #7B2FF7); color: #fff; border: 0; border-radius: 99px; font-weight: 700; box-shadow: 0 12px 26px -10px #F107A3; }
+
+/* --- Lastlove: HUD misi — biru tua, garis cyan, huruf kapital --- */
+.card-root.g-pmisi { background: radial-gradient(ellipse at 50% 0%, #123A4D 0, #0A1B26 55%, #060D14 100%); font-family: 'Rajdhani', 'Plus Jakarta Sans', sans-serif; }
+.g-pmisi .stage .inner { background: rgba(12, 40, 54, .72); color: #E6F4F8; border: 1px solid #8CF3FF; border-radius: 6px; padding: 1.6rem 1.3rem; box-shadow: 0 0 36px #8CF3FF22, inset 0 0 0 4px #0A1B26, inset 0 0 0 5px #8CF3FF55; }
+.g-pmisi .stage .inner h1 { color: #8CF3FF; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; text-shadow: 0 0 18px #8CF3FF66; }
+.g-pmisi .cbtn { background: #0C2F3C; color: #8CF3FF; border: 2px solid #8CF3FF; border-radius: 6px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; box-shadow: 0 0 22px #8CF3FF44; }
+.g-pmall .titik { top: 66px; }

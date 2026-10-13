@@ -198,3 +198,11 @@ Pembeli yang membayar satu per satu lewat alur biasa tidak terpengaruh.
 - Pembayaran gabungan ke iPaymu memakai satu transaksi dengan beberapa baris produk. Itu **belum diuji dengan iPaymu sandbox**; uji satu keranjang berisi 2 draf sebelum dipakai pembeli sungguhan.
 
 **Foto draf.** Foto dan video draf tersimpan di browser (IndexedDB), jadi tidak perlu diunggah ulang untuk semua paket. Syaratnya browser dan perangkat yang sama, dan bukan mode penyamaran. Bila browser tidak mengizinkan, panel Draf Saya menampilkan peringatan.
+
+
+## Pembaruan: skin Premium dan layar penyambung
+- **Lima slide Premium tidak lagi memakai tampilan Basic.** Pembuka, ucapan, surat, kejutan, dan kenangan memakai warna, font, dan bingkai desain Premium yang dipilih: Malam Film (bioskop gelap, subtitle emas), Dearora Mall (banner oranye, kartu putih, tombol belanja), Dunia Sahabat (bingkai tebal bergaya game), Selebstyle (aplikasi sosial gelap), Soundtrack Kita (ungu pemutar musik), Lastlove (HUD misi). Struktur slide tetap sama, tampilannya berbeda.
+- **Layar penyambung.** Sebelum masuk ke desain konsep, penerima melihat satu layar bertema dengan **kalimat buatan pembeli** (mis. "Selamat datang di kisah kita" untuk Malam Film, atau ajakan belanja untuk Dearora Mall), lalu tombol mulai (Mulai Film, Mulai Belanja, Mulai Petualangan, Buka Feed, Putar Sekarang, Terima Misi). Kolomnya bernama *Kalimat pengantar sebelum desain dimulai* di bagian pertama Isi Desain, **wajib diisi**, dan ada tombol "Isi dengan contoh". Pesanan Premium lama yang tidak punya kalimat ini langsung masuk ke desain.
+- Wajib: ganti isi file `Skema` di Apps Script dengan `Skema.gs` terbaru (ada kolom baru `transisi`), lalu deploy versi baru.
+- Skin ada di akhir `css/gaya.css` (kelas `.g-pmovie`, `.g-pmall`, dan seterusnya) dan layar penyambung di akhir `css/special.css` (`.jb-…`); warna dan font bisa disesuaikan di sana.
+- Demo di katalog untuk desain Premium sudah memakai alur lengkap ini.
