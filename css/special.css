@@ -245,3 +245,8 @@ button { font: inherit; cursor: pointer; }
 
 /* Kredit pengirim di layar akhir semua desain */
 .sp-kredit { margin: .5rem 0 0; font-size: .8125rem; opacity: .85; font-style: italic; text-align: center; }
+
+/* Desain Premium sebagai halaman tambahan di dalam perjalanan kartu */
+.konsep-host { z-index: 70; }
+.konsep-lanjut { position: fixed; left: 50%; bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 75; min-height: 52px; padding: 0 1.6rem; border: 0; border-radius: 99px; background: #fff; color: #1b1b22; font: 800 1rem 'Plus Jakarta Sans', system-ui, sans-serif; box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .6); cursor: pointer; animation: konsepMuncul .6s ease both; }
+@keyframes konsepMuncul { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }

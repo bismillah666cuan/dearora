@@ -778,3 +778,10 @@ dialog.modal.demo-desk { width: min(100vw - 1rem, 1100px); max-width: min(100vw 
 dialog.modal.demo-desk .demo-stage { display: block; position: relative; padding: 0; height: calc(var(--demo-h, 560px) + 2rem); }
 dialog.modal.demo-desk .demo-frame { position: absolute; top: 1rem; left: 50%; width: 1280px; height: 720px; max-width: none; margin-left: -640px; border-radius: .5rem; transform-origin: top center; transform: scale(var(--demo-k, .8)); }
 @media (max-width: 700px) { .demo-mode { display: none; } }
+
+/* ---------- Keranjang draf (bayar beberapa ucapan sekaligus) ---------- */
+.draf-list li { flex-wrap: wrap; } .draf-cek { display: grid; place-items: center; width: 44px; height: 44px; cursor: pointer; } .draf-cek input { width: 22px; height: 22px; accent-color: var(--primary); }
+.draf-siap { color: #2E7D32; font-weight: 700; } .draf-belum { color: #B3261E; font-weight: 600; }
+.draf-bar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; padding: .75rem 1rem; border-radius: var(--r); background: var(--badge); } .draf-aksi { display: flex; gap: .5rem; flex-wrap: wrap; }
+.draf-prog { padding: .75rem 1rem; border-radius: var(--r); background: #fff; border: 1px solid var(--border); } .draf-prog p { margin: 0 0 .4rem; font-weight: 600; } .draf-prog.galat { border-color: #F2B8B5; background: #FFF4F3; } .draf-prog .bar { height: 8px; border-radius: 99px; background: var(--border); overflow: hidden; } .draf-prog .bar span { display: block; height: 100%; background: var(--primary); transition: width .3s; }
+.grup-list ul { list-style: none; margin: .75rem 0 0; padding: 0; display: grid; gap: .5rem; } .grup-list li { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .6rem .8rem; border: 1px solid var(--border); border-radius: var(--r); background: #fff; flex-wrap: wrap; } .grup-list li > div { display: grid; } .grup-list small { color: var(--muted); }

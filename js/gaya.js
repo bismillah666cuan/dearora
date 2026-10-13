@@ -150,7 +150,8 @@
 
 
   /* ------------ Desain khusus paket Special (aplikasi mini; halaman /s/) ------------ */
-  function sp(nama, kat, warna, cocok, fitur, brief, kunci) { return { special: true, demoUrl: '/s/?d=' + kunci, nama: nama, kat: kat, warna: warna, cocok: cocok, fitur: fitur, brief: brief, gelap: true }; }
+  function sp(nama, kat, warna, cocok, fitur, brief, kunci) { return { special: true, dasar: DASAR_PREMIUM[kunci] || 'classic', demoUrl: '/s/?d=' + kunci, nama: nama, kat: kat, warna: warna, cocok: cocok, fitur: fitur, brief: brief, gelap: true }; }
+  var DASAR_PREMIUM = { movie: 'cinematic', mall: 'joyful', bestie: 'garden', feed: 'starry', musik: 'starry', misi: 'graduation' };      // tema 5 slide (pembuka→sapaan→surat→kejutan→kenangan) untuk tiap desain Premium
   G.movie = sp('Malam Film', 'Anniversary', ['#0B0B10', '#E8336D'], 'Pasangan, anniversary, dan kenangan bersama: penerima menjadi pemeran utama film pendek.',
     ['Beranda episode ala layanan streaming', 'Subtitle & narasi muncul bertahap', 'Bebas memilih episode + adegan penutup'],
     ['Judul film dan nama pemeran', 'Poster (foto)', '3–4 episode: foto atau video, narasi tiap adegan, judul dan deskripsi pendek', 'Pesan penutup (paling panjang)'], 'movie');

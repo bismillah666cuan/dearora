@@ -4,7 +4,7 @@
 window.DEARORA_CONFIG = {
   // Tempel URL Web App GAS (berakhiran /exec) di antara tanda kutip.
   // Kosong = mode pratinjau (memakai data contoh bawaan, tanpa backend).
-  GAS_URL: 'https://script.google.com/macros/s/AKfycbwGXOIUrfelC07k2etzZQP1_3fPqpj-TWUXES7Qu-bFc77FtJAUmeJXpr5bnyBzIwnd/exec',
+  GAS_URL: 'https://script.google.com/macros/library/d/1H3E8lxo6Srk9ec__LeSJ0zqOpr55VVM8nKX9BhNkvB1XhBrk1Urs8zIs/20',
 
   // Lama data toko disimpan di browser sebelum dicek ulang (menit).
   CACHE_MENIT: 10,

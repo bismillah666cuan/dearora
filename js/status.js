@@ -18,7 +18,7 @@
     if (!o || !t) {                                    // cadangan: pesanan terakhir di browser ini
       try { var j = JSON.parse(sessionStorage.getItem(window.Form.KEY_ORDER) || localStorage.getItem(window.Form.KEY_ORDER)); if (j && j.o && j.t) { o = j.o; t = j.t; } } catch (e) { /* abaikan */ }
     }
-    return { o: o, t: t, trx: q.trx || '', batal: q.batal === '1', sim: q.sim === '1', r: q.r === '1' };
+    return { o: o, t: t, g: q.g || '', trx: q.trx || '', batal: q.batal === '1', sim: q.sim === '1', r: q.r === '1' };
   }
 
   /** Tiga tahap yang selalu terlihat: Pesanan → Pembayaran → Ucapan. Pembeli tahu sedang di mana. */
@@ -108,6 +108,23 @@
       '<div class="hero-cta" style="justify-content:center"><a class="btn btn-primary" href="#/masuk">Masuk ke Portal</a><a class="btn btn-secondary" href="#/">Kembali ke Home</a></div></div>';
   }
 
+  /** Pembayaran gabungan: daftar semua ucapan dalam grup beserta statusnya. Mengembalikan true bila semuanya sudah dibayar. */
+  async function grupInfo() {
+    var grup = null; try { grup = JSON.parse(localStorage.getItem('dearora:grup')); } catch (e) { /* abaikan */ }
+    if (!info.g || !grup || grup.g !== info.g || !Array.isArray(grup.orders) || grup.orders.length < 2) return true;
+    var hasil = await Promise.all(grup.orders.map(function (o) {
+      return API.get('paymentStatus', { o: o.o, t: o.t }, { coba: 1, timeout: 20000 }).then(function (r) { return r && r.success ? r.data : null; }, function () { return null; });
+    }));
+    var root = $('statusRoot'); if (!root) return false;
+    var el = $('grupList'); if (!el) { el = document.createElement('div'); el.id = 'grupList'; el.className = 'card grup-list'; root.appendChild(el); }
+    el.innerHTML = '<h2 class="h3">Ucapan dalam pembayaran ini (' + grup.orders.length + ')</h2><ul>' + hasil.map(function (d, i) {
+      if (!d) return '<li><strong>' + esc(grup.orders[i].o) + '</strong><span class="muted small">Memeriksa…</span></li>';
+      var isi = d.dibayar ? (d.linkHasil ? '<a class="btn btn-secondary btn-sm" href="' + esc(d.linkHasil) + '" target="_blank" rel="noopener">Buka link</a>' : (/special/i.test(d.paket) ? '<span class="small">Dikerjakan manual, 1–2 hari kerja</span>' : '<span class="small">Menyiapkan link…</span>')) : '<span class="small muted">Menunggu pembayaran</span>';
+      return '<li><div><strong>' + esc(d.orderId) + '</strong><small>Paket ' + esc(d.paket) + ' · ' + (d.dibayar ? 'Sudah dibayar' : 'Belum dibayar') + '</small></div>' + isi + '</li>';
+    }).join('') + '</ul>' + (hasil.every(function (d) { return d && d.dibayar; }) ? '<p class="small muted">Semua ucapan masuk ke satu akun. Gunakan satu kode redeem di atas untuk masuk ke portal.</p>' : '');
+    return hasil.every(function (d) { return d && d.dibayar && (d.linkHasil || /special/i.test(d.paket)); });
+  }
+
   async function cek(manual) {
     var my = run;
     try {
@@ -118,7 +135,8 @@
       var d = r.data, sama = terakhir && terakhir.status === d.status && terakhir.dibayar === d.dibayar && terakhir.kodeRedeem === d.kodeRedeem && terakhir.tinjau === d.tinjau && terakhir.linkHasil === d.linkHasil;
       if (!sama || manual) tampilkan(d);
       terakhir = Object.assign({}, d);
-      if (d.dibayar) { try { window.Form.bersihkan(); } catch (e) { /* abaikan */ } if (!d.menungguLink) return; }
+      var grupSelesai = await grupInfo(); if (my !== run) return;
+      if (d.dibayar) { try { window.Form.bersihkan(); if (info.g) window.Form.bersihkanGrup(); } catch (e) { /* abaikan */ } if (!d.menungguLink && grupSelesai) return; }
       if (d.tinjau || d.status === 'Dibatalkan') return;
     } catch (err) { if (my === run && !terakhir) tampilkan(null, 'jaringan'); }
     if (my !== run) return;
@@ -146,7 +164,7 @@
       else if (a === 'salin-link') salin($('lnkUcapan'), true);
       else if (a === 'sim') {
         b.disabled = true; b.textContent = 'Memproses…';
-        try { var r = await API.post('simulasiBayar', { orderId: info.o, token: info.t }, { timeout: 30000 }); if (r && r.success) { clearTimeout(timer); terakhir = null; tampilkan(r.data); try { window.Form.bersihkan(); } catch (e) { /* abaikan */ } } else { b.disabled = false; b.textContent = 'Simulasikan Pembayaran Berhasil'; } }
+        try { var r = await API.post('simulasiBayar', { orderId: info.o, token: info.t }, { timeout: 30000 }); if (r && r.success) { clearTimeout(timer); terakhir = null; tampilkan(r.data); grupInfo(); try { window.Form.bersihkan(); if (info.g) window.Form.bersihkanGrup(); } catch (e) { /* abaikan */ } } else { b.disabled = false; b.textContent = 'Simulasikan Pembayaran Berhasil'; } }
         catch (e) { b.disabled = false; b.textContent = 'Simulasikan Pembayaran Berhasil'; }
       }
     });

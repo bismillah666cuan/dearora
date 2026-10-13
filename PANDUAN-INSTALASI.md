@@ -185,3 +185,16 @@ Desain yang dipilih **bukan** penyebabnya: desain hanya menentukan tampilan. Per
 - **Pilihan musik** kini berupa menu dropdown (menampilkan satu lagu terpilih + pemutar pratinjau), aman untuk puluhan sampai ratusan lagu. Ada catatan bahwa musik bebas hak cipta. **Pastikan hanya memasukkan musik yang memang bebas hak cipta atau berlisensi** agar catatan itu benar.
 - **Demo desain** punya tombol *Tampilan HP* dan *Tampilan Desktop* (tombol tampil di layar lebar).
 - **Efek suara** disesuaikan interaksi: balon melayang di desain Joyful bisa diketuk dan meletus; membuka amplop/surat berbunyi kertas; konfeti berbunyi letupan konfeti; kado, lilin, benih, kuis, dan lainnya punya bunyi masing-masing.
+
+
+## Pembaruan: Premium = Basic + halaman konsep, dan bayar beberapa draf sekaligus
+**Paket Premium kini memuat seluruh alur Basic** (pembuka → ucapan selamat → surat → kejutan pilihan → kenangan foto) **ditambah halaman konsep** sesuai desain yang dipilih (Malam Film, Dearora Mall, Dunia Sahabat, Selebstyle, Soundtrack Kita, Lastlove). Urutan bagi penerima: pembuka → ucapan → surat → **halaman konsep** → kejutan → kenangan. Status "dilihat" dan kolom balasan muncul di slide kenangan (paling akhir), seperti Basic. Tampilan lima slide mengikuti satu tema Basic yang dipasangkan dengan desainnya (Malam Film→Cinematic, Dearora Mall→Joyful, Dunia Sahabat→Secret Garden, Selebstyle dan Soundtrack Kita→Starry Night, Lastlove→Graduation); ubah di `DASAR_PREMIUM` pada `js/gaya.js` bila ingin pasangan lain.
+Form pemesanan Premium sekarang punya langkah tambahan **Surat** dan **Kejutan Akhir**. Ucapan Premium yang dibuat sebelum pembaruan ini tetap bisa dibuka.
+**Ubah teks fitur paket Premium** di Admin → Pengaturan → Paket bila perlu (data lama tidak otomatis berubah). Saran: *Semua alur Basic: pembuka, ucapan, surat, kejutan pilihan, dan kenangan foto* dan *Ditambah halaman konsep eksklusif …*.
+
+**Bayar beberapa draf sekaligus.** Di panel **Draf Saya**, tiap draf yang sudah lengkap berstatus "Siap dibayar" beserta harganya dan bisa dicentang (maksimal 10). Tombol **Bayar N ucapan** membuat pesanan dan mengunggah foto dari penyimpanan browser, lalu membuat **satu pembayaran** untuk semuanya. Draf yang belum lengkap tidak bisa dicentang dan ditandai alasannya. Setelah dibayar, halaman status menampilkan daftar semua ucapan beserta link masing-masing, dan seluruhnya masuk ke **satu akun** (satu kode redeem). Draf yang sudah dibayar otomatis dihapus.
+Pembeli yang membayar satu per satu lewat alur biasa tidak terpengaruh.
+- Wajib: tambahkan kolom **GrupID** di sheet **Pembayaran** dengan menjalankan `setupAppEnvironment`, lalu deploy versi baru.
+- Pembayaran gabungan ke iPaymu memakai satu transaksi dengan beberapa baris produk. Itu **belum diuji dengan iPaymu sandbox**; uji satu keranjang berisi 2 draf sebelum dipakai pembeli sungguhan.
+
+**Foto draf.** Foto dan video draf tersimpan di browser (IndexedDB), jadi tidak perlu diunggah ulang untuk semua paket. Syaratnya browser dan perangkat yang sama, dan bukan mode penyamaran. Bila browser tidak mengizinkan, panel Draf Saya menampilkan peringatan.

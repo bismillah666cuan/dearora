@@ -51,7 +51,7 @@
       kode: '', petunjukKode: '', lilin: 3, bunga: ['', '', ''], target: 10, kalimat: ['', '', ''] };
   }
   function setPath(o, path, val) { var p = path.split('.'), c = o; for (var i = 0; i < p.length - 1; i++) { if (c[p[i]] == null) return; c = c[p[i]]; } c[p[p.length - 1]] = val; }
-  function templatPaket() { return ST.paket === 'basic'; }
+  function templatPaket() { return ST.paket === 'basic' || ST.paket === 'premium'; }
 
   function baru() {
     return { kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
@@ -59,7 +59,7 @@
       catatan: '', setuju: false, _langkah: 0, _id: '', _berkas: [] };
   }
   /* ---------------- Draf: bisa banyak (riwayat ucapan yang sedang disusun) ---------------- */
-  var KEY_DRAFS = 'dearora:drafts:v2';
+  var KEY_DRAFS = 'dearora:drafts:v2', KEY_GRUP = 'dearora:grup';
   function bacaDrafs() {
     try { var j = JSON.parse(localStorage.getItem(KEY_DRAFS)); if (j && Array.isArray(j.items)) return j.items; } catch (e) { /* abaikan */ }
     try {                                                    // migrasi dari draf tunggal versi lama
@@ -110,11 +110,11 @@
   function idbSimpan(f) { pastikanId(); return idbTx('readwrite', function (st) { return st.put(f.blob, ST._id + ':' + f.id); }); }
   function idbHapus(fid) { return ST && ST._id ? idbTx('readwrite', function (st) { return st.delete(ST._id + ':' + fid); }) : Promise.resolve(null); }
   function idbHapusDraf(did) { return idbTx('readwrite', function (st) { var rq = st.openKeyCursor(); rq.onsuccess = function () { var c = rq.result; if (c) { if (String(c.key).indexOf(did + ':') === 0) st.delete(c.key); c.continue(); } }; return rq; }); }
-  function muatBerkasDraf() {
+  function muatBerkasDraf(tanpaPaint) {
     var did = ST && ST._id, meta = ((ST && ST._berkas) || []).slice(); if (!did || !meta.length) return Promise.resolve();
     return Promise.all(meta.map(function (m) {
       return idbTx('readonly', function (st) { return st.get(did + ':' + m.id); }).then(function (blob) { return blob && blob.size ? { id: m.id, jenis: m.jenis, blob: blob, nama: m.nama, ukuran: m.ukuran || blob.size, url: m.jenis === 'foto' ? URL.createObjectURL(blob) : '' } : null; });
-    })).then(function (arr) { if (!ST || ST._id !== did) return; files = arr.filter(Boolean); if (order) order = null; if ($root) paint(); });
+    })).then(function (arr) { if (!ST || ST._id !== did) return; files = arr.filter(Boolean); if (!tanpaPaint) { if (order) order = null; if ($root) paint(); } });
   }
   function hapusDraf(id) {
     idbHapusDraf(id); tulisDrafs(bacaDrafs().filter(function (x) { return x.id !== id; })); }
@@ -123,15 +123,101 @@
     var pk = d && s.paket ? (d.paket.filter(function (x) { return x.id === s.paket; })[0] || {}).nama : '';
     return (s.penerima ? 'Untuk ' + s.penerima : 'Draf tanpa nama penerima') + (pk ? ' · ' + pk : '') + (ds ? ' · ' + ds : '');
   }
+  function hargaPaket(id) { var p = ((data() || {}).paket || []).filter(function (x) { return x.id === id; })[0]; return p ? Number(p.harga) || 0 : 0; }
+  /** Memeriksa kelengkapan sebuah draf tanpa membukanya (foto dihitung dari catatan berkas yang tersimpan). */
+  function cekDraf(it) {
+    var sST = ST, sF = files, sL = langkah, sE = errors, sO = order, hasil;
+    try {
+      pasangDraf(it);
+      files = (ST._berkas || []).map(function (m) { return { id: m.id, jenis: m.jenis, nama: m.nama, ukuran: m.ukuran || 1 }; });
+      if (!ST.paket) hasil = { ok: false, alasan: 'Paket belum dipilih' };
+      else {
+        hasil = { ok: true, paket: ST.paket, harga: hargaPaket(ST.paket) };
+        var semua = daftarLangkah().filter(function (x) { return x !== 'ringkasan'; });
+        for (var i = 0; i < semua.length; i++) { if (Object.keys(validasi(semua[i])).length) { hasil = { ok: false, alasan: 'Belum lengkap: ' + judulLangkah(semua[i]) }; break; } }
+      }
+    } catch (x) { hasil = { ok: false, alasan: 'Draf belum bisa diperiksa' }; }
+    ST = sST; files = sF; langkah = sL; errors = sE; order = sO;
+    return hasil;
+  }
   function panelDraf() {
     var items = bacaDrafs().sort(function (a, b) { return b.tgl - a.tgl; });
     if (!items.length || (langkah !== 0 && items.length < 2)) return '';
+    ui.pilihDraf = ui.pilihDraf || {};
     var tglF = function (t) { try { return new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(t)); } catch (e) { return ''; } };
+    var n = 0, total = 0, siap = 0;
+    var baris = items.map(function (it) {
+      var c = cekDraf(it), aktif = it.id === ST._id; if (c.ok) siap++;
+      var pilih = c.ok && ui.pilihDraf[it.id]; if (!c.ok) delete ui.pilihDraf[it.id]; if (pilih) { n++; total += c.harga; }
+      return '<li' + (aktif ? ' class="on"' : '') + '><label class="draf-cek"><input type="checkbox" id="cek-' + esc(it.id) + '" data-f="draf-pilih" data-id="' + esc(it.id) + '"' + (pilih ? ' checked' : '') + (c.ok ? '' : ' disabled') + ' aria-label="Pilih untuk dibayar: ' + esc(judulDraf(it)) + '"></label>' +
+        '<div><strong>' + esc(judulDraf(it)) + '</strong><small>' + esc(tglF(it.tgl)) + (aktif ? ' · sedang dibuka' : '') + ' · ' + (c.ok ? '<span class="draf-siap">Siap dibayar · ' + esc(U.rupiah(c.harga)) + '</span>' : '<span class="draf-belum">' + esc(c.alasan) + '</span>') + '</small></div>' +
+        (aktif ? '' : '<button type="button" class="btn btn-secondary btn-sm" data-f="draf-buka" data-id="' + esc(it.id) + '">Lanjutkan</button>') + '<button type="button" class="btn btn-quiet btn-sm" data-f="draf-hapus" data-id="' + esc(it.id) + '" aria-label="Hapus draf ' + esc(judulDraf(it)) + '">' + ic('x') + '</button></li>';
+    }).join('');
     var kep = langkah === 0 ? ['<div class="card draf-panel">', '</div>', '<h2 class="h3">Draf Saya (' + items.length + ')</h2>'] : ['<details class="card draf-panel">', '</details>', '<summary><strong>Draf Saya (' + items.length + ')</strong></summary>'];
-    return kep[0] + kep[2] + '<p class="small muted">Ucapan yang sedang kamu susun tersimpan di browser ini. Foto tidak ikut tersimpan, jadi unggah ulang saat melanjutkan.</p><ul class="draf-list">' +
-      items.map(function (it) { var aktif = it.id === ST._id; return '<li' + (aktif ? ' class="on"' : '') + '><div><strong>' + esc(judulDraf(it)) + '</strong><small>' + esc(tglF(it.tgl)) + (aktif ? ' · sedang dibuka' : '') + '</small></div>' +
-        (aktif ? '' : '<button type="button" class="btn btn-secondary btn-sm" data-f="draf-buka" data-id="' + esc(it.id) + '">Lanjutkan</button>') + '<button type="button" class="btn btn-quiet btn-sm" data-f="draf-hapus" data-id="' + esc(it.id) + '" aria-label="Hapus draf ' + esc(judulDraf(it)) + '">' + ic('x') + '</button></li>'; }).join('') +
-      '</ul><button type="button" class="btn btn-primary btn-sm" data-f="draf-baru">+ Mulai ucapan baru</button>' + kep[1];
+    return kep[0] + kep[2] + '<p class="small muted">Ucapan yang sedang kamu susun tersimpan otomatis di browser ini, <strong>termasuk foto dan videonya</strong>, jadi tidak perlu unggah ulang. Centang beberapa draf yang sudah lengkap untuk <strong>dibayar sekaligus</strong>.</p>' +
+      (idb ? '' : '<p class="small err" role="alert">' + ic('info') + ' Browser ini tidak mengizinkan penyimpanan foto di perangkat. Foto draf mungkin perlu diunggah ulang.</p>') +
+      '<ul class="draf-list">' + baris + '</ul>' +
+      '<div class="draf-bar"><span id="drafTotal">' + (n ? n + ' dipilih · Total <strong>' + esc(U.rupiah(total)) + '</strong>' : 'Belum ada yang dipilih') + '</span><span class="draf-aksi">' +
+      (siap > 1 ? '<button type="button" class="btn btn-quiet btn-sm" data-f="draf-semua">Pilih semua yang siap</button>' : '') +
+      '<button type="button" class="btn btn-primary btn-sm" data-f="draf-bayar"' + (n ? '' : ' disabled') + '>' + (n > 1 ? 'Bayar ' + n + ' ucapan' : 'Bayar yang dipilih') + '</button></span></div>' +
+      '<div class="draf-prog" id="drafProg" role="status" hidden></div>' +
+      '<button type="button" class="btn btn-secondary btn-sm" data-f="draf-baru" style="margin-top:.5rem">+ Mulai ucapan baru</button>' + kep[1];
+  }
+  function progDraf(teks, persen, galat) {
+    var el = document.getElementById('drafProg'); if (!el) return; el.hidden = !teks && !galat;
+    el.className = 'draf-prog' + (galat ? ' galat' : ''); el.innerHTML = galat ? '<p class="err">' + esc(galat) + '</p>' : '<p>' + esc(teks) + '</p><div class="bar"><span style="width:' + Math.max(2, Math.min(100, persen || 0)) + '%"></span></div>';
+  }
+  /** Membuat pesanan + mengunggah foto dari beberapa draf, lalu satu pembayaran untuk semuanya. */
+  async function bayarBanyak() {
+    if (ui.sibuk) return;
+    var ids = Object.keys(ui.pilihDraf || {}).filter(function (k) { return ui.pilihDraf[k]; });
+    var items = bacaDrafs().filter(function (x) { return ids.indexOf(x.id) >= 0; });
+    if (!items.length) return;
+    if (items.length === 1) { tulisDraf(); bersihBerkas(); order = null; pasangDraf(items[0]); langkah = daftarLangkah().length - 1; errors = {}; paint(); window.scrollTo(0, 0); muatBerkasDraf(); return; }
+    var simpan = { ST: ST, files: files, langkah: langkah, order: order };
+    tulisDraf(); ui.sibuk = true; ui.kirimDraf = ui.kirimDraf || {};
+    if (langkah !== 0) { langkah = 0; paint(); }
+    var disable = function (v) { $root.querySelectorAll('.draf-panel button, .draf-panel input').forEach(function (e) { e.disabled = v; }); };
+    disable(true);
+    try {
+      var hasil = [], n = items.length;
+      for (var i = 0; i < n; i++) {
+        var it = items[i], awal = (i / n) * 90, lebar = 90 / n;
+        progDraf('Menyiapkan ucapan ' + (i + 1) + ' dari ' + n + '…', awal);
+        ST = baru(); pasangDraf(it); files = []; await muatBerkasDraf(true);
+        var semua = daftarLangkah().filter(function (x) { return x !== 'ringkasan'; });
+        for (var j = 0; j < semua.length; j++) { if (Object.keys(validasi(semua[j])).length) throw galatPermanen('Ucapan "' + judulDraf(it) + '" belum lengkap (' + judulLangkah(semua[j]) + ').'); }
+        if (!files.some(function (f) { return f.jenis === 'foto'; })) throw galatPermanen('Foto untuk "' + judulDraf(it) + '" belum tersimpan di browser ini. Buka drafnya lalu unggah foto.');
+        ST.setuju = true; var p = payload(), fp = JSON.stringify(p) + '|' + files.map(function (f) { return f.id + f.ukuran; }).join(',');
+        var rec = ui.kirimDraf[it.id];
+        if (!rec || rec.fp !== fp) {
+          var r = await API.post('createOrder', p, { timeout: 30000 });
+          if (!r.success) throw galatPermanen('"' + judulDraf(it) + '": ' + (r.message || 'Pesanan ditolak.'));
+          rec = ui.kirimDraf[it.id] = { id: r.data.orderId, token: r.data.token, fp: fp, terunggah: {} };
+        }
+        order = rec;
+        for (var k = 0; k < files.length; k++) { var f = files[k]; if (rec.terunggah[f.id]) continue; await kirimBerkas(f, k, awal + lebar * (k / files.length), lebar / files.length); rec.terunggah[f.id] = true; }
+        hasil.push({ o: rec.id, t: rec.token, d: it.id });
+      }
+      progDraf('Menyiapkan satu pembayaran untuk ' + n + ' ucapan…', 95);
+      var pay = await API.post('createPaymentBatch', { orders: hasil.map(function (h) { return { orderId: h.o, token: h.t }; }) }, { timeout: 30000 });
+      if (!pay.success) throw galatPermanen(pay.message || 'Pembayaran belum dapat dibuat.');
+      try { localStorage.setItem(KEY_GRUP, JSON.stringify({ g: pay.data.grupId, orders: hasil, w: Date.now() })); } catch (x) { /* abaikan */ }
+      var q = 'g=' + encodeURIComponent(pay.data.grupId) + '&o=' + encodeURIComponent(hasil[0].o) + '&t=' + encodeURIComponent(hasil[0].t);
+      progDraf('Mengalihkan…', 100);
+      if (pay.data.simulasi) { ui.sibuk = false; location.hash = '#/status?' + q + '&sim=1'; return; }
+      var url = U.amanHttps(pay.data.payUrl); if (!url) throw galatPermanen('Alamat pembayaran tidak valid.');
+      location.href = url;
+    } catch (err) {
+      ST = simpan.ST; files = simpan.files; langkah = simpan.langkah; order = simpan.order; ui.sibuk = false;
+      disable(false); progDraf('', 0, err.permanen ? err.message : 'Koneksi bermasalah. Pesananmu aman, tekan Bayar lagi. (' + (err.message || 'galat') + ')');
+    }
+  }
+  function bersihkanGrup() {
+    try {
+      var g = JSON.parse(localStorage.getItem(KEY_GRUP)); localStorage.removeItem(KEY_GRUP);
+      if (g && Array.isArray(g.orders)) { var cur = ST && ST._id; g.orders.forEach(function (o) { if (o.d) hapusDraf(o.d); if (o.d && o.d === cur) { ST = baru(); files = []; langkah = 0; } }); }
+    } catch (e) { /* abaikan */ }
   }
   function simpanDraf() { clearTimeout(simpanT); simpanT = setTimeout(tulisDraf, 250); }
   // Pastikan draf tidak hilang bila tab ditutup/dimuat ulang sebelum jeda 250 ms selesai.
@@ -139,7 +225,7 @@
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') { clearTimeout(simpanT); if (ui.simpanAktif !== false) tulisDraf(); } });
 
   function daftarLangkah() {
-    if (ST.paket === 'premium') return ['paket', 'pemesan', 'untuk', 'foto', 'desain', 'isi', 'catatan', 'ringkasan'];
+    if (ST.paket === 'premium') return ['paket', 'pemesan', 'untuk', 'pesan', 'kejutan', 'foto', 'desain', 'isi', 'catatan', 'ringkasan'];
     if (ST.paket === 'special') return ['paket', 'pemesan', 'untuk', 'foto', 'ide', 'catatan', 'ringkasan'];
     return ['paket', 'pemesan', 'untuk', 'pesan', 'kejutan', 'foto', 'desain', 'catatan', 'ringkasan'];
   }
@@ -555,7 +641,7 @@
       (function () { var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null; var n = pf ? pf.nama : ST.namaPembeli, w = pf ? pf.whatsapp : ST.whatsapp, e = pf ? pf.email : ST.email;
         return ringkasBaris('Pemesan', esc(n) + (pf ? ' <span class="tag sage">Akun terhubung</span>' : '') + '<br><span class="muted small">' + esc(w) + ' · ' + esc(e) + '</span>', 'pemesan'); })() +
       ringkasBaris('Untuk / Dari', esc(ST.penerima) + ' / ' + dari, 'untuk') +
-      (ST.paket === 'basic' ? ringkasBaris('Surat', '<span class="clip">' + esc(ST.pesan) + '</span>', 'pesan') : '') +
+      (ST.paket !== 'special' ? ringkasBaris('Surat', '<span class="clip">' + esc(ST.pesan) + '</span>', 'pesan') : '') +
       (ST.paket === 'special' ? ringkasBaris('Ide desain', '<span class="clip">' + esc(ST.ideSendiri) + '</span>' + (ST.urlDiminta ? '<br><span class="muted small">Alamat: ' + esc(normSlug(ST.urlDiminta)) + '.' + esc(domainSpecial()) + '</span>' : ''), 'ide') : '') +
       (ST.paket === 'premium' ? ringkasBaris('Isi desain', 'Sudah diisi (' + ((skSkema() || { skema: { nama: '' } }).skema.nama) + ')', 'isi') : '') +
       (templatPaket() ? ringkasBaris('Kejutan akhir', esc((JENIS_KEJUTAN.filter(function (j) { return j.id === ST.kejutan.jenis; })[0] || {}).nama || '') + '<br><span class="clip muted small">' + esc(ST.kejutan.ucapan) + '</span>', 'kejutan') : '') +
@@ -788,7 +874,8 @@
       pesan: ST.pesan.trim(), desainId: ST.paket === 'special' ? '' : ST.desainId, ideSendiri: ST.paket === 'special' ? ST.ideSendiri.trim() : '',
       catatan: ST.catatan.trim(), setuju: ST.setuju === true, website: '', musikId: ST.paket === 'special' ? '' : (ST.musikId || '')
     };
-    if (ST.paket === 'basic') { p.kejutan = kejutanPayload(); p.opsiDesain = ST.desainId ? ST.opsiDesain : {}; }
+    if (templatPaket()) p.kejutan = kejutanPayload();
+    if (ST.paket === 'basic') p.opsiDesain = ST.desainId ? ST.opsiDesain : {};
     if (ST.paket === 'premium') { var sk = skSiap(); if (sk) p.dataDesain = skPayload(sk); }
     if (ST.paket === 'special' && ST.urlDiminta) p.urlDiminta = normSlug(ST.urlDiminta);
     var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null;
@@ -943,6 +1030,9 @@
       }
     }
     else if (a === 'draf-buka') { var it = bacaDrafs().filter(function (x) { return x.id === b.dataset.id; })[0]; if (it) { tulisDraf(); bersihBerkas(); order = null; pasangDraf(it); errors = {}; paint(); window.scrollTo(0, 0); muatBerkasDraf(); } }
+    else if (a === 'draf-pilih') { ui.pilihDraf = ui.pilihDraf || {}; ui.pilihDraf[b.dataset.id] = b.checked; var tot = document.getElementById('drafTotal'); paint(); var cb = document.getElementById('cek-' + b.dataset.id); if (cb) cb.focus({ preventScroll: true }); }
+    else if (a === 'draf-semua') { ui.pilihDraf = ui.pilihDraf || {}; bacaDrafs().forEach(function (it) { if (cekDraf(it).ok) ui.pilihDraf[it.id] = true; }); paint(); }
+    else if (a === 'draf-bayar') bayarBanyak();
     else if (a === 'draf-hapus') { hapusDraf(b.dataset.id); if (ST._id === b.dataset.id) { bersihBerkas(); order = null; ST = baru(); langkah = 0; } paint(); }
     else if (a === 'draf-baru') { tulisDraf(); bersihBerkas(); order = null; ST = baru(); langkah = 0; errors = {}; paint(); window.scrollTo(0, 0); }
     else if (a === 'akun-masuk') masukAkun(b);
@@ -1007,5 +1097,5 @@
     try { if (idSekarang) hapusDraf(idSekarang); localStorage.removeItem(KEY_DRAF); } catch (e) { /* abaikan */ }
   }
 
-  window.Form = { view: view, after: after, bersihkan: bersihkan, KEY_ORDER: KEY_ORDER };
+  window.Form = { view: view, after: after, bersihkan: bersihkan, bersihkanGrup: bersihkanGrup, KEY_ORDER: KEY_ORDER };
 })();

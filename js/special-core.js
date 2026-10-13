@@ -67,7 +67,22 @@
     konteks: { slug: '', pengirim: '', demo: true }, onAkhir: null, _akhir: false,
     kredit: function (nama) { return '<p class="sp-kredit">Dibuat dengan penuh rasa oleh: ' + esc(nama || '') + '</p>'; },
     /** Dipanggil tiap desain saat penerima mencapai layar terakhir: tandai "dilihat" + tombol balasan. */
+    /** Mode sisipan: desain Premium berjalan sebagai bagian dari perjalanan kartu (di antara surat dan kejutan). */
+    mountInto: function (host, k, c, f, selesai) {
+      var def = reg[k], lama = $root; bersih(); parts = []; fotoIds = c.foto || [];
+      $root = host; Special._akhir = false; Special._embed = function () { Special._embed = null; $root = lama; bersih(); selesai(); };
+      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: false, tema: k };
+      host.className = 'konsep-host sp-root sp-' + k; host.innerHTML = '';
+      if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
+      def.mulai(host, def.adapt(f || {}, c), Special);
+      if (c.musik && k !== 'musik') Special.pasangMusik(c.musik);
+    },
     akhir: function () {
+      if (Special._embed) {                                   // sisipan: tampilkan tombol lanjut ke kejutan, tanpa balasan/penanda dilihat
+        if (Special._akhir) return; Special._akhir = true;
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'konsep-lanjut'; b.innerHTML = 'Lanjut ke kejutan ›';
+        $root.appendChild(b); b.addEventListener('click', function () { var ke = Special._embed; if (ke) { b.remove(); ke(); } }); return;
+      }
       if (Special._akhir) return; Special._akhir = true;
       if (Special.onAkhir) { try { Special.onAkhir(); } catch (e) { /* abaikan */ } }
       if (window.Balasan) window.Balasan.lembar(document.body, Special.konteks);

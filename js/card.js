@@ -16,6 +16,7 @@
   var data = null, slug = '', demo = false, audio = null, aktif = 0, stages = [], timers = [], ambT = [];
   var gk = 'classic', gy = {}, opsiD = {};
   var NAMA_TAHAP = ['buka', 'sapa', 'surat', 'kejutan', 'penutup'];
+  var konsep = '', konsepSelesai = false;
 
   /* ---------------- Util ---------------- */
   function q(s) { return $root.querySelector(s); }
@@ -515,18 +516,16 @@
   var terpasang = false;
   function setGaya(d) {
     gk = Gaya.kunci(d.tema); gy = Gaya.G[gk] || {};
-    if (gy.special) { gk = 'classic'; gy = Gaya.G.classic; }      // desain Special memakai halaman /s/ sendiri
+    konsep = ''; konsepSelesai = false;
+    if (gy.special) { konsep = gk; gk = gy.dasar || 'classic'; gy = Gaya.G[gk] || Gaya.G.classic; }      // desain Premium: 5 slide Basic + halaman konsep tambahan
     opsiD = Object.assign(Gaya.opsiBawaan(gk), d.opsi || {});
   }
-  function renderDesain(kk, d) {
-    data = d; bersih(); clearInterval(slideT);
-    document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
-    Special.onAkhir = function () { if (!demo && slug && window.Balasan) window.Balasan.tandai(slug); };
-    Special.mountData(kk, { penerima: d.penerima, pengirim: dariTeks(d), foto: d.foto || [], slug: slug, musik: d.musik || null }, d.dataDesain);
+  /** Halaman konsep Premium (film, toko online, dll.) dibuka di antara surat dan kejutan, lalu kembali ke alur utama. */
+  function mulaiKonsep() {
+    var host = document.createElement('div'); host.id = 'konsep'; document.body.appendChild(host);
+    Special.mountInto(host, konsep, { penerima: data.penerima, pengirim: dariTeks(data), foto: data.foto || [], slug: slug, musik: null }, data.dataDesain, function () { host.remove(); konsepSelesai = true; ke(3); });
   }
   function render(d) {
-    var kk0 = Gaya.kunci(d.tema), gs0 = Gaya.G[kk0];
-    if (gs0 && gs0.special && d.dataDesain && window.Special && Special.ada(kk0)) { renderDesain(kk0, d); return; }
     data = d; bersih(); aktif = 0; clearInterval(slideT);
     document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
     setGaya(d);
@@ -545,6 +544,7 @@
         var go = ev.target.closest('[data-go]');
         if (go) {
           var n = Number(go.dataset.go), g = q('.gerbang');
+          if (n === 3 && konsep && !konsepSelesai && data.dataDesain && window.Special && Special.ada(konsep)) { mulaiKonsep(); return; }
           if (n === 1 && gy.jedaBuka && g && !g.classList.contains('terbuka')) { g.classList.add('terbuka'); dariElemen(g, 30, { kuat: 8 }); jeda(function () { ke(1); }, gy.jedaBuka); return; }
           ke(n); return;
         }
