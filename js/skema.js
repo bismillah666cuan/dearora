@@ -124,6 +124,27 @@
       T('judul', 'Judul rumah', 60, { bawaan: 'Rumah Kenangan' }),
       { k: 'ruang', tipe: 'daftar', label: 'Ruangan dan kenangannya', hint: '3 sampai 5 ruangan. Tiap ruangan punya satu benda yang menyimpan kenangan.', min: 3, maks: 5, namaItem: 'Ruangan', item: [T('nama', 'Nama ruangan', 30, { wajib: true, hint: 'Mis. Dapur, Kamar, Taman' }), T('benda', 'Benda yang diketuk', 30, { hint: 'Mis. Toples kue' }), T('judul', 'Judul kenangan', 50, { wajib: true }), A('cerita', 'Ceritanya', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
       { k: 'loteng', tipe: 'objek', label: 'Loteng: pesan utama', item: [F('foto', 'Foto pilihan'), A('pesan', 'Pesan utama', 600, { wajib: true })] }
+    ] },
+    brankas: { nama: 'Brankas Rahasia', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Hanya kamu yang bisa membuka brankas ini". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Judul brankas', 40, { bawaan: 'Brankas Rahasia' }),
+      { k: 'ruangan', tipe: 'daftar', label: 'Tiga ruangan dan teka-tekinya', hint: 'Tepat 3 ruangan. Jawaban hanya disimpan di server dan tidak tampil di halaman penerima.', min: 3, maks: 3, namaItem: 'Ruangan', item: [
+        T('nama', 'Nama ruangan', 30, { wajib: true, hint: 'Mis. Ruang Kenangan' }), A('teka', 'Teka-teki atau pertanyaan', 160, { wajib: true, hint: 'Mis. Tanggal berapa kita pertama bertemu?' }),
+        T('jawaban', 'Jawaban yang benar', 40, { wajib: true, hint: 'Huruf besar/kecil dan spasi diabaikan.' }), T('petunjuk', 'Petunjuk (opsional)', 80), A('pesan', 'Pesan yang terbuka setelah benar', 200, { wajib: true })] },
+      { k: 'akhir', tipe: 'objek', label: 'Isi brankas (hadiah utama)', item: [F('foto', 'Foto pilihan'), A('pesan', 'Pesan utama', 600, { wajib: true })] }
+    ] },
+    hujan: { nama: 'Hujan Reda', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Ada yang ingin kukatakan, kalau kamu mau mendengarnya". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      { k: 'pesan', tipe: 'daftar', label: 'Kalimat di balik kaca berembun', hint: '3 sampai 5 kalimat. Penerima mengusap kaca untuk membacanya, dan hujan mereda pelan-pelan.', min: 3, maks: 5, namaItem: 'Kalimat', item: [A('teks', 'Kalimat', 160, { wajib: true })] },
+      { k: 'penutup', tipe: 'objek', label: 'Penjelasan dan permintaan maaf (setelah hujan reda)', item: [A('pesan', 'Isi penutup', 600, { wajib: true })] }
+    ] },
+    lahir: { nama: 'Pengumuman Kelahiran', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Ada kabar bahagia untukmu". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      A('kabar', 'Kabar bahagia (tersembunyi di balik kartu gosok)', 160, { wajib: true, hint: 'Mis. "Kami akan menjadi orang tua!"' }),
+      F('foto', 'Foto di kartu (mis. foto USG atau foto berdua)'),
+      T('tanggal', 'Perkiraan hari lahir (opsional)', 10, { pola: '^\\d{4}-\\d{2}-\\d{2}$', hint: 'Format tahun-bulan-tanggal, mis. 2027-03-15. Dipakai untuk hitung mundur.' }),
+      { k: 'fakta', tipe: 'daftar', label: 'Balon kejutan: fakta tentang si kecil', hint: '3 sampai 5 balon. Tiap balon yang dipecahkan membuka satu fakta.', min: 3, maks: 5, namaItem: 'Balon', item: [T('judul', 'Judul fakta', 30, { wajib: true, hint: 'Mis. Nama, Jenis kelamin, Perkiraan lahir' }), T('isi', 'Isinya', 80, { wajib: true })] },
+      A('penutup', 'Pesan penutup', 400, { wajib: true })
     ] }
   };
 
@@ -181,6 +202,16 @@
   SKEMA.rumah.contoh = { transisi: 'Ketuk pintunya. Banyak kenangan yang tersimpan di dalam rumah ini.', judul: 'Rumah Kenangan',
     ruang: [{ nama: 'Dapur', benda: 'Toples kue', judul: 'Kue buatan Ibu', cerita: 'Aroma kue dari dapur ini yang paling kuingat setiap pulang sekolah.', foto: '' }, { nama: 'Kamar', benda: 'Selimut tebal', judul: 'Cerita sebelum tidur', cerita: 'Dulu aku tidur diiringi cerita yang tak pernah sama setiap malamnya.', foto: '' }, { nama: 'Taman', benda: 'Ayunan tua', judul: 'Sore di ayunan', cerita: 'Tawa kita sore itu masih terdengar jelas sampai sekarang.', foto: '' }],
     loteng: { foto: '', pesan: 'Semua ruangan di rumah ini punya tempat di hatiku. Terima kasih sudah membuat rumah ini penuh cinta, dan aku selalu ingin pulang.' } };
+
+  SKEMA.brankas.contoh = { transisi: 'Hanya kamu yang bisa membuka brankas ini. Jawab tiga teka-teki dariku.', judul: 'Brankas Rahasia',
+    ruangan: [{ nama: 'Ruang Kenangan', teka: 'Di kota mana kita pertama kali bertemu?', jawaban: 'bandung', petunjuk: 'Kota kembang.', pesan: 'Benar. Kota itu masih jadi tempat favoritku karena kamu.' }, { nama: 'Ruang Rasa', teka: 'Makanan apa yang selalu kita pesan bersama?', jawaban: 'nasi goreng', petunjuk: 'Ada telurnya.', pesan: 'Tepat. Rasa sederhana yang selalu terasa istimewa kalau bersamamu.' }, { nama: 'Ruang Janji', teka: 'Angka berapa yang kita sebut sebagai angka keberuntungan?', jawaban: '7', petunjuk: 'Satu digit.', pesan: 'Benar. Dan aku percaya kita memang beruntung.' }],
+    akhir: { foto: '', pesan: 'Isi brankas ini bukan emas atau permata. Isinya aku: terima kasih, janji, dan rasa sayang yang tidak pernah habis.' } };
+  SKEMA.hujan.contoh = { transisi: 'Ada yang ingin kukatakan, kalau kamu mau mendengarnya.',
+    pesan: [{ teks: 'Aku salah, dan aku tahu aku menyakitimu.' }, { teks: 'Aku tidak mencari pembenaran, hanya ingin kamu tahu aku menyesal.' }, { teks: 'Kamu pantas dihargai, dan aku ingin belajar melakukannya dengan lebih baik.' }],
+    penutup: { pesan: 'Hujan pun akhirnya reda, dan aku berharap amarah dan kecewa itu ikut reda pelan-pelan. Aku tidak meminta kamu langsung memaafkan, tapi aku akan terus berusaha memperbaikinya. Maafkan aku.' } };
+  SKEMA.lahir.contoh = { transisi: 'Ada kabar bahagia untukmu. Siapkan hati yang hangat.', kabar: 'Kami akan menjadi orang tua! Satu anggota keluarga baru sedang dalam perjalanan.', foto: '', tanggal: '2027-03-15',
+    fakta: [{ judul: 'Nama panggilan', isi: 'Si Kecil (nama lengkapnya kejutan)' }, { judul: 'Perkiraan lahir', isi: 'Pertengahan Maret' }, { judul: 'Yang kami harapkan', isi: 'Sehat, bahagia, dan penuh tawa' }],
+    penutup: 'Terima kasih sudah menjadi bagian dari perjalanan kami. Doakan kami, dan kamu akan jadi salah satu orang pertama yang menyambut si kecil.' };
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();

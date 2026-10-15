@@ -236,3 +236,14 @@ Tombol **Lihat contoh** pada tiap jenis kejutan kini **langsung membuka kejutann
 | **Rumah Kenangan** | Rumah tampak depan → ketuk pintu → rumah tampak potong dengan 3–5 ruangan → ketuk benda di tiap ruangan → loteng berisi pesan utama | Judul, 3–5 ruangan (nama, benda, kenangan, foto), pesan loteng |
 Pemasangan: ganti isi file `Kode`, `Admin`, dan `Skema` di Apps Script (bukan file baru), deploy versi baru, jalankan **`isiUlangKatalogDesain`**, lalu timpa frontend dan isi `GAS_URL`.
 Langkah **Desain** pada form Premium kini punya **filter kategori** (Semua, Anniversary, Hari Ibu, Imlek, dst.) agar pembeli tidak menggulir 14 desain sekaligus. Kategori baru buatan admin otomatis ikut muncul.
+
+
+## Putaran B: tiga desain Premium baru (total 17)
+| Desain | Alur halaman konsep | Isian pembeli |
+|---|---|---|
+| **Brankas Rahasia** | Lobi brankas → 3 ruangan, tiap ruangan satu teka-teki (jawab → gembok terbuka + pesan) → putar roda → brankas terbuka berisi hadiah utama | Judul, 3 ruangan (nama, teka-teki, **jawaban**, petunjuk, pesan), isi brankas |
+| **Hujan Reda** | Kaca berembun + hujan → usap kaca untuk membaca tiap kalimat, hujan mereda bertahap → pelangi → penjelasan dan maaf | 3–5 kalimat, penjelasan dan permintaan maaf |
+| **Pengumuman Kelahiran** | Kartu gosok berisi kabar bahagia → pecahkan balon untuk membuka fakta → hitung mundur → pesan penutup (palet netral) | Kabar, foto, perkiraan hari lahir (opsional, format 2027-03-15), 3–5 fakta, pesan penutup |
+
+**Brankas Rahasia: jawaban hanya di server.** Jawaban teka-teki dan isi brankas **tidak dikirim ke halaman penerima** (tidak ada di HTML maupun respons data kartu). Halaman hanya menerima nama ruangan, teka-teki, dan petunjuk; jawaban diperiksa lewat server (`brankasCek` per ruangan dan `brankasBuka` untuk brankas terakhir, yang memeriksa ulang SEMUA jawaban). Percobaan dibatasi 40 kali per 10 menit per ucapan. Huruf besar/kecil dan spasi diabaikan. Admin tetap dapat membaca jawaban di detail pesanan untuk keperluan bantuan.
+**Memasang:** ganti isi file `Kode`, `Admin`, `Pesanan`, `Kartu`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, jalankan **`isiUlangKatalogDesain`**, lalu timpa frontend dan isi `GAS_URL`. Tanpa mengganti `Kartu` dan `Kode`, Brankas Rahasia tidak bisa memeriksa jawaban.

@@ -151,7 +151,7 @@
 
   /* ------------ Desain khusus paket Special (aplikasi mini; halaman /s/) ------------ */
   function sp(nama, kat, warna, cocok, fitur, brief, kunci) { return { special: true, dasar: DASAR_PREMIUM[kunci] || 'classic', skin: 'p' + kunci, demoUrl: '/s/?d=' + kunci, nama: nama, kat: kat, warna: warna, cocok: cocok, fitur: fitur, brief: brief, gelap: true }; }
-  var DASAR_PREMIUM = { movie: 'cinematic', mall: 'classic', bestie: 'classic', feed: 'classic', musik: 'classic', misi: 'classic', romantique: 'cinematic', wisuda: 'classic', lebaran: 'classic', imlek: 'classic', mancing: 'classic', awards: 'classic', resep: 'classic', rumah: 'classic' };      // perilaku slide (transisi/dekor) yang dipinjam; tampilan memakai skin Premium sendiri      // tema 5 slide (pembuka→sapaan→surat→kejutan→kenangan) untuk tiap desain Premium
+  var DASAR_PREMIUM = { movie: 'cinematic', mall: 'classic', bestie: 'classic', feed: 'classic', musik: 'classic', misi: 'classic', romantique: 'cinematic', wisuda: 'classic', lebaran: 'classic', imlek: 'classic', mancing: 'classic', awards: 'classic', resep: 'classic', rumah: 'classic', brankas: 'classic', hujan: 'classic', lahir: 'classic' };      // perilaku slide (transisi/dekor) yang dipinjam; tampilan memakai skin Premium sendiri      // tema 5 slide (pembuka→sapaan→surat→kejutan→kenangan) untuk tiap desain Premium
   G.movie = sp('Malam Film', 'Anniversary', ['#0B0B10', '#E8336D'], 'Pasangan, anniversary, dan kenangan bersama: penerima menjadi pemeran utama film pendek.',
     ['Beranda episode ala layanan streaming', 'Subtitle & narasi muncul bertahap', 'Bebas memilih episode + adegan penutup'],
     ['Judul film dan nama pemeran', 'Poster (foto)', '3–4 episode: foto atau video, narasi tiap adegan, judul dan deskripsi pendek', 'Pesan penutup (paling panjang)'], 'movie');
@@ -193,6 +193,16 @@
   G.rumah = sp('Rumah Kenangan', 'Hari Ibu', ['#FFD9B3', '#7FA86B'], 'Keluarga dan sahabat: rumah dengan beberapa ruangan, tiap benda menyimpan satu kenangan.',
     ['Rumah tampak potong dengan 3–5 ruangan', 'Ketuk benda di tiap ruangan untuk membuka kenangan', 'Loteng berisi pesan utama'],
     ['Judul rumah', '3–5 ruangan: nama, benda, kenangan, foto', 'Pesan di loteng'], 'rumah');
+
+  G.brankas = sp('Brankas Rahasia', 'Hari Spesial', ['#1B2230', '#F5C242'], 'Ulang tahun, pasangan, atau lamaran: tiga ruangan berisi teka-teki yang hanya penerima tahu jawabannya, lalu brankas berisi hadiah utama.',
+    ['Tiga ruangan dengan teka-teki dari pembeli', 'Jawaban hanya diperiksa di server, tidak ada di halaman', 'Brankas terakhir berisi hadiah utama'],
+    ['Judul brankas', '3 teka-teki: pertanyaan, jawaban, petunjuk, pesan', 'Isi brankas (foto + pesan utama)'], 'brankas');
+  G.hujan = sp('Hujan Reda', 'Maaf & Rindu', ['#2C3E50', '#9FB3C8'], 'Permintaan maaf yang lembut: kaca berembun dan hujan; tiap kalimat yang dibaca membuat hujan mereda sampai muncul pelangi.',
+    ['Kaca berembun dengan tetes hujan', 'Usap kaca untuk membaca tiap kalimat', 'Hujan mereda, pelangi muncul, lalu penjelasan dan maaf'],
+    ['3–5 kalimat di balik kaca', 'Penjelasan dan permintaan maaf'], 'hujan');
+  G.lahir = sp('Pengumuman Kelahiran', 'Kelahiran', ['#FFF6E6', '#BFD8C6'], 'Pengumuman kehamilan atau kelahiran: kartu gosok, balon kejutan, dan hitung mundur menuju hari bahagia (palet netral, tidak terpaku warna tertentu).',
+    ['Kartu gosok berisi kabar bahagia', 'Pecahkan balon untuk membuka fakta tentang si kecil', 'Hitung mundur menuju hari lahir'],
+    ['Kabar bahagia + foto', '3–5 balon fakta', 'Perkiraan hari lahir (opsional) dan pesan penutup'], 'lahir');
   G.misi = sp('Lastlove: Misi Cinta', 'Ulang Tahun', ['#0A141C', '#FFB020'], 'Pecinta game strategi: briefing markas, tiga misi, dan kartu hero.',
     ['Briefing markas orisinal', 'Tiga misi + hadiah di tiap misi', 'Kartu hero berisi atribut lucu'],
     ['Nama komandan dan gelar', 'Foto tersembunyi dan pesannya', 'Tiga pesan penguat dan satu pertanyaan kuis', 'Hadiah final (pesan atau foto)'], 'misi');
@@ -224,6 +234,9 @@
     awards: function () { return P('sc-aw-sorot s1', '') + P('sc-aw-sorot s2', '') + P('sc-aw-piala', '<i></i>') + P('sc-aw-teks', 'AWARDS'); },
     resep: function () { return P('sc-rs-kartu', '<i>Resep<br>Kasih Sayang</i>') + P('sc-rs-panci', '') + P('sc-rs-uap u1', '') + P('sc-rs-uap u2', ''); },
     rumah: function () { return P('sc-rh-atap', '') + P('sc-rh-rumah', '') + P('sc-rh-pintu', '') + P('sc-rh-jendela w1', '') + P('sc-rh-jendela w2', ''); },
+    brankas: function () { return P('sc-bk-pintu', '') + P('sc-bk-roda', '') + P('sc-bk-gembok', ''); },
+    hujan: function () { return P('sc-hj-kaca', '') + P('sc-hj-tetes t1', '') + P('sc-hj-tetes t2', '') + P('sc-hj-tetes t3', '') + P('sc-hj-pelangi', ''); },
+    lahir: function () { return P('sc-lh-kartu', '<i>Kabar<br>Bahagia</i>') + P('sc-lh-balon b1', '') + P('sc-lh-balon b2', '') + P('sc-lh-balon b3', ''); },
     classic: function () { return P('sc-hati', A.hati('#D84A6E')) + P('sc-doodle d1', A.kilau('#F78DA7')); },
     movie: function () { return P('sc-mv-poster', '<i>Cerita<br>Kita</i>') + P('sc-mv-judul', 'CERITAKITA') + P('sc-mv-eps e1', '1') + P('sc-mv-eps e2', '2') + P('sc-mv-eps e3', '3') + P('sc-mv-play', '▶ Tonton'); },
     mall: function () { return P('sc-ml-bar', 'Dearora Mall') + P('sc-ml-banner', 'Paket Spesial!') + P('sc-ml-p p1', A.hati('#E8336D')) + P('sc-ml-p p2', A.bintang('#FFB020')) + P('sc-ml-p p3', A.hati('#FF7A1A')) + P('sc-ml-p p4', A.bintang('#E8336D')) + P('sc-ml-troli', '3'); },
