@@ -47,7 +47,12 @@ window.DEARORA_SEED = {
     { id: 'DSN-013', nama: 'Dunia Sahabat', kategori: 'Terima Kasih', paket: ['premium'], thumbnail: 'tema:bestie', urlDemo: '' },
     { id: 'DSN-014', nama: 'Selebstyle', kategori: 'Hari Spesial', paket: ['premium'], thumbnail: 'tema:feed', urlDemo: '' },
     { id: 'DSN-015', nama: 'Soundtrack Kita', kategori: 'Maaf & Rindu', paket: ['premium'], thumbnail: 'tema:musik', urlDemo: '' },
-    { id: 'DSN-016', nama: 'Lastlove: Misi Cinta', kategori: 'Ulang Tahun', paket: ['premium'], thumbnail: 'tema:misi', urlDemo: '' }
+    { id: 'DSN-016', nama: 'Lastlove: Misi Cinta', kategori: 'Ulang Tahun', paket: ['premium'], thumbnail: 'tema:misi', urlDemo: '' },
+    { id: 'DSN-017', nama: 'Cinematic Romantique', kategori: 'Anniversary', paket: ['premium'], thumbnail: 'tema:romantique', urlDemo: '' },
+    { id: 'DSN-018', nama: 'Graduation Day', kategori: 'Wisuda', paket: ['premium'], thumbnail: 'tema:wisuda', urlDemo: '' },
+    { id: 'DSN-019', nama: 'Idul Fitri', kategori: 'Idul Fitri', paket: ['premium'], thumbnail: 'tema:lebaran', urlDemo: '' },
+    { id: 'DSN-020', nama: 'Imlek', kategori: 'Imlek', paket: ['premium'], thumbnail: 'tema:imlek', urlDemo: '' },
+    { id: 'DSN-021', nama: 'Fish It', kategori: 'Hari Spesial', paket: ['premium'], thumbnail: 'tema:mancing', urlDemo: '' }
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }

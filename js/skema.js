@@ -70,6 +70,42 @@
       { k: 'kuis', tipe: 'objek', label: 'Misi 3: pertanyaan kuis', item: [T('q', 'Pertanyaan', 120, { wajib: true }), { k: 'opsi', tipe: 'daftarteks', label: 'Pilihan jawaban', min: 2, maks: 3, maksTeks: 60 },
         { k: 'benar', tipe: 'angka', label: 'Nomor jawaban yang benar (mulai dari 1)', min: 1, maks: 3, bawaan: 1 }, T('betul', 'Respons jika benar', 120), T('salah', 'Respons jika salah (lucu)', 120)] },
       { k: 'akhir', tipe: 'objek', label: 'Hadiah final', item: [F('foto', 'Foto pilihan'), A('pesan', 'Pesan utama', 700, { wajib: true }), T('penutup', 'Kalimat kemenangan', 120, { bawaan: 'Misi selesai. Tapi kamu akan selalu jadi hadiah favoritku.' })] }
+    ] },
+    romantique: { nama: 'Cinematic Romantique', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Ada sesuatu yang ingin kutulis untukmu". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      A('salam', 'Ucapan yang muncul bersama nama penerima', 200, { wajib: true, hint: 'Muncul perlahan dari tumpukan bunga, tepat di bawah nama penerima.' }),
+      T('tulis', 'Kata yang diminta ditulis di pasir', 24, { hint: 'Penerima menulis kata ini dengan jarinya di atas pasir. Kosongkan untuk memakai nama penerima.' }),
+      { k: 'halaman', tipe: 'daftar', label: 'Halaman romantis (foto + kata-kata)', hint: '3 sampai 6 halaman. Tiap halaman berisi satu foto dan kalimat dari kamu.', min: 3, maks: 6, namaItem: 'Halaman', item: [F('foto', 'Foto'), A('kata', 'Kata-kata di halaman ini', 160, { wajib: true })] },
+      { k: 'penutup', tipe: 'objek', label: 'Pesan penutup', item: [A('pesan', 'Pesan penutup', 500, { wajib: true })] }
+    ] },
+    wisuda: { nama: 'Graduation Day', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Perjuanganmu layak dirayakan". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('gelar', 'Gelar atau keterangan kelulusan', 80, { wajib: true, hint: 'Mis. Sarjana Teknik · Angkatan 2026' }),
+      F('fotoUtama', 'Foto wisuda utama (tampil besar di sampul)'),
+      { k: 'perjalanan', tipe: 'daftar', label: 'Perjalanan dari masa belajar sampai wisuda', hint: '3 sampai 6 tonggak perjuangan, urut dari awal.', min: 3, maks: 6, namaItem: 'Tonggak', item: [
+        T('waktu', 'Waktu', 24, { wajib: true, hint: 'Mis. 2022 atau Semester 5' }), T('judul', 'Judul', 50, { wajib: true, hint: 'Mis. Hari pertama kuliah' }), A('cerita', 'Ceritanya', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'surat', tipe: 'objek', label: 'Surat penghargaan personal', item: [T('judul', 'Judul surat', 50, { bawaan: 'Surat Penghargaan' }), A('pesan', 'Isi surat', 700, { wajib: true })] }
+    ] },
+    lebaran: { nama: 'Idul Fitri', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Selamat datang di rumah kami". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('salam', 'Salam pembuka di gerbang', 80, { bawaan: 'Selamat Hari Raya Idulfitri' }),
+      A('ucapanKue', 'Ucapan yang muncul setelah kue lebaran jadi', 300, { wajib: true }),
+      { k: 'pintu', tipe: 'daftar', label: 'Tiga pintu masjid dan doa di baliknya', hint: 'Tepat 3 pintu. Tiap pintu menyimpan satu doa.', min: 3, maks: 3, namaItem: 'Pintu', item: [T('judul', 'Judul pintu', 40, { wajib: true, hint: 'Mis. Doa untuk keluarga' }), A('doa', 'Doanya', 240, { wajib: true })] },
+      A('maaf', 'Permohonan maaf dan penutup', 600, { wajib: true })
+    ] },
+    imlek: { nama: 'Imlek', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Semoga tahun ini penuh keberuntungan". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('salam', 'Salam utama', 40, { bawaan: 'Gong Xi Fa Cai' }),
+      { k: 'harapan', tipe: 'daftar', label: 'Tiga lentera berisi pesan harapan', hint: 'Tepat 3 lentera. Penerima menyalakannya satu per satu.', min: 3, maks: 3, namaItem: 'Lentera', item: [A('teks', 'Pesan harapan', 160, { wajib: true })] },
+      { k: 'hongbao', tipe: 'objek', label: 'Amplop merah (angpao)', item: [T('judul', 'Judul amplop', 40, { bawaan: 'Angpao untukmu' }), A('doa', 'Doa di dalam amplop', 300, { wajib: true })] },
+      { k: 'hadiah', tipe: 'objek', label: 'Kotak hadiah simbolis', item: [T('nama', 'Nama hadiah', 40, { wajib: true, hint: 'Mis. Satu tahun penuh tawa' }), A('isi', 'Isi hadiah', 300, { wajib: true })] },
+      A('penutup', 'Doa penutup setelah barongsai', 400, { wajib: true })
+    ] },
+    mancing: { nama: 'Fish It', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Yuk, kita lihat kamu dapat apa hari ini". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      { k: 'kenangan', tipe: 'daftar', label: 'Memory Bay: hasil pancingan berupa kenangan', hint: '2 sampai 3 kenangan. Tiap pancingan membuka satu.', min: 2, maks: 3, namaItem: 'Kenangan', item: [T('judul', 'Judul', 40, { wajib: true }), A('teks', 'Ceritanya', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'pesanManis', tipe: 'daftar', label: 'Love Lagoon: botol berisi pesan manis', hint: '2 sampai 3 pesan manis.', min: 2, maks: 3, namaItem: 'Pesan', item: [T('judul', 'Judul', 40), A('teks', 'Pesannya', 200, { wajib: true })] },
+      { k: 'peti', tipe: 'objek', label: 'Treasure Cove: peti harta karun (hadiah utama)', item: [F('foto', 'Foto pilihan'), A('pesan', 'Surat atau pesan utama', 600, { wajib: true })] }
     ] }
   };
 
@@ -99,6 +135,24 @@
     kartu: ['Kamu peduli tanpa pernah minta dilihat.', 'Kamu bikin orang lain merasa aman dan diterima.', 'Kamu bertahan, bahkan saat hari terasa berat.'],
     kuis: { q: 'Siapa yang paling beruntung mengenalmu?', opsi: ['Aku, tentu saja', 'Semua orang di sekitarmu', 'Dunia ini'], benar: 1, betul: 'Tepat sekali. Aku pemenangnya.', salah: 'Jawaban menarik, tapi aku tetap yang paling beruntung. Coba lagi!' },
     akhir: { foto: '', pesan: 'Semua misi tadi hanya cara untuk bilang satu hal: kamu berharga, dan aku sangat bersyukur ada kamu.', penutup: 'Misi selesai. Tapi kamu akan selalu jadi hadiah favoritku.' } };
+
+  SKEMA.romantique.contoh = { transisi: 'Ada sesuatu yang ingin kutulis untukmu, pelan-pelan, seperti pasir yang menyimpan jejak.', salam: 'Di antara semua bunga, kamu yang paling kuingat. Selamat datang di halaman cinta kita.',
+    halaman: [{ foto: '', kata: 'Aku jatuh cinta bukan karena kamu sempurna, tapi karena bersamamu semuanya terasa pulang.' }, { foto: '', kata: 'Setiap hari bersamamu adalah adegan yang tidak ingin kuakhiri.' }, { foto: '', kata: 'Kalau waktu bisa melambat, aku ingin melambat di saat ini.' }],
+    penutup: { pesan: 'Terima kasih sudah menjadi rumah untuk hatiku. Aku mencintaimu, hari ini dan di semua hari setelahnya.' } };
+  SKEMA.wisuda.contoh = { transisi: 'Perjuanganmu layak dirayakan, dari halaman pertama sampai hari ini.', gelar: 'Sarjana · Angkatan 2026',
+    perjalanan: [{ waktu: '2022', judul: 'Hari pertama kuliah', cerita: 'Dengan tas baru dan jantung berdebar, kamu memulai perjalanan panjang ini.', foto: '' }, { waktu: 'Semester 5', judul: 'Masa-masa tersulit', cerita: 'Begadang, revisi, dan ragu. Tapi kamu tidak pernah benar-benar menyerah.', foto: '' }, { waktu: 'Hari sidang', judul: 'Berdiri dengan berani', cerita: 'Kamu menjawab satu per satu, dan kami semua bangga.', foto: '' }],
+    surat: { judul: 'Surat Penghargaan', pesan: 'Selamat atas kelulusanmu. Terima kasih sudah berjuang begitu keras. Apa pun yang menantimu, ingatlah bahwa kamu sudah membuktikan dirimu mampu.' } };
+  SKEMA.lebaran.contoh = { transisi: 'Selamat datang di rumah kami. Silakan masuk, ada yang menunggumu di serambi.', salam: 'Selamat Hari Raya Idulfitri', ucapanKue: 'Kue lebaran ini kubuat dengan banyak doa. Semoga hari rayamu semanis kue ini dan selalu ditemani orang-orang tersayang.',
+    pintu: [{ judul: 'Doa untuk keluarga', doa: 'Semoga keluargamu selalu sehat, rukun, dan dilimpahi keberkahan.' }, { judul: 'Doa untuk rezeki', doa: 'Semoga rezekimu lapang, halal, dan membawa ketenangan.' }, { judul: 'Doa untuk hati', doa: 'Semoga hatimu selalu damai, dan segala yang kamu cita-citakan dimudahkan.' }],
+    maaf: 'Di hari yang fitri ini, aku mohon maaf lahir dan batin atas segala salah, sengaja maupun tidak. Terima kasih sudah menjadi bagian dari hari-hariku. Taqabbalallahu minna wa minkum.' };
+  SKEMA.imlek.contoh = { transisi: 'Semoga tahun ini penuh keberuntungan, tawa, dan kabar baik untukmu.', salam: 'Gong Xi Fa Cai',
+    harapan: [{ teks: 'Semoga kesehatanmu selalu terjaga sepanjang tahun.' }, { teks: 'Semoga rezekimu mengalir deras dan usahamu lancar.' }, { teks: 'Semoga orang-orang tersayang selalu ada di sekelilingmu.' }],
+    hongbao: { judul: 'Angpao untukmu', doa: 'Di dalam amplop ini ada doa: semoga setiap langkahmu dilancarkan dan setiap harapanmu terwujud.' }, hadiah: { nama: 'Satu tahun penuh tawa', isi: 'Hadiah simbolisku: waktu untuk mendengarkan, tertawa, dan merayakan bersamamu sepanjang tahun.' },
+    penutup: 'Terima kasih sudah mengetuk barongsai. Semoga koin-koin emas ini menjadi doa keberuntungan untukmu sepanjang tahun. Gong Xi Fa Cai!' };
+  SKEMA.mancing.contoh = { transisi: 'Yuk, kita lihat kamu dapat apa hari ini. Siapkan kailnya!',
+    kenangan: [{ judul: 'Hari pertama kita', teks: 'Waktu itu kita belum tahu akan sedekat ini.', foto: '' }, { judul: 'Tertawa tanpa alasan', teks: 'Itu salah satu hari terbaik yang kuingat.', foto: '' }],
+    pesanManis: [{ judul: 'Untukmu', teks: 'Kamu itu orang yang bikin hari biasa jadi seru.' }, { judul: 'Pesan di botol', teks: 'Terima kasih sudah selalu ada, bahkan di hari yang berat.' }],
+    peti: { foto: '', pesan: 'Harta karun yang sesungguhnya bukan isi peti ini. Harta karunku adalah kamu, dan semua hari yang kita lalui bersama.' } };
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();

@@ -351,3 +351,41 @@
 .g-pmisi .stage .inner h1 { color: #8CF3FF; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; text-shadow: 0 0 18px #8CF3FF66; }
 .g-pmisi .cbtn { background: #0C2F3C; color: #8CF3FF; border: 2px solid #8CF3FF; border-radius: 6px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; box-shadow: 0 0 22px #8CF3FF44; }
 .g-pmall .titik { top: 66px; }
+
+/* --- Skin lima desain Premium tambahan --- */
+.theme-promantique { --t1: #14080F; --t2: #3A1226; --tink: #F4E8D3; --tacc: #E3BE7B; }
+.theme-pwisuda { --t1: #F6F1E4; --t2: #EFE6CF; --tink: #2B2433; --tacc: #C9A24B; }
+.theme-plebaran { --t1: #0B5D4B; --t2: #052E26; --tink: #FFF6DD; --tacc: #F6D06F; }
+.theme-pimlek { --t1: #C8102E; --t2: #7E0A1A; --tink: #FFF3D6; --tacc: #F5C242; }
+.theme-pmancing { --t1: #BFE9FF; --t2: #2E8FCC; --tink: #0D3B5C; --tacc: #FFD76A; }
+/* Cinematic Romantique: gelap burgundy, emas champagne, huruf serif miring */
+.card-root.g-promantique { background: radial-gradient(ellipse at 50% 30%, #3A1226 0%, #14080F 60%, #070307 100%); font-family: 'Cormorant Garamond', Georgia, serif; }
+.g-promantique .stage .inner h1 { font-style: italic; font-weight: 600; color: #fff; text-shadow: 0 0 26px #E3BE7B66; }
+.g-promantique .stage .inner p, .g-promantique .stage .inner .t-pesan { font-style: italic; color: #F4E8D3; }
+.g-promantique .nama-besar { color: #E3BE7B; font-style: italic; }
+.g-promantique .cbtn { background: transparent; color: #F6E3A1; border: 1px solid #E3BE7B; border-radius: 4px; letter-spacing: .12em; text-transform: uppercase; box-shadow: 0 0 22px #E3BE7B33; }
+/* Graduation Day: terang editorial, kertas bertekstur, aksen emas */
+.card-root.g-pwisuda { background: #F6F1E4; font-family: 'Cormorant Garamond', Georgia, serif; }
+.g-pwisuda::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .5; background: repeating-linear-gradient(0deg, rgba(120, 100, 60, .05) 0 1px, transparent 1px 4px); }
+.g-pwisuda .stage .inner { background: #fff; color: #2B2433; border-radius: 4px; padding: 1.8rem 1.4rem; box-shadow: 0 20px 40px -24px rgba(40, 30, 10, .55); border-top: 4px solid #C9A24B; border-bottom: 1px solid #C9A24B; }
+.g-pwisuda .stage .inner h1 { font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif; color: #0F1F3D; font-weight: 700; letter-spacing: .04em; }
+.g-pwisuda .nama-besar { font-family: 'Playfair Display', Georgia, serif; color: #0F1F3D; }
+.g-pwisuda .cbtn { background: #0F1F3D; color: #E8CF8A; border: 0; border-radius: 2px; letter-spacing: .1em; text-transform: uppercase; }
+.g-pwisuda .cbtn.ghost { background: transparent; color: #0F1F3D; border: 2px solid #0F1F3D; }
+/* Idul Fitri: zamrud, emas, lentera */
+.card-root.g-plebaran { background: radial-gradient(ellipse at 50% 0%, #11806A 0, #0B5D4B 42%, #052E26 100%); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.g-plebaran::before { content: ""; position: fixed; right: 8%; top: 5%; width: 64px; height: 64px; z-index: 1; border-radius: 50%; box-shadow: inset -16px 6px 0 0 #F6D06F; transform: rotate(-20deg); filter: drop-shadow(0 0 16px #F6D06F88); pointer-events: none; }
+.g-plebaran .stage .inner { background: rgba(255, 246, 221, .08); border: 1px solid #F6D06F55; border-radius: 26px; padding: 1.7rem 1.3rem; backdrop-filter: blur(4px); }
+.g-plebaran .stage .inner h1 { color: #FFE9A8; font-weight: 800; text-shadow: 0 0 24px #F6D06F55; }
+.g-plebaran .cbtn { background: linear-gradient(135deg, #F6D06F, #D9A52E); color: #3A2A00; border: 0; border-radius: 99px; font-weight: 800; }
+/* Imlek: vermilion, emas */
+.card-root.g-pimlek { background: radial-gradient(ellipse at 50% 0, #E8323A 0, #C8102E 45%, #7E0A1A 100%); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.g-pimlek .stage .inner { background: rgba(126, 10, 26, .55); border: 2px solid #F5C242; border-radius: 18px; padding: 1.7rem 1.3rem; box-shadow: inset 0 0 0 5px #7E0A1A, inset 0 0 0 6px #F5C24288; }
+.g-pimlek .stage .inner h1 { color: #FFE08A; font-weight: 800; text-shadow: 0 0 24px #F5C24266; }
+.g-pimlek .cbtn { background: linear-gradient(135deg, #F5C242, #E89A1B); color: #5A0A12; border: 0; border-radius: 12px; font-weight: 800; }
+/* Fish It: laut biru, kartu putih bulat, tombol kuning timbul */
+.card-root.g-pmancing { background: linear-gradient(180deg, #BFE9FF 0, #8FD3F5 40%, #3FA7E0 100%); font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif; }
+.g-pmancing .stage .inner { background: #fff; color: #0D3B5C; border-radius: 28px; border: 4px solid #fff; box-shadow: 0 10px 0 #17609A55, 0 24px 40px -24px #05324f; padding: 1.7rem 1.3rem; }
+.g-pmancing .stage .inner h1 { color: #17609A; font-weight: 700; text-shadow: 3px 3px 0 #FFD76A; }
+.g-pmancing .cbtn { background: #FFD76A; color: #5A3A00; border: 3px solid #fff; border-radius: 99px; box-shadow: 0 6px 0 #B8892B; font-weight: 700; font-family: inherit; }
+.g-pmancing .cbtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #B8892B; }

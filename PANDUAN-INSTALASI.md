@@ -206,3 +206,19 @@ Pembeli yang membayar satu per satu lewat alur biasa tidak terpengaruh.
 - Wajib: ganti isi file `Skema` di Apps Script dengan `Skema.gs` terbaru (ada kolom baru `transisi`), lalu deploy versi baru.
 - Skin ada di akhir `css/gaya.css` (kelas `.g-pmovie`, `.g-pmall`, dan seterusnya) dan layar penyambung di akhir `css/special.css` (`.jb-…`); warna dan font bisa disesuaikan di sana.
 - Demo di katalog untuk desain Premium sudah memakai alur lengkap ini.
+
+
+## Lima desain Premium baru (dari dokumen contoh_desain)
+Premium kini punya **11 desain**. Lima yang baru:
+| Desain | Alur halaman konsep | Isian pembeli |
+|---|---|---|
+| **Cinematic Romantique** | Bunga hidup bergerak → nama penerima muncul dari tumpukan bunga → bunga disapu menjadi pasir → nama ditulis di pasir → halaman romantis (foto + kata-kata) | Ucapan di bawah nama, kata di pasir, 3–6 halaman (foto + kalimat), pesan penutup |
+| **Graduation Day** | Sampul majalah dengan foto wisuda besar → perjalanan perjuangan bertahap → surat penghargaan → lempar toga | Gelar, foto utama, 3–6 tonggak (waktu, judul, cerita, foto), surat |
+| **Idul Fitri** | Gerbang zamrud (bulan sabit, lentera, masjid) → serambi → membuat kue lebaran → 3 pintu masjid berisi doa → permohonan maaf | Salam, ucapan setelah kue jadi, 3 doa, pesan maaf |
+| **Imlek** | Perayaan merah-emas dengan kembang api → 3 lentera berisi harapan → angpao + kotak hadiah → barongsai (ketuk = koin emas) | Salam, 3 harapan, doa angpao, hadiah simbolis, doa penutup |
+| **Fish It** | Laut, pulau, perahu → peta 3 spot (Memory Bay, Love Lagoon, Treasure Cove) → lempar kail, "ada sesuatu nih!", tarik kail → ikan, botol pesan, peti harta karun | 2–3 kenangan, 2–3 pesan manis, isi peti |
+
+Seperti desain Premium lainnya: lima slide Basic (pembuka, ucapan, surat, kejutan, kenangan) tampil dengan **warna, font, dan bingkai tema desain itu**; sebelum halaman konsep ada **layar penyambung** berisi kalimat buatan pembeli.
+**Cara memasang:** ganti file `Kode`, `Admin`, dan `Skema` di Apps Script (jangan membuat file baru), deploy versi baru, lalu jalankan **`isiUlangKatalogDesain`** agar kelima desain masuk katalog dan jalankan `setupAppEnvironment` bila belum. Timpa frontend, isi `GAS_URL`, `git push`. Teks fitur paket Premium bisa Ibu sesuaikan di Admin.
+**Menambah desain Premium lagi nanti** perlu: isian di `js/skema.js`, mesin `js/sp-<kunci>.js`, skin di `css/gaya.css`, layar penyambung di `css/special.css`, entri di `js/gaya.js`, dan baris di Kode.gs (lalu `isiUlangKatalogDesain`).
+Kategori **Idul Fitri** dan **Imlek** otomatis menjadi filter baru di katalog.
