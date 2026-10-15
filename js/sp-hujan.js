@@ -44,7 +44,9 @@
         }
         function reda() {
           if (tuntas) return; tuntas = true; level = 0; pet.textContent = 'Hujan sudah reda.'; if (window.Suara) window.Suara.sukses(); kb.classList.add('hilang'); el.classList.add('reda');
-          S.jeda(function () { cancelAnimationFrame(raf); rx.clearRect(0, 0, W, H); }, 1400); S.jeda(penutup, 3600);
+          S.jeda(function () { cancelAnimationFrame(raf); rx.clearRect(0, 0, W, H); }, 1400);
+          var lw = el.querySelector('.hj-lewat'); if (lw) lw.hidden = true;
+          S.jeda(function () { pet.textContent = 'Hujan sudah reda. Baca dulu kalimat-kalimatnya, lalu tekan Lanjut.'; var b = document.createElement('button'); b.type = 'button'; b.className = 'hj-lewat hj-lanjut'; b.textContent = 'Lanjut ›'; el.appendChild(b); b.addEventListener('click', function () { if (window.Suara) window.Suara.buka(); penutup(); }); }, 2200);
         }
         var turun = false, hitung = 0;
         function usap(e) { if (!turun) return; kx.globalCompositeOperation = 'destination-out'; var gr = kx.createRadialGradient(e.clientX, e.clientY, 4, e.clientX, e.clientY, 46); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.65, 'rgba(0,0,0,.92)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); kx.fillStyle = gr; kx.beginPath(); kx.arc(e.clientX, e.clientY, 46, 0, 6.3); kx.fill(); kx.globalCompositeOperation = 'source-over'; if (window.Suara) window.Suara.gosok(); if (++hitung % 5 === 0) cek(); }
@@ -54,8 +56,9 @@
         el.querySelector('.hj-lewat').addEventListener('click', function (e) { e.stopPropagation(); kx.globalCompositeOperation = 'destination-out'; kx.fillStyle = '#000'; kx.fillRect(0, 0, W, H); kx.globalCompositeOperation = 'source-over'; teks.forEach(function (p, q) { if (!baca[q]) { baca[q] = true; jumlah++; p.classList.add('baca'); } }); reda(); });
       }
       function penutup() {
-        layar('<div class="hj-pelangi tampil" aria-hidden="true"></div><div class="hj-akhir"><p class="hj-kicker">SETELAH HUJAN</p><p class="hj-pesan">' + S.kata(d.penutup, 5200, 55) + '</p>' + S.kredit(d.pengirim) + '</div>', 'hj-penutupl');
-        S.confetti(innerWidth / 2, innerHeight * 0.25, 36, ['#FFE9A3', '#FFD3B8', '#BFD8C6', '#fff'], { kuat: 6 }); S.akhir();
+        layar('<div class="hj-pelangi tampil" aria-hidden="true"></div><div class="hj-akhir"><p class="hj-kicker">SETELAH HUJAN</p><p class="hj-pesan">' + S.kata(d.penutup, 60000, 190) + '</p>' + S.kredit(d.pengirim) + '</div>', 'hj-penutupl');
+        S.confetti(innerWidth / 2, innerHeight * 0.25, 36, ['#FFE9A3', '#FFD3B8', '#BFD8C6', '#fff'], { kuat: 6 });
+        var kata = d.penutup.split(/\s+/).length; S.jeda(S.akhir, Math.min(16000, kata * 190 + 1800));      // tombol lanjut baru muncul setelah teks selesai dibaca
       }
       jendela();
     }

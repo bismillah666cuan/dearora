@@ -525,7 +525,7 @@
   /** Halaman konsep Premium (film, toko online, dll.) dibuka di antara surat dan kejutan, lalu kembali ke alur utama. */
   function mulaiKonsep() {
     var host = document.createElement('div'); host.id = 'konsep'; document.body.appendChild(host);
-    Special.mountInto(host, konsep, { penerima: data.penerima, pengirim: dariTeks(data), foto: data.foto || [], slug: slug, musik: null }, data.dataDesain, function () { host.remove(); konsepSelesai = true; ke(3); });
+    Special.mountInto(host, konsep, { penerima: data.penerima, pengirim: dariTeks(data), foto: data.foto || [], slug: slug, musik: null, demo: demo }, data.dataDesain, function () { host.remove(); konsepSelesai = true; ke(3); });
   }
   function render(d) {
     data = d; bersih(); aktif = 0; clearInterval(slideT);

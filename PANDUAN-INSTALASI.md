@@ -247,3 +247,9 @@ Langkah **Desain** pada form Premium kini punya **filter kategori** (Semua, Anni
 
 **Brankas Rahasia: jawaban hanya di server.** Jawaban teka-teki dan isi brankas **tidak dikirim ke halaman penerima** (tidak ada di HTML maupun respons data kartu). Halaman hanya menerima nama ruangan, teka-teki, dan petunjuk; jawaban diperiksa lewat server (`brankasCek` per ruangan dan `brankasBuka` untuk brankas terakhir, yang memeriksa ulang SEMUA jawaban). Percobaan dibatasi 40 kali per 10 menit per ucapan. Huruf besar/kecil dan spasi diabaikan. Admin tetap dapat membaca jawaban di detail pesanan untuk keperluan bantuan.
 **Memasang:** ganti isi file `Kode`, `Admin`, `Pesanan`, `Kartu`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, jalankan **`isiUlangKatalogDesain`**, lalu timpa frontend dan isi `GAS_URL`. Tanpa mengganti `Kartu` dan `Kode`, Brankas Rahasia tidak bisa memeriksa jawaban.
+
+
+## Perbaikan Brankas Rahasia dan Hujan Reda
+- **Brankas Rahasia di demo katalog** sempat menampilkan "Koneksi bermasalah (Ucapan tidak ditemukan)" karena demo mengira dirinya ucapan asli dan mencoba memeriksa jawaban ke server. Sekarang demo memeriksa jawaban contoh secara lokal (jawaban contoh ruangan pertama: *bandung*, kedua: *nasi goreng*, ketiga: *7*). Pada ucapan asli, jawaban tetap hanya diperiksa server.
+- **Hujan Reda tidak lagi berpindah otomatis.** Setelah semua kalimat terbaca, hujan reda dan pelangi muncul, tetapi perpindahan ke penjelasan baru terjadi setelah penerima menekan **Lanjut**. Teks penjelasan muncul lebih pelan, dan tombol lanjut ke kejutan baru muncul setelah teks selesai dibaca. Warna kalimat disesuaikan agar tetap terbaca di latar pelangi.
+- Perubahan ini hanya di frontend (tidak perlu mengganti file GAS).

@@ -71,7 +71,7 @@
     mountInto: function (host, k, c, f, selesai) {
       var def = reg[k], lama = $root; bersih(); parts = []; fotoIds = c.foto || [];
       $root = host; Special._akhir = false; Special._embed = function () { Special._embed = null; $root = lama; bersih(); selesai(); };
-      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: false, tema: k };
+      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: !!c.demo, tema: k };
       host.className = 'konsep-host sp-root sp-' + k; host.innerHTML = '';
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       var mulaiDesain = function () { host.innerHTML = ''; def.mulai(host, def.adapt(f || {}, c), Special); if (c.musik && k !== 'musik') Special.pasangMusik(c.musik); };
