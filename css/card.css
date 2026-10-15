@@ -201,3 +201,8 @@ dialog.lightbox button { position: fixed; top: calc(.75rem + env(safe-area-inset
   .stage, .stage.on .inner > *, .letter, .finale, .env *, .sparkle, .hint, .env, .gift, .flame, .env-ring { animation: none !important; transition-duration: .001ms !important; transition-delay: 0s !important; }
   .stage.on .inner > *, .finale.show, .letter.show { opacity: 1; } .l-isi .w { opacity: 1; animation: none; } .lanjut { opacity: 1; }
 }
+
+/* Mode contoh kejutan (dibuka dari form pemesanan) */
+.demo-catatan { position: fixed; left: .75rem; right: .75rem; top: calc(.6rem + env(safe-area-inset-top, 0px)); z-index: 90; display: flex; align-items: center; gap: .6rem; padding: .6rem .8rem; border-radius: 14px; background: rgba(255, 255, 255, .95); color: #261C24; box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .5); font: 500 .8125rem/1.4 'Plus Jakarta Sans', system-ui, sans-serif; }
+.demo-catatan p { margin: 0; flex: 1; } .demo-ulang { flex: none; min-height: 36px; padding: 0 .8rem; border-radius: 99px; border: 1.5px solid #E85D75; background: #fff; color: #C23B58; font: 700 .75rem 'Plus Jakarta Sans', system-ui, sans-serif; cursor: pointer; }
+.demo-kejutan .stage.kejutan .inner { padding-top: 5.5rem; } .demo-kejutan .stage.kejutan .cbtn[data-go="4"] { display: none; }

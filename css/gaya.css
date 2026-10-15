@@ -389,3 +389,20 @@
 .g-pmancing .stage .inner h1 { color: #17609A; font-weight: 700; text-shadow: 3px 3px 0 #FFD76A; }
 .g-pmancing .cbtn { background: #FFD76A; color: #5A3A00; border: 3px solid #fff; border-radius: 99px; box-shadow: 0 6px 0 #B8892B; font-weight: 700; font-family: inherit; }
 .g-pmancing .cbtn:active { transform: translateY(4px); box-shadow: 0 2px 0 #B8892B; }
+
+/* --- Skin Dearora Awards / Resep Kasih Sayang / Rumah Kenangan --- */
+.theme-pawards { --t1: #0E1530; --t2: #1E2A5C; --tink: #F4F1EA; --tacc: #F5C242; }
+.theme-presep { --t1: #FFF1DC; --t2: #FFE0B5; --tink: #4A2A18; --tacc: #E8745A; }
+.theme-prumah { --t1: #E8F5FF; --t2: #FFD9A8; --tink: #4A2A18; --tacc: #7FA86B; }
+.card-root.g-pawards { background: radial-gradient(ellipse at 50% 0, #1E2A5C 0, #0E1530 55%, #070A1C 100%); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.g-pawards .stage .inner { background: rgba(14, 21, 48, .85); border: 3px solid #F5C242; border-radius: 14px; padding: 1.7rem 1.3rem; box-shadow: 0 0 40px #F5C24233; }
+.g-pawards .stage .inner h1 { background: linear-gradient(180deg, #FFF3B0, #F5C242); -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 800; }
+.g-pawards .cbtn { background: linear-gradient(135deg, #F5C242, #E89A1B); color: #3A2400; border: 0; border-radius: 99px; font-weight: 800; }
+.card-root.g-presep { background: #FFF1DC; background-image: linear-gradient(rgba(232, 116, 90, .08) 1px, transparent 1px), linear-gradient(90deg, rgba(232, 116, 90, .08) 1px, transparent 1px); background-size: 28px 28px; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.g-presep .stage .inner { background: #fff; border: 2px dashed #E8745A; border-radius: 10px; padding: 1.7rem 1.3rem; box-shadow: 0 18px 36px -22px #8E3623; }
+.g-presep .stage .inner h1 { font-family: 'Caveat', cursive; font-weight: 700; color: #8E3623; font-size: 2.6rem; }
+.g-presep .cbtn { background: #E8745A; color: #fff; border: 0; border-radius: 99px; box-shadow: 0 6px 0 #B85439; font-weight: 800; }
+.card-root.g-prumah { background: linear-gradient(180deg, #BFE3F7 0, #E8F5FF 45%, #FFE9C7 45%, #FFD9A8 100%); font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif; }
+.g-prumah .stage .inner { background: #fff; color: #4A2A18; border-radius: 26px; border: 4px solid #fff; box-shadow: 0 10px 0 #8E362333, 0 24px 40px -24px #8E3623; padding: 1.7rem 1.3rem; }
+.g-prumah .stage .inner h1 { color: #8E3623; font-weight: 600; }
+.g-prumah .cbtn { background: #7FA86B; color: #fff; border: 0; border-radius: 99px; box-shadow: 0 6px 0 #5A7F48; font-weight: 700; font-family: inherit; }

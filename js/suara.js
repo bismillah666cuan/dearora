@@ -46,6 +46,7 @@
     /** Konfeti / party popper: letupan lalu kerlip. */
     konfeti: function () { if (!batas('konfeti', 150)) return; desis(0, 0.1, 0.28, 2600, 700, 0.7); nada(520, 0, 0.08, 'triangle', 0.12, 200); [1568, 2093, 1760].forEach(function (f, i) { nada(f, 0.07 + i * 0.05, 0.25, 'sine', 0.05); }); },
     percik: function () { desis(0, 0.18, 0.2, 1400, 500, 0.7); nada(300, 0.02, 0.12, 'sine', 0.1, 120); },
+    drum: function () { for (var i = 0; i < 14; i++) { desis(i * 0.09, 0.07, 0.12 + i * 0.012, 260, 160, 0.6); nada(120 + i * 6, i * 0.09, 0.08, 'triangle', 0.08 + i * 0.006); } },
     whoosh: function () { desis(0, 0.3, 0.14, 400, 2600, 0.8); },
     ding: function () { nada(1320, 0, 0.4, 'sine', 0.14); nada(1976, 0.02, 0.5, 'sine', 0.08); },
     gosok: function () { if (!batas('gosok', 85)) return; desis(0, 0.1, 0.1, 2400 + Math.random() * 900, 1400, 0.7); },

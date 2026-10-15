@@ -52,7 +52,10 @@ window.DEARORA_SEED = {
     { id: 'DSN-018', nama: 'Graduation Day', kategori: 'Wisuda', paket: ['premium'], thumbnail: 'tema:wisuda', urlDemo: '' },
     { id: 'DSN-019', nama: 'Idul Fitri', kategori: 'Idul Fitri', paket: ['premium'], thumbnail: 'tema:lebaran', urlDemo: '' },
     { id: 'DSN-020', nama: 'Imlek', kategori: 'Imlek', paket: ['premium'], thumbnail: 'tema:imlek', urlDemo: '' },
-    { id: 'DSN-021', nama: 'Fish It', kategori: 'Hari Spesial', paket: ['premium'], thumbnail: 'tema:mancing', urlDemo: '' }
+    { id: 'DSN-021', nama: 'Fish It', kategori: 'Hari Spesial', paket: ['premium'], thumbnail: 'tema:mancing', urlDemo: '' },
+    { id: 'DSN-022', nama: 'Dearora Awards', kategori: 'Terima Kasih', paket: ['premium'], thumbnail: 'tema:awards', urlDemo: '' },
+    { id: 'DSN-023', nama: 'Resep Kasih Sayang', kategori: 'Hari Ibu', paket: ['premium'], thumbnail: 'tema:resep', urlDemo: '' },
+    { id: 'DSN-024', nama: 'Rumah Kenangan', kategori: 'Hari Ibu', paket: ['premium'], thumbnail: 'tema:rumah', urlDemo: '' }
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }

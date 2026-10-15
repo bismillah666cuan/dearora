@@ -222,3 +222,17 @@ Seperti desain Premium lainnya: lima slide Basic (pembuka, ucapan, surat, kejuta
 **Cara memasang:** ganti file `Kode`, `Admin`, dan `Skema` di Apps Script (jangan membuat file baru), deploy versi baru, lalu jalankan **`isiUlangKatalogDesain`** agar kelima desain masuk katalog dan jalankan `setupAppEnvironment` bila belum. Timpa frontend, isi `GAS_URL`, `git push`. Teks fitur paket Premium bisa Ibu sesuaikan di Admin.
 **Menambah desain Premium lagi nanti** perlu: isian di `js/skema.js`, mesin `js/sp-<kunci>.js`, skin di `css/gaya.css`, layar penyambung di `css/special.css`, entri di `js/gaya.js`, dan baris di Kode.gs (lalu `isiUlangKatalogDesain`).
 Kategori **Idul Fitri** dan **Imlek** otomatis menjadi filter baru di katalog.
+
+
+## "Lihat contoh" di langkah Kejutan Akhir
+Tombol **Lihat contoh** pada tiap jenis kejutan kini **langsung membuka kejutannya saja** (tanpa slide pembuka, ucapan, dan surat) dengan catatan di atas: *"Contoh interaksi. Ini hanya gambaran cara kejutannya dimainkan. Isi ucapan, nama, dan fotonya nanti sesuai yang kamu tulis."* Ada tombol **Mainkan ulang**. Demo di katalog (Coba Demo) tetap memutar perjalanan lengkap. Ini hanya perubahan frontend.
+
+
+## Putaran A: tiga desain Premium baru (total 14) dan filter kategori
+| Desain | Alur halaman konsep | Isian pembeli |
+|---|---|---|
+| **Dearora Awards** | Karpet merah dan sorot lampu → buka amplop (drum) → "And the winner is…" → piala + alasan menang (ulang 3–5 kali) → pidato kemenangan | Nama acara, 3–5 penghargaan (nama + alasan), pidato |
+| **Resep Kasih Sayang** | Kartu resep tulisan tangan → ketuk bahan masuk panci, tiap bahan membuka kenangan → aduk dan sajikan | Judul resep, 3–6 bahan (takaran, cerita, foto), nama hidangan + pesan utama |
+| **Rumah Kenangan** | Rumah tampak depan → ketuk pintu → rumah tampak potong dengan 3–5 ruangan → ketuk benda di tiap ruangan → loteng berisi pesan utama | Judul, 3–5 ruangan (nama, benda, kenangan, foto), pesan loteng |
+Pemasangan: ganti isi file `Kode`, `Admin`, dan `Skema` di Apps Script (bukan file baru), deploy versi baru, jalankan **`isiUlangKatalogDesain`**, lalu timpa frontend dan isi `GAS_URL`.
+Langkah **Desain** pada form Premium kini punya **filter kategori** (Semua, Anniversary, Hari Ibu, Imlek, dst.) agar pembeli tidak menggulir 14 desain sekaligus. Kategori baru buatan admin otomatis ikut muncul.

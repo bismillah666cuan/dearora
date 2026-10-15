@@ -106,6 +106,24 @@
       { k: 'kenangan', tipe: 'daftar', label: 'Memory Bay: hasil pancingan berupa kenangan', hint: '2 sampai 3 kenangan. Tiap pancingan membuka satu.', min: 2, maks: 3, namaItem: 'Kenangan', item: [T('judul', 'Judul', 40, { wajib: true }), A('teks', 'Ceritanya', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
       { k: 'pesanManis', tipe: 'daftar', label: 'Love Lagoon: botol berisi pesan manis', hint: '2 sampai 3 pesan manis.', min: 2, maks: 3, namaItem: 'Pesan', item: [T('judul', 'Judul', 40), A('teks', 'Pesannya', 200, { wajib: true })] },
       { k: 'peti', tipe: 'objek', label: 'Treasure Cove: peti harta karun (hadiah utama)', item: [F('foto', 'Foto pilihan'), A('pesan', 'Surat atau pesan utama', 600, { wajib: true })] }
+    ] },
+    awards: { nama: 'Dearora Awards', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Malam ini kamu jadi bintang utamanya". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('acara', 'Nama acara penghargaan', 40, { bawaan: 'Dearora Awards', hint: 'Mis. Malam Penghargaan Sahabat Terbaik.' }),
+      { k: 'penghargaan', tipe: 'daftar', label: 'Kategori penghargaan', hint: '3 sampai 5 penghargaan. Penerima menjadi pemenang di setiap kategori.', min: 3, maks: 5, namaItem: 'Penghargaan', item: [T('judul', 'Nama penghargaan', 50, { wajib: true, hint: 'Mis. Sahabat Paling Sabar' }), A('alasan', 'Alasan menang', 200, { wajib: true })] },
+      { k: 'pidato', tipe: 'objek', label: 'Pidato kemenangan', item: [A('pesan', 'Isi pidato (pesan utama)', 600, { wajib: true })] }
+    ] },
+    resep: { nama: 'Resep Kasih Sayang', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Hari ini aku masak sesuatu yang spesial untuk Ibu". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Judul kartu resep', 60, { wajib: true, bawaan: 'Resep Kasih Sayang' }),
+      { k: 'bahan', tipe: 'daftar', label: 'Bahan-bahan', hint: '3 sampai 6 bahan. Tiap bahan membuka satu kenangan atau ucapan terima kasih.', min: 3, maks: 6, namaItem: 'Bahan', item: [T('nama', 'Takaran dan bahan', 40, { wajib: true, hint: 'Mis. 2 sendok kesabaran' }), A('cerita', 'Kenangan atau terima kasih', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'hidangan', tipe: 'objek', label: 'Hidangan jadi dan pesan utama', item: [T('nama', 'Nama hidangan', 40, { bawaan: 'Semangkuk Kasih Sayang' }), A('pesan', 'Pesan utama', 600, { wajib: true })] }
+    ] },
+    rumah: { nama: 'Rumah Kenangan', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. "Ketuk pintunya, banyak kenangan di dalam". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Judul rumah', 60, { bawaan: 'Rumah Kenangan' }),
+      { k: 'ruang', tipe: 'daftar', label: 'Ruangan dan kenangannya', hint: '3 sampai 5 ruangan. Tiap ruangan punya satu benda yang menyimpan kenangan.', min: 3, maks: 5, namaItem: 'Ruangan', item: [T('nama', 'Nama ruangan', 30, { wajib: true, hint: 'Mis. Dapur, Kamar, Taman' }), T('benda', 'Benda yang diketuk', 30, { hint: 'Mis. Toples kue' }), T('judul', 'Judul kenangan', 50, { wajib: true }), A('cerita', 'Ceritanya', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'loteng', tipe: 'objek', label: 'Loteng: pesan utama', item: [F('foto', 'Foto pilihan'), A('pesan', 'Pesan utama', 600, { wajib: true })] }
     ] }
   };
 
@@ -153,6 +171,16 @@
     kenangan: [{ judul: 'Hari pertama kita', teks: 'Waktu itu kita belum tahu akan sedekat ini.', foto: '' }, { judul: 'Tertawa tanpa alasan', teks: 'Itu salah satu hari terbaik yang kuingat.', foto: '' }],
     pesanManis: [{ judul: 'Untukmu', teks: 'Kamu itu orang yang bikin hari biasa jadi seru.' }, { judul: 'Pesan di botol', teks: 'Terima kasih sudah selalu ada, bahkan di hari yang berat.' }],
     peti: { foto: '', pesan: 'Harta karun yang sesungguhnya bukan isi peti ini. Harta karunku adalah kamu, dan semua hari yang kita lalui bersama.' } };
+
+  SKEMA.awards.contoh = { transisi: 'Malam ini kamu jadi bintang utamanya. Karpet merah sudah digelar.', acara: 'Dearora Awards',
+    penghargaan: [{ judul: 'Sahabat Paling Sabar', alasan: 'Karena kamu selalu mendengarkan, bahkan saat ceritaku diulang untuk kesekian kali.' }, { judul: 'Paling Jago Bikin Ketawa', alasan: 'Hari terburukku pun jadi lebih ringan setiap kamu mulai bercanda.' }, { judul: 'Teman Terbaik Sepanjang Masa', alasan: 'Karena kamu hadir di hari-hari yang paling penting dan yang paling biasa.' }],
+    pidato: { pesan: 'Terima kasih sudah menjadi kamu. Piala ini hanya simbol kecil dari rasa syukurku karena mengenalmu. Terima kasih untuk semuanya, dan selamat!' } };
+  SKEMA.resep.contoh = { transisi: 'Hari ini aku memasak sesuatu yang spesial, dengan bahan yang paling kuingat darimu.', judul: 'Resep Kasih Sayang',
+    bahan: [{ nama: '2 sendok kesabaran', cerita: 'Ibu tidak pernah marah lama-lama, bahkan saat aku bandel.', foto: '' }, { nama: 'Sejumput doa', cerita: 'Setiap pagi doa Ibu mengiringi langkahku sebelum aku sadar.', foto: '' }, { nama: 'Secangkir pelukan hangat', cerita: 'Pelukan Ibu selalu jadi tempat pulang paling aman.', foto: '' }],
+    hidangan: { nama: 'Semangkuk Kasih Sayang', pesan: 'Resep ini tidak akan pernah persis sama dengan yang Ibu berikan, karena kasih sayang Ibu tak punya takaran. Terima kasih untuk semuanya, Bu.' } };
+  SKEMA.rumah.contoh = { transisi: 'Ketuk pintunya. Banyak kenangan yang tersimpan di dalam rumah ini.', judul: 'Rumah Kenangan',
+    ruang: [{ nama: 'Dapur', benda: 'Toples kue', judul: 'Kue buatan Ibu', cerita: 'Aroma kue dari dapur ini yang paling kuingat setiap pulang sekolah.', foto: '' }, { nama: 'Kamar', benda: 'Selimut tebal', judul: 'Cerita sebelum tidur', cerita: 'Dulu aku tidur diiringi cerita yang tak pernah sama setiap malamnya.', foto: '' }, { nama: 'Taman', benda: 'Ayunan tua', judul: 'Sore di ayunan', cerita: 'Tawa kita sore itu masih terdengar jelas sampai sekarang.', foto: '' }],
+    loteng: { foto: '', pesan: 'Semua ruangan di rumah ini punya tempat di hatiku. Terima kasih sudah membuat rumah ini penuh cinta, dan aku selalu ingin pulang.' } };
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();
