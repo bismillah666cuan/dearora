@@ -260,9 +260,10 @@
   VIEW.paket = function () {
     var d = data();
     var kartu = U.susunPaket(d.paket).map(function (p) {
-      var f = p.fitur || {};
-      return '<label class="plan-pick' + (f.rekomendasi ? ' fav' : '') + (ST.paket === p.id ? ' on' : '') + '" for="pk-' + esc(p.id) + '">' +
-        '<input type="radio" id="pk-' + esc(p.id) + '" name="paket" data-k="paket" value="' + esc(p.id) + '"' + (ST.paket === p.id ? ' checked' : '') + '>' +
+      var f = p.fitur || {}, segera = U.paketSegera(p, d.desain);
+      return '<label class="plan-pick' + (f.rekomendasi ? ' fav' : '') + (ST.paket === p.id ? ' on' : '') + (segera ? ' segera' : '') + '" for="pk-' + esc(p.id) + '">' +
+        '<input type="radio" id="pk-' + esc(p.id) + '" name="paket" data-k="paket" value="' + esc(p.id) + '"' + (ST.paket === p.id ? ' checked' : '') + (segera ? ' disabled' : '') + '>' +
+        (segera ? '<span class="plan-flag sm">Segera hadir</span>' : '') +
         (f.badge ? '<span class="plan-flag sm">' + esc(f.badge) + '</span>' : '') +
         '<span class="pp-name">' + esc(p.nama) + '</span>' +
         '<span class="pp-price">Rp ' + esc(U.rupiah(p.harga)) + '</span>' +

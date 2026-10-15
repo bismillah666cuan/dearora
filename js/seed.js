@@ -31,7 +31,17 @@ window.DEARORA_SEED = {
           { t: 'Surprise interaktif: amplop digital dan pesan rahasia', ok: true },
           { t: 'Password opsional untuk pesan rahasia', ok: true },
           { t: 'Atur urutan cerita dan tampilan pembuka', ok: true },
-          { t: '1× revisi gratis', ok: true } ] } }
+          { t: '1× revisi gratis', ok: true } ] } },
+    { id: 'invitation', nama: 'Invitation', harga: 99000, masaAktifHari: 90, maksFoto: 15,
+      fitur: { tagline: 'Undangan digital interaktif dengan konfirmasi hadir (RSVP) untuk pernikahan, ulang tahun, dan syukuran.', foto: 'Hingga 15 foto galeri', pembuatan: 'Otomatis, link langsung jadi', kelompok: 'undangan',
+        fitur: [
+          { t: 'Konfirmasi hadir: hadir, tidak hadir, atau belum pasti, lengkap dengan jumlah tamu dan ucapan', ok: true },
+          { t: 'Detail acara, tombol peta lokasi, dan tambah ke kalender', ok: true },
+          { t: 'Hitung mundur menuju hari acara dan galeri hingga 15 foto', ok: true },
+          { t: 'Amplop digital: nomor rekening atau e-wallet dengan tombol salin', ok: true },
+          { t: 'Daftar jawaban tamu di akunmu, bisa diunduh sebagai CSV', ok: true },
+          { t: 'Link privat, aktif 90 hari', ok: true },
+          { t: 'Revisi', ok: false } ] } }
   ],
   desain: [
     { id: 'DSN-001', nama: 'Cinematic Romance', kategori: 'Anniversary', paket: ['basic'], thumbnail: 'tema:cinematic', urlDemo: '' },

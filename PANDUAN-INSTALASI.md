@@ -253,3 +253,13 @@ Langkah **Desain** pada form Premium kini punya **filter kategori** (Semua, Anni
 - **Brankas Rahasia di demo katalog** sempat menampilkan "Koneksi bermasalah (Ucapan tidak ditemukan)" karena demo mengira dirinya ucapan asli dan mencoba memeriksa jawaban ke server. Sekarang demo memeriksa jawaban contoh secara lokal (jawaban contoh ruangan pertama: *bandung*, kedua: *nasi goreng*, ketiga: *7*). Pada ucapan asli, jawaban tetap hanya diperiksa server.
 - **Hujan Reda tidak lagi berpindah otomatis.** Setelah semua kalimat terbaca, hujan reda dan pelangi muncul, tetapi perpindahan ke penjelasan baru terjadi setelah penerima menekan **Lanjut**. Teks penjelasan muncul lebih pelan, dan tombol lanjut ke kejutan baru muncul setelah teks selesai dibaca. Warna kalimat disesuaikan agar tetap terbaca di latar pelangi.
 - Perubahan ini hanya di frontend (tidak perlu mengganti file GAS).
+
+
+## Paket baru: Invitation (Undangan Digital)
+Paket keempat, **khusus undangan digital dengan konfirmasi hadir (RSVP)**. Pada tahap ini paketnya **sudah tampil, tetapi belum bisa dipesan**: desain undangannya menyusul.
+- **Tampilan:** di halaman Paket & Harga, Invitation berupa kartu lebar terpisah di bawah tiga paket utama ("Untuk acara besar? Pakai undangan digital"). Tata letak tiga kolom (Premium di tengah) tidak berubah. Di langkah Paket pada form, Invitation muncul sebagai pilihan keempat dengan tanda **Segera hadir** dan belum bisa dipilih.
+- **"Segera hadir" otomatis hilang** begitu ada minimal satu desain aktif untuk paket ini. Server juga menolak pesanan Invitation selama belum ada desain, jadi tidak ada pesanan yang tersangkut.
+- **Data awal:** harga contoh Rp 99.000 (di atas Premium dan di bawah Special), aktif 90 hari, hingga 15 foto galeri. **Harga hanya contoh: atur sendiri di Admin → Pengaturan → Paket.**
+- **Memasang:** ganti isi file `Kode` dan `Pesanan` di Apps Script (bukan file baru), jalankan **`setupAppEnvironment`** (menambah baris Invitation pada sheet Paket tanpa menyentuh harga paket lain), lalu deploy **versi baru**. Timpa frontend dan isi `GAS_URL`.
+- **Catatan batas teks:** tiap baris fitur paket di admin maksimal **120 karakter**. Teks bawaan Premium sebelumnya terlalu panjang sehingga paket tidak bisa disimpan lewat admin; sudah diperbaiki di data bawaan.
+- Desain undangan, form RSVP, dan daftar jawaban tamu dikerjakan pada tahap berikutnya.

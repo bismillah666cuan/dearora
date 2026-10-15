@@ -152,7 +152,11 @@
     var body;
     if (ctx.status === 'loading') body = '<div class="pricing">' + U.skeletons(3, 'sk-plan') + '</div>';
     else if (ctx.status === 'error') body = U.errorBox();
-    else body = '<div class="pricing">' + U.susunPaket(ctx.data.paket).map(U.planCard).join('') + '</div>';
+    else {
+      var inv = U.paketUndangan(ctx.data.paket);
+      body = '<div class="pricing">' + U.susunPaket(U.paketUtama(ctx.data.paket)).map(U.planCard).join('') + '</div>' +
+        (inv ? '<div class="inv-wrap"><h3 class="inv-judul">Untuk acara besar? Pakai undangan digital</h3>' + U.kartuUndangan(inv, ctx.data.desain) + '</div>' : '');
+    }
     return body + (tampilkanCallout ? callLinkRandom() : '');
   }
 

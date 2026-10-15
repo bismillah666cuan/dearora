@@ -126,6 +126,20 @@
       '</div></article>';
   }
 
+  /** Paket tanpa desain aktif (kecuali Special yang custom) belum bisa dipesan: tampil "Segera hadir". */
+  function paketSegera(p, desain) { return p.id !== 'special' && !(desain || []).some(function (x) { return (x.paket || []).indexOf(p.id) >= 0; }); }
+  function paketUtama(arr) { return (arr || []).filter(function (p) { return (p.fitur || {}).kelompok !== 'undangan'; }); }
+  function paketUndangan(arr) { return (arr || []).filter(function (p) { return (p.fitur || {}).kelompok === 'undangan'; })[0] || null; }
+  function kartuUndangan(p, desain) {
+    var f = p.fitur || {}, segera = paketSegera(p, desain);
+    var fit = (f.fitur || []).map(function (x) { return '<li class="' + (x.ok ? 'ok' : 'no') + '">' + ic(x.ok ? 'check' : 'x') + '<span>' + esc(x.t) + '</span></li>'; }).join('');
+    return '<article class="inv-card card" aria-labelledby="invNama"><div class="inv-kiri"><p class="inv-label">' + ic('mail') + ' Khusus undangan</p>' +
+      '<h3 class="inv-nama" id="invNama">' + esc(p.nama) + ' <small>Undangan Digital</small></h3><p class="inv-tag">' + esc(f.tagline || '') + '</p>' +
+      '<p class="inv-harga">Rp ' + esc(rupiah(p.harga)) + '</p><p class="inv-meta">Aktif ' + esc(formatMasa(p.masaAktifHari)) + ' · ' + esc(f.foto || (p.maksFoto + ' foto')) + '</p>' +
+      (segera ? '<button type="button" class="btn btn-secondary" disabled>Segera hadir</button><p class="small muted">Desain undangannya sedang disiapkan.</p>' : '<a class="btn btn-primary" href="#/buat?paket=' + esc(p.id) + '">Pesan Undangan</a>') +
+      '</div><ul class="inv-fitur">' + fit + '</ul></article>';
+  }
+
   /** Paket yang ditandai rekomendasi ("Terfavorit"/"Terlaris") ditaruh di TENGAH agar jadi sorotan. */
   function susunPaket(arr) {
     var a = (arr || []).slice(), i = a.findIndex(function (p) { var f = p.fitur || {}; return !!f.rekomendasi; });
@@ -181,7 +195,7 @@
     esc: esc, ic: ic, rupiah: rupiah, formatMasa: formatMasa, amanHttps: amanHttps,
     KATEGORI: KATEGORI, daftarKategori: daftarKategori, infoKategori: infoKategori, CONTOH: CONTOH,
     temaDari: temaDari, ikonTema: ikonTema, partikel: partikel,
-    badgePaket: badgePaket, thumbHTML: thumbHTML, designCard: designCard, planCard: planCard, susunPaket: susunPaket,
+    badgePaket: badgePaket, thumbHTML: thumbHTML, designCard: designCard, planCard: planCard, susunPaket: susunPaket, paketSegera: paketSegera, paketUtama: paketUtama, paketUndangan: paketUndangan, kartuUndangan: kartuUndangan,
     skeletons: skeletons, errorBox: errorBox, faqList: faqList
   };
 })();
