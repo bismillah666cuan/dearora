@@ -308,7 +308,7 @@
   function cth(jenis) {
     var tema = 'blossom';
     if (data() && ST.desainId) { var d = data().desain.filter(function (x) { return x.id === ST.desainId; })[0]; if (d) tema = U.temaDari(d.thumbnail); }
-    return '/u/?demo=1&j=' + encodeURIComponent(jenis) + '&tema=' + encodeURIComponent(tema);
+    return '/u/?demo=1&mulai=kejutan&j=' + encodeURIComponent(jenis) + '&tema=' + encodeURIComponent(tema);
   }
   function kolom(id, label, nilai, p, maks, hint, tipe) {
     return fld(id, label, '<input class="input" id="' + id + '" data-p="' + p + '" type="' + (tipe || 'text') + '" value="' + esc(nilai) + '" maxlength="' + maks + '"' + aria(id) + '>', hint, false);
@@ -348,8 +348,8 @@
         '<a class="kc-demo" href="' + esc(cth(j.id)) + '" target="_blank" rel="noopener">Lihat contoh ' + ic('arrow') + '</a></div>';
     }).join('');
     var hintUcapan = k.jenis === 'kode' ? 'Pesan yang terbuka setelah kode benar. Disimpan di server, tidak tampil di halaman sebelum kode dimasukkan.' : k.jenis === 'gosok' ? 'Pesan yang tersembunyi di bawah lapisan gosok.' : 'Ucapan utama yang muncul di akhir. Ini bisa berbeda dari isi surat.';
-    return '<p class="lead small" style="margin-bottom:1rem">Setelah surat dibaca, penerima memainkan satu <strong>kejutan</strong>. Pilih yang paling cocok dengan momenmu. Tekan <em>Lihat contoh</em> untuk mencobanya.</p>' +
-      '<fieldset class="field"><legend class="sr-only">Jenis kejutan</legend><div class="kej-grid">' + kartu + '</div>' + (errors.kejutanJenis ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.kejutanJenis) + '</p>' : '') + '</fieldset>' +
+    return '<p class="lead small" style="margin-bottom:1rem">Setelah surat dibaca, penerima memainkan satu <strong>kejutan</strong>. Pilih yang paling cocok dengan momenmu. Tekan <em>Lihat contoh</em> untuk melihat cara memainkannya. Contoh itu hanya gambaran interaksi; isi ucapan, nama, dan fotonya nanti sesuai yang kamu tulis.</p>' +
+      '<fieldset class="field"><legend class="sr-only">Jenis kejutan</legend><div class="kej-grid">' + kartu + '</div><p class="hint" style="margin-top:.6rem">' + ic('info') + ' "Lihat contoh" langsung membuka kejutannya saja, tanpa slide pembuka, ucapan, dan surat.</p>' + (errors.kejutanJenis ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.kejutanJenis) + '</p>' : '') + '</fieldset>' +
       '<h2 class="h3" style="margin:1.25rem 0 .75rem">' + esc(info.nama) + '</h2>' + detailKejutan(k) +
       fld('kejutanUcapan', 'Ucapan kejutan', '<textarea class="input textarea" id="kejutanUcapan" data-p="kejutan.ucapan" rows="4" maxlength="350"' + aria('kejutanUcapan') + '>' + esc(k.ucapan) + '</textarea><span class="counter' + (k.ucapan.length > 300 ? ' over' : '') + '" data-counter="kejutanUcapan" data-max="300">' + k.ucapan.length + '/300</span>', hintUcapan);
   };

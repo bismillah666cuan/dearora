@@ -575,9 +575,20 @@
     $root.innerHTML = '<div class="card-pesan"><span class="ico">' + ic(ikon) + '</span><h1>' + esc(judul) + '</h1><p>' + esc(teks) + '</p><a class="cbtn" href="/">Kenal Dearora</a></div>';
   }
 
+  /** Mode "Lihat contoh" di form: langsung ke kejutan (tanpa pembuka, ucapan, surat) + catatan bahwa ini hanya contoh interaksi. */
+  function langsungKejutan() {
+    document.body.classList.add('demo-kejutan'); var t = q('.titik'); if (t) t.hidden = true;
+    var n = document.createElement('div'); n.className = 'demo-catatan'; n.setAttribute('role', 'note');
+    n.innerHTML = '<p><strong>Contoh interaksi.</strong> Ini hanya gambaran cara kejutannya dimainkan. Isi ucapan, nama, dan fotonya nanti sesuai yang kamu tulis.</p><button type="button" class="demo-ulang">Mainkan ulang</button>';
+    document.body.appendChild(n); n.querySelector('.demo-ulang').addEventListener('click', function () { location.reload(); });
+    var s = stages[3]; if (!s) return;
+    stages.forEach(function (x, k) { if (k !== 3) { x.classList.remove('on'); x.setAttribute('inert', ''); x.setAttribute('aria-hidden', 'true'); } });
+    aktif = 3; s.classList.add('on'); s.removeAttribute('inert'); s.removeAttribute('aria-hidden'); mulaiKejutan();
+  }
+
   async function muat() {
     var qs = new URLSearchParams(location.search);
-    if (qs.get('demo') === '1') { demo = true; render(dataDemo(qs)); return; }
+    if (qs.get('demo') === '1') { demo = true; render(dataDemo(qs)); if (qs.get('mulai') === 'kejutan') langsungKejutan(); return; }
     slug = ambilSlug();
     if (!slug) { pesanAkhir('info', 'Link Tidak Lengkap', 'Alamat ucapan ini tidak valid. Periksa kembali link yang kamu terima.'); return; }
     if (!API.siap()) { pesanAkhir('info', 'Mode Pratinjau', 'Isi GAS_URL di js/config.js agar ucapan dapat dimuat.'); return; }
