@@ -109,7 +109,7 @@
     /** Mode nyata: data dari server. c = {penerima, pengirim, foto:[idDrive], slug}; f = isian pembeli (skema). */
     mountData: function (k, c, f) {
       var def = reg[k]; bersih(); parts = []; Special._akhir = false; fotoIds = c.foto || [];
-      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: false, tema: k };
+      Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: !!c.demo, tema: k };
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
       document.title = 'Ucapan untukmu';

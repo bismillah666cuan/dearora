@@ -212,6 +212,36 @@
   SKEMA.lahir.contoh = { transisi: 'Ada kabar bahagia untukmu. Siapkan hati yang hangat.', kabar: 'Kami akan menjadi orang tua! Satu anggota keluarga baru sedang dalam perjalanan.', foto: '', tanggal: '2027-03-15',
     fakta: [{ judul: 'Nama panggilan', isi: 'Si Kecil (nama lengkapnya kejutan)' }, { judul: 'Perkiraan lahir', isi: 'Pertengahan Maret' }, { judul: 'Yang kami harapkan', isi: 'Sehat, bahagia, dan penuh tawa' }],
     penutup: 'Terima kasih sudah menjadi bagian dari perjalanan kami. Doakan kami, dan kamu akan jadi salah satu orang pertama yang menyambut si kecil.' };
+
+  /* ===== Paket Invitation: tiga gaya berbagi satu skema ===== */
+  function undanganBagian() {
+    return [
+      T('judul', 'Judul undangan', 60, { wajib: true, hint: 'Mis. Pernikahan Rani & Dimas, atau Ulang Tahun ke-7 Nara.' }),
+      A('sapaan', 'Kalimat sambutan', 220, { wajib: true, hint: 'Mis. Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami.' }),
+      { k: 'acara', tipe: 'daftar', label: 'Acara', hint: '1 sampai 3 acara (mis. akad dan resepsi). Acara pertama dipakai untuk hitung mundur.', min: 1, maks: 3, namaItem: 'Acara', item: [
+        T('nama', 'Nama acara', 40, { wajib: true, hint: 'Mis. Akad Nikah' }), T('tanggal', 'Tanggal', 10, { wajib: true, pola: '^\\d{4}-\\d{2}-\\d{2}$', hint: 'Format tahun-bulan-tanggal, mis. 2027-03-15.' }),
+        T('jam', 'Jam', 24, { wajib: true, hint: 'Mis. 10.00 WIB atau 10.00–12.00 WIB' }), T('tempat', 'Nama tempat', 60, { wajib: true }), A('alamat', 'Alamat', 160, { wajib: true }),
+        T('peta', 'Tautan Google Maps (opsional)', 300, { pola: '^https://[^\\s]{4,290}$', hint: 'Salin tautan dari Google Maps, diawali https://' })] },
+      T('dresscode', 'Dress code (opsional)', 80, { hint: 'Mis. Nuansa pastel' }),
+      { k: 'galeri', tipe: 'daftarfoto', label: 'Galeri foto (opsional, hingga 15)', maks: 15 },
+      { k: 'rekening', tipe: 'daftar', label: 'Amplop digital (opsional)', hint: 'Hingga 3 rekening atau e-wallet. Hanya ditampilkan dengan tombol salin; Dearora tidak memproses pembayaran.', min: 0, maks: 3, namaItem: 'Rekening', item: [T('bank', 'Bank atau e-wallet', 30, { wajib: true }), T('nomor', 'Nomor', 40, { wajib: true }), T('atasNama', 'Atas nama', 50, { wajib: true })] },
+      { k: 'rsvp', tipe: 'objek', label: 'Konfirmasi kehadiran', item: [{ k: 'maksTamu', tipe: 'angka', label: 'Maksimal jumlah tamu per jawaban', min: 1, maks: 10, bawaan: 4 }, T('catatan', 'Catatan di formulir', 160, { bawaan: 'Mohon konfirmasi kehadiran sebelum hari acara.' })] },
+      A('penutup', 'Kalimat penutup', 300, { wajib: true })
+    ];
+  }
+  SKEMA.uelegan = { nama: 'Undangan Elegan', bagian: undanganBagian() };
+  SKEMA.uceria = { nama: 'Undangan Ceria', bagian: undanganBagian() };
+  SKEMA.uhangat = { nama: 'Undangan Hangat', bagian: undanganBagian() };
+  SKEMA.uelegan.contoh = { judul: 'Pernikahan Rani & Dimas', sapaan: 'Dengan memohon rahmat dan ridho-Nya, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu di hari bahagia kami.',
+    acara: [{ nama: 'Akad Nikah', tanggal: '2027-03-15', jam: '09.00 WIB', tempat: 'Masjid Al-Ikhlas', alamat: 'Jl. Melati No. 12, Karawang', peta: '' }, { nama: 'Resepsi', tanggal: '2027-03-15', jam: '11.00–14.00 WIB', tempat: 'Gedung Serbaguna Asri', alamat: 'Jl. Pemuda No. 3, Karawang', peta: '' }],
+    dresscode: 'Nuansa pastel', galeri: [], rekening: [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Rani Putri' }], rsvp: { maksTamu: 4, catatan: 'Mohon konfirmasi kehadiran sebelum 1 Maret 2027.' },
+    penutup: 'Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Terima kasih atas doa dan restunya.' };
+  SKEMA.uceria.contoh = { judul: 'Ulang Tahun ke-7 Nara', sapaan: 'Yuk, rayakan hari spesial Nara bersama! Ada kue, permainan, dan banyak tawa menunggu.',
+    acara: [{ nama: 'Pesta Ulang Tahun', tanggal: '2027-05-22', jam: '14.00–17.00 WIB', tempat: 'Rumah Nara', alamat: 'Jl. Kenanga No. 8, Bekasi', peta: '' }],
+    dresscode: 'Pakai baju warna-warni', galeri: [], rekening: [], rsvp: { maksTamu: 4, catatan: 'Kabari kami ya supaya kuenya cukup!' }, penutup: 'Terima kasih sudah datang dan membuat hari Nara makin seru.' };
+  SKEMA.uhangat.contoh = { judul: 'Syukuran Rumah Baru Keluarga Santoso', sapaan: 'Dengan rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk bersilaturahmi dan berdoa bersama di rumah baru kami.',
+    acara: [{ nama: 'Doa dan Makan Bersama', tanggal: '2027-04-10', jam: '16.00 WIB', tempat: 'Rumah Keluarga Santoso', alamat: 'Perum Griya Asri Blok C No. 5, Bekasi', peta: '' }],
+    dresscode: '', galeri: [], rekening: [], rsvp: { maksTamu: 5, catatan: 'Mohon kabari kehadiran agar kami bisa menyiapkan hidangan.' }, penutup: 'Doa dan kehadiran Bapak/Ibu/Saudara/i adalah keberkahan bagi kami. Terima kasih.' };
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();

@@ -68,7 +68,10 @@ window.DEARORA_SEED = {
     { id: 'DSN-024', nama: 'Rumah Kenangan', kategori: 'Hari Ibu', paket: ['premium'], thumbnail: 'tema:rumah', urlDemo: '' },
     { id: 'DSN-025', nama: 'Brankas Rahasia', kategori: 'Hari Spesial', paket: ['premium'], thumbnail: 'tema:brankas', urlDemo: '' },
     { id: 'DSN-026', nama: 'Hujan Reda', kategori: 'Maaf & Rindu', paket: ['premium'], thumbnail: 'tema:hujan', urlDemo: '' },
-    { id: 'DSN-027', nama: 'Pengumuman Kelahiran', kategori: 'Kelahiran', paket: ['premium'], thumbnail: 'tema:lahir', urlDemo: '' }
+    { id: 'DSN-027', nama: 'Pengumuman Kelahiran', kategori: 'Kelahiran', paket: ['premium'], thumbnail: 'tema:lahir', urlDemo: '' },
+    { id: 'DSN-028', nama: 'Undangan Elegan', kategori: 'Pernikahan', paket: ['invitation'], thumbnail: 'tema:uelegan', urlDemo: '' },
+    { id: 'DSN-029', nama: 'Undangan Ceria', kategori: 'Ulang Tahun', paket: ['invitation'], thumbnail: 'tema:uceria', urlDemo: '' },
+    { id: 'DSN-030', nama: 'Undangan Hangat', kategori: 'Syukuran', paket: ['invitation'], thumbnail: 'tema:uhangat', urlDemo: '' }
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }

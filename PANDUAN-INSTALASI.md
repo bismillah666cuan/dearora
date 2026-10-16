@@ -263,3 +263,14 @@ Paket keempat, **khusus undangan digital dengan konfirmasi hadir (RSVP)**. Pada 
 - **Memasang:** ganti isi file `Kode` dan `Pesanan` di Apps Script (bukan file baru), jalankan **`setupAppEnvironment`** (menambah baris Invitation pada sheet Paket tanpa menyentuh harga paket lain), lalu deploy **versi baru**. Timpa frontend dan isi `GAS_URL`.
 - **Catatan batas teks:** tiap baris fitur paket di admin maksimal **120 karakter**. Teks bawaan Premium sebelumnya terlalu panjang sehingga paket tidak bisa disimpan lewat admin; sudah diperbaiki di data bawaan.
 - Desain undangan, form RSVP, dan daftar jawaban tamu dikerjakan pada tahap berikutnya.
+
+
+## Paket Invitation: tiga desain undangan dan konfirmasi hadir (RSVP)
+Paket **Invitation** kini bisa dipesan, dengan tiga desain: **Undangan Elegan** (pernikahan dan lamaran), **Undangan Ceria** (ulang tahun dan reuni), dan **Undangan Hangat** (syukuran, aqiqah, acara keluarga).
+
+**Alur untuk tamu (tanpa slide Basic):** amplop bersegel yang dipecahkan → sambutan (menyapa tamu bila link personal) → detail 1–3 acara dengan tombol **peta** dan **Tambah ke kalender** → hitung mundur → galeri foto (hingga 15) → amplop digital (rekening/e-wallet dengan tombol salin; hanya informasi, Dearora tidak memproses pembayaran) → **konfirmasi hadir** (nama, hadir/belum pasti/tidak hadir, jumlah tamu, ucapan) → penutup.
+**Jawaban tamu:** tersimpan di sheet **RSVP**. Tamu bisa **mengubah jawabannya** dari perangkat yang sama (kunci acak disimpan di perangkat tamu, tidak perlu akun). Batas bawaan **100 jawaban per undangan** (ubah di Admin → Pengaturan → Umum → `RSVP_MAKS`). Anti-spam: batas kecepatan per undangan dan kolom jebakan bot. Formulir memuat catatan "Jawabanmu hanya dilihat oleh pengundang". Data yang disimpan hanya nama, status, jumlah, dan ucapan (tanpa nomor HP/email tamu).
+**Untuk pembeli (portal → Pesanan Saya → Detail):** ringkasan (hadir + jumlah orang, belum pasti, tidak hadir, jumlah jawaban), daftar jawaban lengkap, **Unduh daftar (CSV)**, hapus jawaban, dan **pembuat tautan personal**: tempel nama tamu (satu per baris), lalu dapatkan link dengan `?u=Nama` untuk dibagikan lewat WhatsApp. Daftar nama itu tidak disimpan di server.
+**Aktif 90 hari**, link acak dan privat. Semua jawaban **otomatis terhapus** saat link kedaluwarsa atau pesanan dihapus. Disarankan memesan paling lambat sekitar 2 bulan sebelum acara; sebelum kedaluwarsa, pembeli sebaiknya mengunduh CSV (fitur Perpanjang di admin tetap bisa dipakai).
+**Pemasangan:** ganti isi file `Kode`, `Pesanan`, `Kartu`, `Portal`, `Admin`, `Rutin`, dan `Skema` di Apps Script (bukan file baru), jalankan **`setupAppEnvironment`** (membuat sheet RSVP dan config `RSVP_MAKS`) lalu **`isiUlangKatalogDesain`** (menambah tiga desain undangan), dan deploy **versi baru**. Timpa frontend, isi `GAS_URL`, `git push`.
+Harga Invitation tetap Ibu atur di Admin → Pengaturan → Paket.

@@ -121,7 +121,7 @@
     if (qs.get('ikon')) op.ikon = qs.get('ikon').split(',').slice(0, 4);
     var hasil = { paket: 'basic', tema: gkd, kategori: dm.kat || 'Ulang Tahun', penerima: dm.penerima, dari: { tipe: 'nama', nilai: dm.dari }, pesan: dm.pesan,
       pesanPersonal: '', foto: ['demo:0', 'demo:1', 'demo:2'], video: '', musik: null, amplop: false, rahasia: j === 'kode', perluPassword: j === 'kode', pembuka: 'judul', kedaluwarsa: '', kejutan: KEJ_DEMO[j], opsi: op, _demo: true };
-    if (g0.special && window.SKEMA && window.SKEMA[gkd] && window.SKEMA[gkd].contoh) { hasil.paket = 'premium'; hasil.dataDesain = JSON.parse(JSON.stringify(window.SKEMA[gkd].contoh)); }   // demo Premium = 5 slide + halaman konsep
+    if (g0.special && window.SKEMA && window.SKEMA[gkd] && window.SKEMA[gkd].contoh) { hasil.paket = g0.undangan ? 'invitation' : 'premium'; hasil.dataDesain = JSON.parse(JSON.stringify(window.SKEMA[gkd].contoh)); }   // demo Premium = 5 slide + halaman konsep
     return hasil;
   }
 
@@ -527,7 +527,14 @@
     var host = document.createElement('div'); host.id = 'konsep'; document.body.appendChild(host);
     Special.mountInto(host, konsep, { penerima: data.penerima, pengirim: dariTeks(data), foto: data.foto || [], slug: slug, musik: null, demo: demo }, data.dataDesain, function () { host.remove(); konsepSelesai = true; ke(3); });
   }
+  /** Paket Invitation: tanpa slide Basic; desain undangan tampil langsung (RSVP ada di dalamnya). */
+  function renderUndangan(kk, d) {
+    data = d; bersih(); document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
+    Special.mountData(kk, { penerima: d.penerima, pengirim: dariTeks(d), foto: d.foto || [], slug: slug, demo: demo }, d.dataDesain);
+  }
   function render(d) {
+    var kk0 = Gaya.kunci(d.tema);
+    if (d.paket === 'invitation' && d.dataDesain && window.Special && Special.ada(kk0)) { renderUndangan(kk0, d); return; }
     data = d; bersih(); aktif = 0; clearInterval(slideT);
     document.querySelectorAll('.kupu-t').forEach(function (x) { x.remove(); });
     setGaya(d);

@@ -182,6 +182,30 @@
     return '<div class="card order-card"><h2 class="h3">Balasan penerima (' + o.balasan.length + ')</h2><ul class="rev-list">' + o.balasan.map(function (b) {
       return '<li><span class="tag rose">' + esc(b.nama || 'Penerima') + '</span> <span class="small muted">' + esc(tglJam(b.tgl)) + '</span><p style="margin-top:.25rem;white-space:pre-wrap">' + esc(b.pesan) + '</p></li>'; }).join('') + '</ul></div>';
   }
+  function boxRsvp(o) {
+    if (o.paketId !== 'invitation') return '';
+    return '<div class="card order-card" id="boxRsvp"><h2 class="h3">Jawaban tamu (RSVP)</h2><div id="rsvpIsi"><p class="small muted">Memuat jawaban…</p></div></div>';
+  }
+  function tampilRsvp(r, o) {
+    var rg = r.ringkas, st = { hadir: ['Hadir', 'sage'], tidak: ['Tidak hadir', ''], ragu: ['Belum pasti', 'rose'] };
+    var link = o.linkHasil || '';
+    var ring = '<div class="rsvp-ring"><div><b>' + rg.hadir + '</b><span>Hadir (' + rg.orang + ' orang)</span></div><div><b>' + rg.ragu + '</b><span>Belum pasti</span></div><div><b>' + rg.tidak + '</b><span>Tidak hadir</span></div><div><b>' + rg.total + '/' + r.maks + '</b><span>Jawaban masuk</span></div></div>';
+    var daftar = r.daftar.length ? '<ul class="rsvp-list">' + r.daftar.map(function (x) { return '<li><div><strong>' + esc(x.nama) + '</strong> <span class="tag ' + st[x.status][1] + '">' + st[x.status][0] + '</span>' + (x.status === 'hadir' ? ' <span class="small muted">' + x.jumlah + ' orang</span>' : '') + (x.ucapan ? '<p class="small">“' + esc(x.ucapan) + '”</p>' : '') + '<span class="small muted">' + esc(tglJam(x.tgl)) + (x.diubah ? ' · diubah' : '') + '</span></div><button type="button" class="btn btn-quiet btn-sm" data-p="rsvp-hapus" data-id="' + esc(x.id) + '" aria-label="Hapus jawaban ' + esc(x.nama) + '">' + ic('x') + '</button></li>'; }).join('') + '</ul>' : '<p class="small muted">Belum ada jawaban. Bagikan link undangan ke para tamu.</p>';
+    var alat = '<div class="rsvp-alat"><button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-csv"' + (r.daftar.length ? '' : ' disabled') + '>Unduh daftar (CSV)</button></div>' +
+      '<details class="rsvp-tautan"><summary>Buat tautan personal untuk tiap tamu</summary><p class="small muted">Tempel nama tamu, satu per baris. Setiap tamu mendapat link dengan namanya (sapaan "Kepada Yth."), dan namanya otomatis terisi di formulir. Daftar nama ini <strong>tidak disimpan</strong> di server.</p><textarea id="rsvpNama" class="input textarea" rows="4" placeholder="Budi Santoso&#10;Siti Aminah"></textarea><button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-link" data-url="' + esc(link) + '">Buat tautan</button><textarea id="rsvpHasil" class="input textarea" rows="5" readonly hidden></textarea><button type="button" class="btn btn-quiet btn-sm" data-p="rsvp-salin" hidden>Salin semua</button></details>';
+    return ring + alat + '<h3 class="h3" style="margin-top:1rem">Daftar jawaban</h3>' + daftar;
+  }
+  var rsvpData = null, ordAktif = null;
+  async function muatRsvp(o) {
+    var el = $('rsvpIsi'); if (!el) return;
+    try { var r = await A.panggil('rsvpDaftar', { orderId: o.orderId }); if (!r.success) { el.innerHTML = '<p class="err">' + esc(r.message || 'Gagal memuat.') + '</p>'; return; } rsvpData = r.data; el.innerHTML = tampilRsvp(r.data, o); }
+    catch (e) { el.innerHTML = '<p class="err">Koneksi bermasalah. Muat ulang halaman.</p>'; }
+  }
+  function csvRsvp(o) {
+    var q = function (s) { return '"' + String(s == null ? '' : s).replace(/"/g, '""').replace(/^[=+\-@]/, "'$&") + '"'; };
+    var baris = [['Nama', 'Status', 'Jumlah', 'Ucapan', 'Waktu'].join(',')].concat((rsvpData ? rsvpData.daftar : []).map(function (x) { return [q(x.nama), q({ hadir: 'Hadir', tidak: 'Tidak hadir', ragu: 'Belum pasti' }[x.status]), x.jumlah, q(x.ucapan), q(x.tgl)].join(','); }));
+    var b = new Blob(['\ufeff' + baris.join('\r\n')], { type: 'text/csv;charset=utf-8' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = 'jawaban-tamu-' + o.orderId + '.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 3000);
+  }
   function boxChat(o) {
     if (o.paketId !== 'special') return '';
     var l = (o.chat || []).map(function (c) { return '<li class="chat-' + (c.peran === 'admin' ? 'adm' : 'pem') + '"><b>' + (c.peran === 'admin' ? 'Tim admin' : 'Kamu') + '</b> <span class="small muted">' + esc(tglJam(c.tgl)) + '</span><p>' + esc(c.pesan) + '</p></li>'; }).join('');
@@ -191,6 +215,7 @@
         '<p class="small" style="margin-top:.75rem">Chat sudah ditutup karena pesanan selesai dan jatah revisi habis.</p>') + '</div>';
   }
   function isiDetail(o) {
+    ordAktif = o; if (o.paketId === 'invitation') setTimeout(function () { muatRsvp(o); }, 0);
     var rev = (o.revisi || []).map(function (x) {
       return '<li><span class="tag lav">' + esc(x.status) + '</span> <span class="small muted">' + esc(tglJam(x.tglMinta)) + '</span><p style="margin-top:.25rem">' + esc(x.catatan) + '</p></li>';
     }).join('');
@@ -215,7 +240,7 @@
       '<div class="sum-row"><dt>Pembayaran</dt><dd>Rp ' + esc(U.rupiah(o.nominal)) + ' · ' + esc(o.statusBayar) + (o.tglBayar ? ' · ' + esc(tglJam(o.tglBayar)) : '') + '</dd></div>' +
       '<div class="sum-row"><dt>Dipesan</dt><dd>' + esc(tglJam(o.tglOrder)) + '</dd></div></dl>' +
       '<div class="order-act">' + ((o.status !== 'Menunggu Pembayaran' && o.status !== 'Dibatalkan' && o.status !== 'Perlu Ditinjau') ? '<button type="button" class="btn btn-quiet btn-sm" data-p="pdf" data-o="' + esc(o.orderId) + '">Unduh PDF Bukti</button>' : '') +
-      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxChat(o) + boxBalasan(o) + boxRevisi;
+      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxRsvp(o) + boxChat(o) + boxBalasan(o) + boxRevisi;
   }
 
   async function afterDetail(main, c) {
@@ -250,6 +275,16 @@
       } catch (e) { toast('Koneksi bermasalah, coba lagi'); }
       b.disabled = false; b.textContent = asli; return;
     }
+    if (a === 'rsvp-hapus') {
+      b.disabled = true; try { var rh = await A.panggil('rsvpHapus', { orderId: ordAktif && ordAktif.orderId, id: b.dataset.id }); if (rh.success) { rsvpData = rh.data; $('rsvpIsi').innerHTML = tampilRsvp(rh.data, ordAktif); } else b.disabled = false; } catch (e) { b.disabled = false; } return;
+    }
+    if (a === 'rsvp-csv') { csvRsvp(ordAktif); return; }
+    if (a === 'rsvp-link') {
+      var nama = ($('rsvpNama').value || '').split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 300), url = b.dataset.url;
+      if (!url) { toast('Link undangan belum tersedia.'); return; } var hasil = nama.map(function (n) { return n + '\t' + url + (url.indexOf('?') >= 0 ? '&' : '?') + 'u=' + encodeURIComponent(n); }).join('\n');
+      var h = $('rsvpHasil'); h.value = hasil; h.hidden = false; b.parentNode.querySelector('[data-p="rsvp-salin"]').hidden = false; return;
+    }
+    if (a === 'rsvp-salin') { var hx = $('rsvpHasil'); hx.select(); try { document.execCommand('copy'); } catch (e) { /* abaikan */ } b.textContent = 'Tersalin ✓'; return; }
     if (a === 'chat-kirim') {
       var ci = $('chatIsi'), ce = $('chatErr'), pesan = (ci.value || '').trim();
       if (!pesan) { ce.hidden = false; ce.textContent = 'Tulis pesan terlebih dahulu.'; ci.focus(); return; }

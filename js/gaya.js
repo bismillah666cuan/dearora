@@ -203,6 +203,11 @@
   G.lahir = sp('Pengumuman Kelahiran', 'Kelahiran', ['#FFF6E6', '#BFD8C6'], 'Pengumuman kehamilan atau kelahiran: kartu gosok, balon kejutan, dan hitung mundur menuju hari bahagia (palet netral, tidak terpaku warna tertentu).',
     ['Kartu gosok berisi kabar bahagia', 'Pecahkan balon untuk membuka fakta tentang si kecil', 'Hitung mundur menuju hari lahir'],
     ['Kabar bahagia + foto', '3–5 balon fakta', 'Perkiraan hari lahir (opsional) dan pesan penutup'], 'lahir');
+
+  G.uelegan = sp('Undangan Elegan', 'Pernikahan', ['#FBF6EA', '#B8923A'], 'Pernikahan dan lamaran: ivory dan emas, serif klasik, amplop bersegel lilin.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dan amplop digital'], ['Judul, sambutan, 1–3 acara', 'Galeri, amplop digital, dress code', 'Pengaturan form konfirmasi hadir'], 'uelegan');
+  G.uceria = sp('Undangan Ceria', 'Ulang Tahun', ['#FFE45E', '#FF6FA5'], 'Ulang tahun dan reuni: warna-warni ceria, nuansa pesta.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dengan jumlah tamu'], ['Judul, sambutan, 1–3 acara', 'Galeri dan dress code', 'Pengaturan form konfirmasi hadir'], 'uceria');
+  G.uhangat = sp('Undangan Hangat', 'Syukuran', ['#C8573D', '#FFF4E4'], 'Syukuran, aqiqah, dan acara keluarga: hangat dan bersahaja.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dan amplop digital'], ['Judul, sambutan, 1–3 acara', 'Galeri, amplop digital', 'Pengaturan form konfirmasi hadir'], 'uhangat');
+  ['uelegan', 'uceria', 'uhangat'].forEach(function (k) { G[k].undangan = true; });
   G.misi = sp('Lastlove: Misi Cinta', 'Ulang Tahun', ['#0A141C', '#FFB020'], 'Pecinta game strategi: briefing markas, tiga misi, dan kartu hero.',
     ['Briefing markas orisinal', 'Tiga misi + hadiah di tiap misi', 'Kartu hero berisi atribut lucu'],
     ['Nama komandan dan gelar', 'Foto tersembunyi dan pesannya', 'Tiga pesan penguat dan satu pertanyaan kuis', 'Hadiah final (pesan atau foto)'], 'misi');
@@ -237,6 +242,9 @@
     brankas: function () { return P('sc-bk-pintu', '') + P('sc-bk-roda', '') + P('sc-bk-gembok', ''); },
     hujan: function () { return P('sc-hj-kaca', '') + P('sc-hj-tetes t1', '') + P('sc-hj-tetes t2', '') + P('sc-hj-tetes t3', '') + P('sc-hj-pelangi', ''); },
     lahir: function () { return P('sc-lh-kartu', '<i>Kabar<br>Bahagia</i>') + P('sc-lh-balon b1', '') + P('sc-lh-balon b2', '') + P('sc-lh-balon b3', ''); },
+    uelegan: function () { return P('sc-ud-amplop', '') + P('sc-ud-segel', '♥') + P('sc-ud-teks e', 'Undangan'); },
+    uceria: function () { return P('sc-ud-amplop c', '') + P('sc-ud-segel c', '♥') + P('sc-ud-teks c', 'Pesta!'); },
+    uhangat: function () { return P('sc-ud-amplop h', '') + P('sc-ud-segel h', '♥') + P('sc-ud-teks h', 'Syukuran'); },
     classic: function () { return P('sc-hati', A.hati('#D84A6E')) + P('sc-doodle d1', A.kilau('#F78DA7')); },
     movie: function () { return P('sc-mv-poster', '<i>Cerita<br>Kita</i>') + P('sc-mv-judul', 'CERITAKITA') + P('sc-mv-eps e1', '1') + P('sc-mv-eps e2', '2') + P('sc-mv-eps e3', '3') + P('sc-mv-play', '▶ Tonton'); },
     mall: function () { return P('sc-ml-bar', 'Dearora Mall') + P('sc-ml-banner', 'Paket Spesial!') + P('sc-ml-p p1', A.hati('#E8336D')) + P('sc-ml-p p2', A.bintang('#FFB020')) + P('sc-ml-p p3', A.hati('#FF7A1A')) + P('sc-ml-p p4', A.bintang('#E8336D')) + P('sc-ml-troli', '3'); },
