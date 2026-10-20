@@ -90,7 +90,9 @@
     lahir: function () { var n = [784, 988, 1175, 1319][Math.floor(Math.random() * 4)]; nada(n, 0, 0.4, 'sine', 0.07); },
     uelegan: function () { nada(523, 0, 0.6, 'sine', 0.07); nada(1047, 0.01, 0.3, 'sine', 0.02); },
     uceria: function () { nada(880, 0, 0.07, 'triangle', 0.1, 1320); },
-    uhangat: function () { lonceng(330, 0, 0.06, 0.8); }
+    uhangat: function () { lonceng(330, 0, 0.06, 0.8); },
+    uislami: function () { lonceng(587, 0, 0.07, 0.9); }, urustik: function () { ketukKayu(0, 300, 0.12); nada(1500, 0.02, 0.06, 'triangle', 0.04); },
+    ubintang: function () { nada(2093, 0, 0.14, 'sine', 0.06); nada(2794, 0.05, 0.12, 'sine', 0.04); }, ujawa: function () { lonceng(392, 0, 0.07, 1); }, uroyal: function () { nada(523, 0, 0.35, 'triangle', 0.1); nada(1047, 0.01, 0.15, 'sine', 0.04); }
   };
   var S = {
     aktif: function () { return !senyap; },
@@ -181,6 +183,7 @@
     tuang: function () { noise(0, 1, 0.12, 'bandpass', 1200, 2300, 0.8, 0.1); for (var i = 0; i < 5; i++) { var f = acak(500, 900); nada(f, 0.2 + i * 0.13, 0.07, 'sine', 0.06, f * 1.6); } },
     sizzle: function () { noise(0, 1.1, 0.13, 'highpass', 3200, 4200, 0.6, 0.08); },
     aduk: function () { for (var i = 0; i < 4; i++) { nada(1700 + i * 60, i * 0.18, 0.1, 'triangle', 0.07); ketukKayu(i * 0.18 + 0.02, 330, 0.08); } },
+    kerlip: function () { [2093, 2637, 3136, 2349, 3520].forEach(function (f, i) { nada(f, i * 0.09, 0.28, 'sine', 0.05); }); noise(0.3, 1.1, 0.04, 'highpass', 6000, 8000, 0.5, 0.2); },
     /* ===== BRANKAS & MENULIS ===== */
     roda: function () { for (var i = 0; i < 10; i++) { nada(1900 - i * 40, i * (0.07 + i * 0.006), 0.02, 'square', 0.06); noise(i * (0.07 + i * 0.006), 0.02, 0.05, 'highpass', 3000, 2500, 0.5, 0.001); } },
     gembok: function () { nada(1300, 0, 0.04, 'square', 0.08); nada(700, 0.07, 0.08, 'square', 0.09); ketukKayu(0.1, 220, 0.1); },

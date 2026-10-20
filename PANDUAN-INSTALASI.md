@@ -353,3 +353,18 @@ Desain **Undangan Pernikahan** (sebelumnya "Undangan Elegan", DSN-028) dirancang
 
 **Pemasangan:** ganti isi file `Kode`, `Pesanan`, `Kartu`, `Admin`, `Portal`, `Email`, `Pembayaran`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, lalu jalankan **`isiUlangKatalogDesain`** agar nama desain berubah menjadi "Undangan Pernikahan" (atau ubah namanya manual di Admin → Desain). Timpa frontend, isi ulang `GAS_URL`, `git push`.
 **Catatan pesanan lama:** pesanan Undangan Elegan yang sudah dibuat dengan skema lama tetap tampil (nama pasangan diambil dari judul, tanpa bagian mempelai), tetapi tidak memiliki mempelai, kutipan, dan kisah. Undangan Ceria dan Hangat tidak berubah.
+
+
+## Lima tema undangan pernikahan baru (paket Invitation: kini 8 desain)
+Selain **Undangan Pernikahan** (bunga), tersedia: **Undangan Islami Elegan**, **Undangan Rustic Boho**, **Undangan Malam Bintang**, **Undangan Adat Jawa**, dan **Undangan Klasik Royal**. Semuanya memakai satu mesin (struktur isi, konfirmasi hadir, akun pembeli, foto opsional sama persis), dengan hiasan SVG orisinal buatan kode, pembuka, warna, dan bunyi sendiri.
+| Tema | Pembuka | Ciri khas | Bunyi |
+|---|---|---|---|
+| Islami Elegan | Pintu lengkung (mihrab) terbuka, cahaya keemasan | Bismillah (Arab) dan salam, ornamen bintang delapan, hijau zamrud dan emas, kicker "Walimatul Ursy" | lonceng lembut |
+| Rustic Boho | Amplop kraft | Ranting eukaliptus dan bunga kering, foto berbingkai polaroid bertape, daun berguguran | kertas, petikan |
+| Malam Bintang | Langit berbintang, rasi bintang menyala, bintang jatuh | Tema gelap (teks terang, formulir disesuaikan), kerlip bintang | kerlip bintang, kotak musik |
+| Adat Jawa | Layar wayang (kelir) terbuka, gunungan menyala | Pola batik kawung, bunga melati berguguran, kicker "Sugeng Rawuh" | kenong gamelan |
+| Klasik Royal | Tirai beludru bordeaux terbuka | Bingkai emas berukir, fleur-de-lis, karangan laurel, debu emas | gerak tirai, fanfare |
+**Isian sama untuk semua tema pernikahan:** nama pasangan, sambutan, kutipan/ayat (maks. 320 karakter), dress code, foto utama, penutup, mempelai (nama, "putra/putri dari", foto), 1–3 acara, kisah (maks. 4), galeri, amplop digital, pengaturan konfirmasi hadir. Semua foto opsional (tanpa foto: monogram dan ornamen tema). Contoh isian tiap tema sudah bernuansa temanya.
+**Catatan konten (mohon diperiksa sendiri):** teks Arab hanya bismillah standar; contoh ayat (QS. Ar-Rum: 21) berupa terjemahan Indonesia; contoh "Sugeng rawuh" dan istilah adat/upacara bersifat contoh. Pembeli dapat mengubah semua teks. Periksa kesesuaian budaya dan agama sebelum dijual.
+**Font:** *Amiri* (Arab) dan *Great Vibes* dimuat dari Google Fonts; bila gagal dimuat, tampil huruf biasa.
+**Pemasangan:** ganti isi `Kode`, `Pesanan`, `Kartu`, `Admin`, `Portal`, `Email`, `Pembayaran`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, jalankan **`isiUlangKatalogDesain`** (menambah 5 desain baru), lalu timpa frontend, isi ulang `GAS_URL`, `git push`.

@@ -236,7 +236,7 @@
     return [
       T('judul', 'Nama pasangan (tampil besar)', 40, { wajib: true, hint: 'Mis. Rani & Dimas' }),
       A('sapaan', 'Kalimat sambutan', 220, { wajib: true, hint: 'Mis. Dengan memohon rahmat dan ridho-Nya, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami.' }),
-      A('kutipan', 'Kutipan atau ayat (opsional)', 200, { hint: 'Mis. "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup..."' }),
+      A('kutipan', 'Kutipan atau ayat (opsional)', 320, { hint: 'Mis. "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup..."' }),
       T('dresscode', 'Dress code (opsional)', 80, { hint: 'Mis. Nuansa pastel' }),
       F('fotoSampul', 'Foto utama pasangan (opsional)'),
       A('penutup', 'Kalimat penutup', 300, { wajib: true }),
@@ -264,6 +264,37 @@
   SKEMA.uhangat.contoh = { judul: 'Syukuran Rumah Baru Keluarga Santoso', sapaan: 'Dengan rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk bersilaturahmi dan berdoa bersama di rumah baru kami.',
     acara: [{ nama: 'Doa dan Makan Bersama', tanggal: '2027-04-10', jam: '16.00 WIB', tempat: 'Rumah Keluarga Santoso', alamat: 'Perum Griya Asri Blok C No. 5, Bekasi', peta: '' }],
     dresscode: '', galeri: [], rekening: [], rsvp: { maksTamu: 5, catatan: 'Mohon kabari kehadiran agar kami bisa menyiapkan hidangan.' }, penutup: 'Doa dan kehadiran Bapak/Ibu/Saudara/i adalah keberkahan bagi kami. Terima kasih.' };
+
+  /* ===== Lima tema pernikahan tambahan (skema sama dengan Undangan Pernikahan; contoh isian bernuansa tema) ===== */
+  function temaNikah(kunci, nama, c) { SKEMA[kunci] = { nama: nama, bagian: nikahBagian() }; SKEMA[kunci].contoh = c; }
+  var ACARA2 = function (a, b) { return [{ nama: a[0], tanggal: '2027-03-15', jam: a[1], tempat: a[2], alamat: a[3], peta: '' }, { nama: b[0], tanggal: '2027-03-15', jam: b[1], tempat: b[2], alamat: b[3], peta: '' }]; };
+  var KISAH = [{ waktu: '2019', judul: 'Pertama Bertemu', cerita: 'Takdir mempertemukan kami di sebuah acara kampus, dan kami saling melempar senyum untuk pertama kalinya.', foto: '' }, { waktu: '2022', judul: 'Menjadi Kita', cerita: 'Setelah bertahun-tahun bersahabat, kami memutuskan untuk berjalan bersama.', foto: '' }, { waktu: '2026', judul: 'Lamaran', cerita: 'Dengan restu keluarga, kami melangkah ke jenjang yang lebih serius.', foto: '' }];
+  var REK = [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Mempelai Wanita' }], RSVP = { maksTamu: 4, catatan: 'Mohon konfirmasi kehadiran sebelum 1 Maret 2027.' };
+  temaNikah('uislami', 'Undangan Islami Elegan', { judul: 'Aisyah & Faris', sapaan: 'Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada pernikahan kami.',
+    kutipan: 'Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. (QS. Ar-Rum: 21)', dresscode: 'Nuansa hijau dan krem', fotoSampul: '',
+    penutup: 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Jazakumullahu khairan atas doa dan restunya.',
+    mempelai: { wanita: 'Aisyah Putri Rahmawati', wanitaOrtu: 'Putri dari Bapak H. Hendra & Ibu Hj. Sari', wanitaFoto: '', pria: 'Muhammad Faris Aditya', priaOrtu: 'Putra dari Bapak H. Budi & Ibu Hj. Ani', priaFoto: '' },
+    acara: ACARA2(['Akad Nikah', '08.00 WIB', 'Masjid Al-Ikhlas', 'Jl. Melati No. 12, Karawang'], ['Resepsi', '11.00–14.00 WIB', 'Gedung Serbaguna Asri', 'Jl. Pemuda No. 3, Karawang']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+  temaNikah('urustik', 'Undangan Rustic Boho', { judul: 'Maya & Raka', sapaan: 'Kami menikah, dan ingin merayakannya bersama orang-orang tercinta di kebun yang teduh. Datang ya, dan ceritakan kisahmu bersama kami!',
+    kutipan: 'Cinta tidak mengenal lelah; ia tumbuh pelan seperti pohon, dan teduh bagi siapa saja yang berteduh di bawahnya.', dresscode: 'Earth tone: krem, sage, terakota', fotoSampul: '',
+    penutup: 'Terima kasih sudah menjadi bagian dari cerita kami. Sampai jumpa di kebun!',
+    mempelai: { wanita: 'Maya Anggraini', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Raka Pratama', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
+    acara: ACARA2(['Garden Party', '15.30 WIB', 'Taman Rimbun', 'Jl. Kenanga No. 8, Bandung'], ['Makan Malam Santai', '18.30 WIB', 'Taman Rimbun', 'Jl. Kenanga No. 8, Bandung']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+  temaNikah('ubintang', 'Undangan Malam Bintang', { judul: 'Nadia & Reza', sapaan: 'Di bawah langit yang sama, dua hati dipertemukan. Kami mengundang Anda untuk menjadi saksi malam bahagia kami.',
+    kutipan: 'Di antara jutaan bintang, aku menemukanmu.', dresscode: 'Dress code: biru tua atau hitam', fotoSampul: '',
+    penutup: 'Kehadiran dan doa Anda adalah bintang yang menerangi malam kami. Terima kasih.',
+    mempelai: { wanita: 'Nadia Salsabila', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Reza Mahendra', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
+    acara: ACARA2(['Akad Nikah', '16.00 WIB', 'Rumah Mempelai Wanita', 'Jl. Melati No. 12, Karawang'], ['Resepsi Malam', '19.00 WIB', 'Rooftop Langit Biru', 'Jl. Pemuda No. 3, Karawang']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+  temaNikah('ujawa', 'Undangan Adat Jawa', { judul: 'Sekar & Bagas', sapaan: 'Atas berkat rahmat Tuhan Yang Maha Esa, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada pernikahan kami dengan adat Jawa.',
+    kutipan: 'Doa restu Bapak/Ibu/Saudara/i adalah bekal kami membangun rumah tangga yang tenteram dan sejahtera.', dresscode: 'Busana batik atau kebaya', fotoSampul: '',
+    penutup: 'Atas kehadiran dan doa restu Bapak/Ibu/Saudara/i, kami ucapkan terima kasih.',
+    mempelai: { wanita: 'Sekar Ayu Wulandari', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Bagas Prasetyo', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
+    acara: ACARA2(['Akad Nikah', '08.00 WIB', 'Rumah Mempelai Wanita', 'Jl. Melati No. 12, Yogyakarta'], ['Resepsi Adat', '11.00–14.00 WIB', 'Pendapa Sumber Rejeki', 'Jl. Kenanga No. 3, Yogyakarta']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+  temaNikah('uroyal', 'Undangan Klasik Royal', { judul: 'Anindya & Raditya', sapaan: 'Dengan penuh hormat, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri perayaan pernikahan kami.',
+    kutipan: 'Dua jiwa, satu janji, selamanya.', dresscode: 'Formal / Black tie', fotoSampul: '',
+    penutup: 'Kehormatan bagi kami bila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu. Terima kasih.',
+    mempelai: { wanita: 'Anindya Paramita', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Raditya Wicaksana', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
+    acara: ACARA2(['Upacara Pemberkatan', '10.00 WIB', 'Gereja Santa Maria', 'Jl. Merdeka No. 5, Jakarta'], ['Gala Dinner', '19.00 WIB', 'Ballroom Grand Mahkota', 'Jl. Sudirman No. 1, Jakarta']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();

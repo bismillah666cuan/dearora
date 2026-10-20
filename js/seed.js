@@ -71,7 +71,12 @@ window.DEARORA_SEED = {
     { id: 'DSN-027', nama: 'Pengumuman Kelahiran', kategori: '', paket: ['premium'], thumbnail: 'tema:lahir', urlDemo: '' },
     { id: 'DSN-028', nama: 'Undangan Pernikahan', kategori: '', paket: ['invitation'], thumbnail: 'tema:uelegan', urlDemo: '' },
     { id: 'DSN-029', nama: 'Undangan Ceria', kategori: '', paket: ['invitation'], thumbnail: 'tema:uceria', urlDemo: '' },
-    { id: 'DSN-030', nama: 'Undangan Hangat', kategori: '', paket: ['invitation'], thumbnail: 'tema:uhangat', urlDemo: '' }
+    { id: 'DSN-030', nama: 'Undangan Hangat', kategori: '', paket: ['invitation'], thumbnail: 'tema:uhangat', urlDemo: '' },
+    { id: 'DSN-031', nama: 'Undangan Islami Elegan', kategori: '', paket: ['invitation'], thumbnail: 'tema:uislami', urlDemo: '' },
+    { id: 'DSN-032', nama: 'Undangan Rustic Boho', kategori: '', paket: ['invitation'], thumbnail: 'tema:urustik', urlDemo: '' },
+    { id: 'DSN-033', nama: 'Undangan Malam Bintang', kategori: '', paket: ['invitation'], thumbnail: 'tema:ubintang', urlDemo: '' },
+    { id: 'DSN-034', nama: 'Undangan Adat Jawa', kategori: '', paket: ['invitation'], thumbnail: 'tema:ujawa', urlDemo: '' },
+    { id: 'DSN-035', nama: 'Undangan Klasik Royal', kategori: '', paket: ['invitation'], thumbnail: 'tema:uroyal', urlDemo: '' }
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }
