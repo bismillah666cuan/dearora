@@ -274,3 +274,42 @@ Paket **Invitation** kini bisa dipesan, dengan tiga desain: **Undangan Elegan** 
 **Aktif 90 hari**, link acak dan privat. Semua jawaban **otomatis terhapus** saat link kedaluwarsa atau pesanan dihapus. Disarankan memesan paling lambat sekitar 2 bulan sebelum acara; sebelum kedaluwarsa, pembeli sebaiknya mengunduh CSV (fitur Perpanjang di admin tetap bisa dipakai).
 **Pemasangan:** ganti isi file `Kode`, `Pesanan`, `Kartu`, `Portal`, `Admin`, `Rutin`, dan `Skema` di Apps Script (bukan file baru), jalankan **`setupAppEnvironment`** (membuat sheet RSVP dan config `RSVP_MAKS`) lalu **`isiUlangKatalogDesain`** (menambah tiga desain undangan), dan deploy **versi baru**. Timpa frontend, isi `GAS_URL`, `git push`.
 Harga Invitation tetap Ibu atur di Admin → Pengaturan → Paket.
+
+
+## Pembayaran dengan Midtrans (pilihan di samping iPaymu)
+Backend kini mendukung **dua gateway**; yang aktif ditentukan satu Script Property. Kode iPaymu tetap ada, dan bawaannya masih iPaymu.
+**Mengapa Midtrans cocok untuk Apps Script:** untuk integrasi standar (Snap) Midtrans tidak mewajibkan IP statis; permintaan cukup diotorisasi dengan Server Key. Midtrans menerima akun **perorangan** (KTP + NPWP).
+
+**Langkah:**
+1. Daftar di dashboard Midtrans (sandbox langsung bisa dipakai), lalu ajukan dokumen untuk production (KTP, NPWP, website atau media sosial).
+2. Di dashboard Midtrans, pilih lingkungan **Sandbox** → Settings → **Access Keys**, salin **Server Key** (berawalan `SB-`).
+3. Apps Script → Project Settings → **Script Properties**, tambahkan:
+   - `PAYMENT_GATEWAY` = `midtrans`
+   - `MIDTRANS_SERVER_KEY` = Server Key sandbox tadi
+   - `PAYMENT_MODE` = `sandbox`
+4. Jalankan **`ujiKoneksiMidtrans`** di editor, baca Log eksekusi: harus muncul "BERHASIL" beserta URL pembayaran uji.
+5. Di dashboard Midtrans → Settings → **Configuration**:
+   - **Payment Notification URL**: `https://dearora.app/api/midtrans-notify` (lihat perantara di bawah). Alternatif langsung: jalankan `tampilkanUrlWebhook` dan pakai URL "Midtrans — URL webhook langsung".
+   - **Finish/Unfinish/Error Redirect URL**: boleh diisi `https://dearora.app/status.html`. Pesanan memakai alamat finish sendiri lewat API, jadi pengaturan ini hanya cadangan.
+6. Uji pembayaran di sandbox memakai simulator Midtrans (QRIS/VA), termasuk keranjang (beberapa ucapan sekaligus).
+7. **Production:** setelah akun disetujui, ambil Server Key **Production** (tanpa `SB-`), isi ulang `MIDTRANS_SERVER_KEY`, ubah `PAYMENT_MODE` ke `production`, jalankan `cekKesiapanRilis`, lalu uji satu transaksi nyata kecil (Midtrans meminta minimal Rp10.000).
+Untuk kembali ke iPaymu: ubah `PAYMENT_GATEWAY` ke `ipaymu`. Pesanan yang sudah dibayar tidak terpengaruh, dan sesi pembayaran yang belum selesai otomatis dibuatkan ulang di gateway yang aktif.
+
+**Perantara webhook (`api/midtrans-notify.js`):** uji "Payment Notification URL" Midtrans mengharapkan balasan HTTP 200 langsung, sedangkan Web App Apps Script membalas POST dengan pengalihan (302). Fungsi serverless di folder `api/` menerima notifikasi di `https://dearora.app/api/midtrans-notify`, meneruskannya ke Apps Script, lalu membalas 200. Pasang dengan: Vercel → Settings → **Environment Variables**, tambahkan `GAS_URL` (URL Web App `/exec`) dan `WEBHOOK_TOKEN` (sama dengan Script Property `WEBHOOK_TOKEN`), lalu **Redeploy**. Notifikasi tidak dipercaya begitu saja: backend memeriksa tanda tangan Midtrans dan memverifikasi ulang ke API status Midtrans.
+**Keamanan:** nominal selalu dari sheet Paket; status lunas baru dicatat setelah server memverifikasi ke API Midtrans (order_id dan nominal cocok); pemrosesan idempoten. Halaman status juga memverifikasi sendiri bila notifikasi terlambat.
+**Pemasangan GAS:** ganti isi file `Pembayaran` dan `Kode` (bukan file baru), lalu deploy versi baru.
+
+
+## Urutan langkah form pemesanan (desain lebih dulu, data pemesan di akhir)
+Pembeli memilih **desain** tepat setelah memilih paket, supaya langsung terbayang, dan mengisi **data pemesan** di akhir.
+- **Basic:** Paket → Desain → Untuk Siapa → Surat → Kejutan Akhir → Foto → Catatan → Data Pemesan → Ringkasan
+- **Premium:** Paket → Desain → Untuk Siapa → Surat → Kejutan Akhir → Foto → Isi Desain → Catatan → Data Pemesan → Ringkasan
+- **Invitation:** Paket → Desain → Untuk Siapa → Foto → Isi Desain → Catatan → Data Pemesan → Ringkasan
+- **Special:** Paket → Untuk Siapa → Foto → Ide Desain → Catatan → Data Pemesan → Ringkasan (tanpa langkah desain)
+
+Isi Desain tetap setelah Foto karena pilihan foto di situ memakai foto yang sudah diunggah.
+- **Dari katalog:** tombol "Pakai Desain" langsung membuka **Untuk Siapa** (desain sudah dipilih); tombol Kembali membuka Desain dengan pilihan tadi tetap terpilih.
+- **Draf lama** (tersimpan dengan urutan lama) otomatis dipulihkan ke langkah yang sama.
+- **Pembeli yang sudah login:** pemberitahuan "Masuk sebagai ..." muncul di langkah Data Pemesan di akhir.
+- **Data pemesan diingat di perangkat** (nama, WhatsApp, email) setelah langkahnya dilewati, agar pesanan berikutnya, terutama di keranjang, tidak mengetik ulang. Disimpan hanya di browser pembeli, dapat diubah, dan tidak membuat draf kosong. (Kunci penyimpanan: `dearora:pemesan`.)
+- Perubahan ini **hanya di frontend**; tidak ada file GAS yang perlu diganti.

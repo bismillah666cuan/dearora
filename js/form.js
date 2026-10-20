@@ -54,9 +54,9 @@
   function templatPaket() { return ST.paket === 'basic' || ST.paket === 'premium'; }
 
   function baru() {
-    return { kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
+    return isiDariIngatan({ kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
       mode: 'pilih', desainId: '', ideSendiri: '', musikId: '', jenisSurprise: '', pesanRahasia: '', passwordRahasia: '', pembuka: 'judul',
-      catatan: '', setuju: false, _langkah: 0, _id: '', _berkas: [] };
+      catatan: '', setuju: false, _langkah: 0, _id: '', _berkas: [] });
   }
   /* ---------------- Draf: bisa banyak (riwayat ucapan yang sedang disusun) ---------------- */
   var KEY_DRAFS = 'dearora:drafts:v2', KEY_GRUP = 'dearora:grup';
@@ -75,17 +75,17 @@
     if (j.s.kejutan && typeof j.s.kejutan === 'object') ST.kejutan = Object.assign(kejutanBaru(), j.s.kejutan);
     if (j.s.opsiDesain && typeof j.s.opsiDesain === 'object') ST.opsiDesain = j.s.opsiDesain;
     if (j.s.dataDesain && typeof j.s.dataDesain === 'object') ST.dataDesain = j.s.dataDesain;
-    ST._id = it.id; langkah = Number(ST._langkah) || 0; ST._berkas = Array.isArray(j.s._berkas) ? j.s._berkas : [];
+    ST._id = it.id; langkah = langkahDariDraf(ST); ST._berkas = Array.isArray(j.s._berkas) ? j.s._berkas : [];
   }
   function muatDraf() {
     ST = baru();
     try { var it = bacaDrafs().sort(function (a, b) { return b.tgl - a.tgl; })[0]; if (it) { pasangDraf(it); muatBerkasDraf(); } } catch (e) { /* abaikan */ }
   }
   function tulisDraf() {
-    if (!ST || !(ST.paket || ST.penerima || ST.namaPembeli)) return;
+    if (!ST || !(ST.paket || ST.penerima)) return;
     try {
       if (!ST._id) ST._id = 'd' + Date.now().toString(36) + rand(3);
-      var s = Object.assign({}, ST, { _langkah: langkah, _berkas: files.map(function (f) { return { id: f.id, jenis: f.jenis, nama: f.nama, ukuran: f.ukuran }; }), kejutan: Object.assign({}, ST.kejutan, { kode: '' }) }); delete s.passwordRahasia; delete s.setuju;
+      var s = Object.assign({}, ST, { _langkah: langkah, _lid: langkahId(), _berkas: files.map(function (f) { return { id: f.id, jenis: f.jenis, nama: f.nama, ukuran: f.ukuran }; }), kejutan: Object.assign({}, ST.kejutan, { kode: '' }) }); delete s.passwordRahasia; delete s.setuju;
       var items = bacaDrafs().filter(function (x) { return x.id !== ST._id; }); items.unshift({ id: ST._id, tgl: Date.now(), s: s }); tulisDrafs(items);
     } catch (e) { /* abaikan */ }
   }
@@ -224,11 +224,30 @@
   window.addEventListener('pagehide', function () { clearTimeout(simpanT); if (ui.simpanAktif !== false) tulisDraf(); });
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') { clearTimeout(simpanT); if (ui.simpanAktif !== false) tulisDraf(); } });
 
+  // Urutan: pilih paket → pilih DESAIN dulu (agar pembeli langsung terbayang) → isi ucapan → data pemesan di akhir.
   function daftarLangkah() {
-    if (ST.paket === 'premium') return ['paket', 'pemesan', 'untuk', 'pesan', 'kejutan', 'foto', 'desain', 'isi', 'catatan', 'ringkasan'];
-    if (ST.paket === 'special') return ['paket', 'pemesan', 'untuk', 'foto', 'ide', 'catatan', 'ringkasan'];
-    if (ST.paket === 'invitation') return ['paket', 'pemesan', 'untuk', 'foto', 'desain', 'isi', 'catatan', 'ringkasan'];
+    if (ST.paket === 'premium') return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'isi', 'catatan', 'pemesan', 'ringkasan'];
+    if (ST.paket === 'special') return ['paket', 'untuk', 'foto', 'ide', 'catatan', 'pemesan', 'ringkasan'];
+    if (ST.paket === 'invitation') return ['paket', 'desain', 'untuk', 'foto', 'isi', 'catatan', 'pemesan', 'ringkasan'];
+    return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'catatan', 'pemesan', 'ringkasan'];
+  }
+  /** Urutan lama (sebelum data pemesan dipindah ke akhir): dipakai hanya untuk memulihkan draf lama ke langkah yang tepat. */
+  function urutanLama(p) {
+    if (p === 'premium') return ['paket', 'pemesan', 'untuk', 'pesan', 'kejutan', 'foto', 'desain', 'isi', 'catatan', 'ringkasan'];
+    if (p === 'special') return ['paket', 'pemesan', 'untuk', 'foto', 'ide', 'catatan', 'ringkasan'];
+    if (p === 'invitation') return ['paket', 'pemesan', 'untuk', 'foto', 'desain', 'isi', 'catatan', 'ringkasan'];
     return ['paket', 'pemesan', 'untuk', 'pesan', 'kejutan', 'foto', 'desain', 'catatan', 'ringkasan'];
+  }
+  function langkahDariDraf(s) {
+    var l = daftarLangkah(), id = s._lid || urutanLama(s.paket)[Number(s._langkah) || 0], i = l.indexOf(id);
+    return i >= 0 ? i : Math.min(Number(s._langkah) || 0, l.length - 1);
+  }
+  // Data pemesan diisi di akhir; supaya pesanan berikutnya (mis. keranjang) tidak mengetik ulang, diingat di perangkat ini.
+  var KUNCI_PEMESAN = 'dearora:pemesan';
+  function ingatPemesan() { try { localStorage.setItem(KUNCI_PEMESAN, JSON.stringify({ n: ST.namaPembeli.trim(), w: ST.whatsapp.trim(), e: ST.email.trim() })); } catch (e) { /* abaikan */ } }
+  function isiDariIngatan(s) {
+    try { var m = JSON.parse(localStorage.getItem(KUNCI_PEMESAN) || 'null'); if (m && !s.namaPembeli && !s.whatsapp && !s.email) { s.namaPembeli = String(m.n || '').slice(0, 60); s.whatsapp = String(m.w || '').slice(0, 20); s.email = String(m.e || '').slice(0, 100); } } catch (e) { /* abaikan */ }
+    return s;
   }
   function judulLangkah(id) { return id === 'ekstra' ? (ST.paket === 'special' ? 'Musik & Surprise' : 'Musik') : JUDUL[id]; }
   function langkahId() { var l = daftarLangkah(); if (langkah >= l.length) langkah = l.length - 1; return l[langkah]; }
@@ -798,6 +817,7 @@
     }
     errors = validasi(id);
     if (Object.keys(errors).length) { paint(); fokusError(); return; }
+    if (id === 'pemesan') ingatPemesan();
     langkah++; errors = {}; if (langkahId() === 'isi') ui.isiBagian = 0; paint(); fokusJudul(); simpanDraf();
   }
   function kembali() { if (langkahId() === 'isi' && (ui.isiBagian || 0) > 0) { ui.isiBagian--; errors = {}; paint(); fokusJudul(); return; } if (langkah > 0) { langkah--; errors = {}; paint(); fokusJudul(); simpanDraf(); } }
@@ -1079,7 +1099,10 @@
       if (!ST.paket && ds.paket.length) ST.paket = ds.paket[0];
       if (ds.paket.indexOf(ST.paket) >= 0) { ST.mode = 'pilih'; ST.desainId = ds.id; }
     }
-    if ((p || ds) && ST.paket && langkah === 0) langkah = 1;     // paket sudah ditentukan → lompat ke Data Pemesan
+    if ((p || ds) && ST.paket && langkah === 0) {                  // paket sudah ditentukan → lompat ke langkah berikutnya
+      var urut = daftarLangkah(), desainPasti = ds && ds.paket.indexOf(ST.paket) >= 0 && urut.indexOf('desain') >= 0;
+      langkah = desainPasti ? urut.indexOf('untuk') : 1;             // desain sudah dipilih dari katalog → langsung "Untuk Siapa"; selain itu → pilih desain
+    }
   }
 
   function view(c) {

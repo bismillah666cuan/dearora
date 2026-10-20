@@ -271,7 +271,7 @@
       v = await tanya({ judul: 'Aktifkan ucapan sekarang?', teks: 'Link ucapan dibuat, foto dibuka untuk yang punya link, masa aktif mulai dihitung, dan email "Ucapanmu sudah jadi" dikirim ke pembeli.', ya: 'Aktifkan' });
       if (!v) return; hasil = await call('adminAktifkan', { orderId: id });
     } else if (a === 'setujui' || a === 'tolak') {
-      v = await tanya({ judul: a === 'setujui' ? 'Setujui pembayaran?' : 'Tolak & batalkan pesanan?', teks: a === 'setujui' ? 'Pembayaran dianggap lunas. Akun, kode redeem, dan aktivasi berjalan seperti biasa.' : 'Pesanan dibatalkan. Pengembalian dana (jika perlu) dilakukan manual di dashboard iPaymu.', ya: a === 'setujui' ? 'Setujui' : 'Tolak', bahaya: a === 'tolak' });
+      v = await tanya({ judul: a === 'setujui' ? 'Setujui pembayaran?' : 'Tolak & batalkan pesanan?', teks: a === 'setujui' ? 'Pembayaran dianggap lunas. Akun, kode redeem, dan aktivasi berjalan seperti biasa.' : 'Pesanan dibatalkan. Pengembalian dana (jika perlu) dilakukan manual di dashboard gateway pembayaran (iPaymu atau Midtrans).', ya: a === 'setujui' ? 'Setujui' : 'Tolak', bahaya: a === 'tolak' });
       if (!v) return; hasil = await call('adminTinjau', { orderId: id, keputusan: a });
     } else if (a === 'batalkan' || a === 'nonaktif') {
       v = await tanya({ judul: a === 'batalkan' ? 'Batalkan pesanan' : 'Nonaktifkan link ucapan', teks: a === 'nonaktif' ? 'Link langsung tidak bisa dibuka dan akses foto dicabut.' : '', fields: [{ name: 'alasan', label: 'Alasan (dicatat)', type: 'textarea', wajib: true }], ya: a === 'batalkan' ? 'Batalkan' : 'Nonaktifkan', bahaya: true });
@@ -397,7 +397,7 @@
   }
   function tabKeamanan() {
     return '<div class="card"><h2>Mengganti password admin</h2><ol class="stack small" style="list-style:decimal;padding-left:1.25rem"><li>Buka Apps Script → ⚙ Setelan Proyek → Properti skrip.</li><li>Tambahkan <span class="mono">ADMIN_PASSWORD_BARU</span> berisi password baru (minimal 12 karakter).</li><li>Jalankan fungsi <span class="mono">aturPasswordAdmin</span>. Properti tadi dihapus otomatis dan semua sesi admin dicabut.</li></ol></div>' +
-      '<div class="card"><h2>Hal yang sebaiknya dijaga</h2><ul class="stack small" style="list-style:disc;padding-left:1.25rem"><li>Jangan bagikan layar yang memuat <span class="mono">WEBHOOK_TOKEN</span> atau API Key iPaymu.</li><li>Ubah <span class="mono">PAYMENT_MODE</span> ke production hanya saat siap rilis (jalankan <span class="mono">cekKesiapanRilis</span>).</li><li>Spreadsheet Dearora_DB berisi data pribadi pembeli. Jangan dibagikan.</li></ul></div>';
+      '<div class="card"><h2>Hal yang sebaiknya dijaga</h2><ul class="stack small" style="list-style:disc;padding-left:1.25rem"><li>Jangan bagikan layar yang memuat <span class="mono">WEBHOOK_TOKEN</span> atau API Key/Server Key gateway pembayaran.</li><li>Ubah <span class="mono">PAYMENT_MODE</span> ke production hanya saat siap rilis (jalankan <span class="mono">cekKesiapanRilis</span>).</li><li>Spreadsheet Dearora_DB berisi data pribadi pembeli. Jangan dibagikan.</li></ul></div>';
   }
   function tabPengaturan(tab, data, errors) {
     if (tab === 'desain') return ringkasTabDesain(data);
