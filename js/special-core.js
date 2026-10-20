@@ -72,6 +72,7 @@
       var def = reg[k], lama = $root; bersih(); parts = []; fotoIds = c.foto || [];
       $root = host; Special._akhir = false; Special._embed = function () { Special._embed = null; $root = lama; bersih(); selesai(); };
       Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: !!c.demo, tema: k };
+      if (window.Suara && window.Suara.tema) window.Suara.tema(k);                // bunyi klik dan latar mengikuti tema desain
       host.className = 'konsep-host sp-root sp-' + k; host.innerHTML = '';
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       var mulaiDesain = function () { host.innerHTML = ''; def.mulai(host, def.adapt(f || {}, c), Special); if (c.musik && k !== 'musik') Special.pasangMusik(c.musik); };
@@ -101,6 +102,7 @@
       var demoData = def.demo || (window.SKEMA && window.SKEMA[k] && window.SKEMA[k].contoh ? def.adapt(JSON.parse(JSON.stringify(window.SKEMA[k].contoh)), { penerima: 'Rani', pengirim: 'Dimas', foto: [] }) : {});
       var data = Object.assign({}, demoData, window.SPECIAL_DATA || {});
       Special.konteks = { slug: '', pengirim: data.pengirim || '', demo: true, tema: k };
+      if (window.Suara && window.Suara.tema) window.Suara.tema(k);
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
       document.title = (def.nama || 'Ucapan') + ' — Dearora';
@@ -110,6 +112,7 @@
     mountData: function (k, c, f) {
       var def = reg[k]; bersih(); parts = []; Special._akhir = false; fotoIds = c.foto || [];
       Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: !!c.demo, tema: k };
+      if (window.Suara && window.Suara.tema) window.Suara.tema(k);                // bunyi klik dan latar mengikuti tema desain
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
       document.title = 'Ucapan untukmu';

@@ -20,8 +20,8 @@
       function dekor() { return '<div class="im-awan a1" aria-hidden="true">' + AWAN + '</div><div class="im-awan a2" aria-hidden="true">' + AWAN + '</div>'; }
       function sambut() {
         var el = layar(dekor() + '<div class="im-gantung g1" aria-hidden="true">' + LAMPION + '</div><div class="im-gantung g2" aria-hidden="true">' + LAMPION + '</div><div class="im-gantung g3" aria-hidden="true">' + LAMPION + '</div><div class="im-isi"><p class="im-kicker">新年快乐</p><h1>' + esc(d.salam) + '</h1><p class="im-untuk">untuk ' + esc(d.penerima) + '</p><button type="button" class="im-btn">Nyalakan keberuntungan</button></div>', 'im-sambut');
-        kembang = setInterval(function () { S.confetti(innerWidth * (0.15 + Math.random() * 0.7), innerHeight * (0.12 + Math.random() * 0.35), 26, ['#F5C242', '#FF4D4D', '#FFE08A', '#fff'], { kuat: 8, naik: 3 }); if (window.Suara) window.Suara.konfeti(); }, 1300);
-        el.querySelector('.im-btn').addEventListener('click', function () { if (window.Suara) window.Suara.buka(); lentera(); });
+        kembang = setInterval(function () { S.confetti(innerWidth * (0.15 + Math.random() * 0.7), innerHeight * (0.12 + Math.random() * 0.35), 26, ['#F5C242', '#FF4D4D', '#FFE08A', '#fff'], { kuat: 8, naik: 3 }); if (window.Suara) window.Suara.petasan(); }, 1300);
+        el.querySelector('.im-btn').addEventListener('click', function () { if (window.Suara) window.Suara.gong(); lentera(); });
       }
       function lentera() {
         var n = 0;
@@ -29,7 +29,7 @@
         var el = layar(dekor() + '<div class="im-isi kecil"><h2>Nyalakan tiga lentera</h2><p class="im-pet">Ketuk lentera untuk menyalakannya dan baca harapan di dalamnya.</p><div class="im-tiga">' + tiga + '</div><button type="button" class="im-btn" id="imLanjut" hidden>Buka amplop ›</button></div>', 'im-lentera');
         el.querySelectorAll('.im-len').forEach(function (b) {
           b.addEventListener('click', function () {
-            if (b.classList.contains('nyala')) return; b.classList.add('nyala'); n++; if (window.Suara) window.Suara.tumbuh();
+            if (b.classList.contains('nyala')) return; b.classList.add('nyala'); n++; if (window.Suara) window.Suara.kenong();
             el.querySelector('#imH' + b.dataset.i).textContent = d.harapan[Number(b.dataset.i)]; S.dariEl(b, 16, ['#F5C242', '#FFE08A'], { kuat: 5 });
             if (n === d.harapan.length) el.querySelector('#imLanjut').hidden = false;
           });
@@ -40,8 +40,8 @@
         var buka = 0;
         var el = layar(dekor() + '<div class="im-isi kecil"><h2>Angpao dan kotak hadiah</h2><p class="im-pet">Dua simbol pemberian dan keberuntungan. Ketuk untuk membukanya.</p><div class="im-dua"><button type="button" class="im-angpao" aria-label="Buka angpao">' + ANGPAO + '</button><button type="button" class="im-kotak" aria-label="Buka kotak hadiah">' + KOTAK + '</button></div><div class="im-isi-b" id="imB" aria-live="polite"></div><button type="button" class="im-btn" id="imBarong" hidden>Panggil barongsai ›</button></div>', 'im-hadiah');
         function selesaiSatu(kartu) { el.querySelector('#imB').insertAdjacentHTML('beforeend', kartu); buka++; if (buka === 2) el.querySelector('#imBarong').hidden = false; }
-        el.querySelector('.im-angpao').addEventListener('click', function (e) { var b = e.currentTarget; if (b.classList.contains('buka')) return; b.classList.add('buka'); if (window.Suara) window.Suara.kertas(); S.dariEl(b, 40, ['#F5C242', '#FFE08A', '#D71920'], { kuat: 8, naik: 7 }); selesaiSatu('<div class="im-kartu"><h3>' + esc(d.hongbao.judul) + '</h3><p>' + esc(d.hongbao.doa) + '</p></div>'); });
-        el.querySelector('.im-kotak').addEventListener('click', function (e) { var b = e.currentTarget; if (b.classList.contains('buka')) return; b.classList.add('buka'); if (window.Suara) window.Suara.hadiah(); S.dariEl(b, 30, ['#F5C242', '#fff'], { kuat: 7, naik: 6 }); selesaiSatu('<div class="im-kartu"><h3>' + esc(d.hadiah.nama) + '</h3><p>' + esc(d.hadiah.isi) + '</p></div>'); });
+        el.querySelector('.im-angpao').addEventListener('click', function (e) { var b = e.currentTarget; if (b.classList.contains('buka')) return; b.classList.add('buka'); if (window.Suara) window.Suara.angpao(); S.dariEl(b, 40, ['#F5C242', '#FFE08A', '#D71920'], { kuat: 8, naik: 7 }); selesaiSatu('<div class="im-kartu"><h3>' + esc(d.hongbao.judul) + '</h3><p>' + esc(d.hongbao.doa) + '</p></div>'); });
+        el.querySelector('.im-kotak').addEventListener('click', function (e) { var b = e.currentTarget; if (b.classList.contains('buka')) return; b.classList.add('buka'); if (window.Suara) window.Suara.koin(); S.dariEl(b, 30, ['#F5C242', '#fff'], { kuat: 7, naik: 6 }); selesaiSatu('<div class="im-kartu"><h3>' + esc(d.hadiah.nama) + '</h3><p>' + esc(d.hadiah.isi) + '</p></div>'); });
         el.querySelector('#imBarong').addEventListener('click', barongsai);
       }
       function barongsai() {
@@ -49,7 +49,7 @@
         var el = layar(dekor() + '<div class="im-isi kecil"><h2>Barongsai</h2><p class="im-pet" id="imP">Ketuk barongsai, dan lihat apa yang keluar!</p><div class="im-arena"><button type="button" class="im-singa" aria-label="Ketuk barongsai">' + SINGA + '</button><div class="im-koin-area" aria-hidden="true"></div></div><p class="im-skor" id="imS" role="status">Koin emas: 0 / ' + T + '</p><div class="im-akhir" id="imA" hidden></div></div>', 'im-barong');
         var b = el.querySelector('.im-singa'), area = el.querySelector('.im-koin-area'), skor = el.querySelector('#imS');
         b.addEventListener('click', function () {
-          if (n >= T) return; n++; b.classList.remove('lompat'); void b.offsetWidth; b.classList.add('lompat'); if (window.Suara) window.Suara.ding();
+          if (n >= T) return; n++; b.classList.remove('lompat'); void b.offsetWidth; b.classList.add('lompat'); if (window.Suara) window.Suara.barongsai();
           for (var i = 0; i < 4; i++) { var c = document.createElement('span'); c.className = 'im-koin'; c.style.setProperty('--dx', Math.round((Math.random() - 0.5) * 220) + 'px'); c.style.animationDelay = (i * 0.06) + 's'; area.appendChild(c); (function (x) { setTimeout(function () { x.remove(); }, 1500); })(c); }
           S.dariEl(b, 14, ['#F5C242', '#FFE08A'], { kuat: 6, naik: 7 }); skor.textContent = 'Koin emas: ' + n + ' / ' + T;
           if (n === T) { S.jeda(function () { var a = el.querySelector('#imA'); a.hidden = false; a.innerHTML = '<p class="im-doa">' + S.kata(d.penutup, 3600, 55) + '</p>' + S.kredit(d.pengirim); S.confetti(innerWidth / 2, innerHeight * 0.4, 60, ['#F5C242', '#D71920', '#FFE08A'], { kuat: 9 }); S.akhir(); }, 500); }

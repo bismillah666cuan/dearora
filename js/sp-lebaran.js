@@ -19,7 +19,7 @@
       function bintang() { var b = '', i; for (i = 0; i < 24; i++) b += '<i style="left:' + ((i * 41) % 96 + 2) + '%;top:' + ((i * 23) % 52 + 2) + '%;animation-delay:' + ((i % 7) * 0.4) + 's"></i>'; return '<div class="lb-bintang" aria-hidden="true">' + b + '</div>'; }
       function gerbang() {
         var el = layar(bintang() + '<div class="lb-bulan" aria-hidden="true">' + BULAN + '</div><div class="lb-lentera l1" aria-hidden="true">' + LENTERA + '</div><div class="lb-lentera l2" aria-hidden="true">' + LENTERA + '</div><div class="lb-masjid" aria-hidden="true">' + MASJID + '</div><div class="lb-isi"><p class="lb-kicker">1 SYAWAL</p><h1>' + esc(d.salam) + '</h1><p class="lb-untuk">untuk ' + esc(d.penerima) + '</p><button type="button" class="lb-btn">Masuk ke Serambi</button></div>', 'lb-gerbang');
-        el.querySelector('.lb-btn').addEventListener('click', function () { if (window.Suara) window.Suara.buka(); serambi(); });
+        el.querySelector('.lb-btn').addEventListener('click', function () { if (window.Suara) window.Suara.bedug(); serambi(); });
       }
       function serambi() {
         var chip = BAHAN.map(function (b, i) { return '<button type="button" class="lb-chip" data-i="' + i + '">' + esc(b) + '</button>'; }).join('');
@@ -27,16 +27,16 @@
         var pakai = 0, m = el.querySelector('#lbM'), info = el.querySelector('#lbI');
         el.querySelectorAll('.lb-chip').forEach(function (b) {
           b.addEventListener('click', function () {
-            if (b.disabled) return; b.disabled = true; b.classList.add('pakai'); pakai++; if (window.Suara) window.Suara.tumbuh();
+            if (b.disabled) return; b.disabled = true; b.classList.add('pakai'); pakai++; if (window.Suara) window.Suara.toples();
             m.style.setProperty('--isi', (pakai / BAHAN.length * 100) + '%'); info.textContent = pakai + ' / ' + BAHAN.length + ' bahan';
             if (pakai === BAHAN.length) { el.querySelector('#lbAduk').hidden = false; info.textContent = 'Semua bahan masuk. Saatnya diaduk!'; }
           });
         });
         el.querySelector('#lbAduk').addEventListener('click', function (e) {
-          e.currentTarget.hidden = true; m.classList.add('aduk'); if (window.Suara) window.Suara.whoosh();
+          e.currentTarget.hidden = true; m.classList.add('aduk'); if (window.Suara) window.Suara.pintu();
           S.jeda(function () {
             m.classList.remove('aduk'); el.querySelector('#lbB').hidden = true; info.hidden = true; var ov = el.querySelector('#lbOv'); ov.hidden = false; ov.classList.add('jalan');
-            S.jeda(function () { ov.hidden = true; var k = el.querySelector('#lbK'); k.hidden = false; k.innerHTML = '<div class="lb-nastar">' + NASTAR + NASTAR + NASTAR + '</div><p class="lb-ucapan">' + S.kata(d.ucapanKue, 3600, 60) + '</p><button type="button" class="lb-btn" id="lbPintu">Buka pintu doa ›</button>'; if (window.Suara) window.Suara.sukses(); S.dariEl(k, 36, ['#F6D06F', '#7BC96F', '#fff'], { kuat: 7 }); k.querySelector('#lbPintu').addEventListener('click', pintu); }, 2400);
+            S.jeda(function () { ov.hidden = true; var k = el.querySelector('#lbK'); k.hidden = false; k.innerHTML = '<div class="lb-nastar">' + NASTAR + NASTAR + NASTAR + '</div><p class="lb-ucapan">' + S.kata(d.ucapanKue, 3600, 60) + '</p><button type="button" class="lb-btn" id="lbPintu">Buka pintu doa ›</button>'; if (window.Suara) window.Suara.lonceng(); S.dariEl(k, 36, ['#F6D06F', '#7BC96F', '#fff'], { kuat: 7 }); k.querySelector('#lbPintu').addEventListener('click', pintu); }, 2400);
           }, 1700);
         });
       }
@@ -46,7 +46,7 @@
         var el = layar(bintang() + '<div class="lb-isi kecil"><h2>Tiga pintu doa</h2><p class="lb-pet">Ketuk setiap pintu masjid untuk membuka doanya.</p><div class="lb-tiga">' + tiga + '</div><div class="lb-doa" id="lbD" aria-live="polite"></div><button type="button" class="lb-btn" id="lbMaaf" hidden>Satu pesan lagi ›</button></div>', 'lb-pintu-l');
         el.querySelectorAll('.lb-p').forEach(function (b) {
           b.addEventListener('click', function () {
-            var i = Number(b.dataset.i), p = d.pintu[i]; if (window.Suara) window.Suara.buka(); b.classList.add('buka');
+            var i = Number(b.dataset.i), p = d.pintu[i]; if (window.Suara) window.Suara.pintu(); b.classList.add('buka');
             if (!buka[i]) { buka[i] = true; n++; }
             el.querySelector('#lbD').innerHTML = '<div class="lb-kartu-d"><h3>' + esc(p.judul) + '</h3><p>' + esc(p.doa) + '</p></div>'; S.dariEl(b, 14, ['#F6D06F', '#fff'], { kuat: 5 });
             if (n === d.pintu.length) el.querySelector('#lbMaaf').hidden = false;

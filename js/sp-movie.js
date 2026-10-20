@@ -42,6 +42,7 @@
       }
 
       function pembuka() {
+        if (window.Suara) { window.Suara.klaket(); window.Suara.proyektor(); }
         var el = layar('<div class="mv-splash"><p class="mv-studio">STUDIO DEARORA MENYAJIKAN</p><h1 class="mv-judul">' + judulBesar + '</h1><p class="mv-untuk">Sebuah film untuk ' + esc(d.pemeran) + '</p><button type="button" class="mv-lewati">Lewati</button></div>', 'mv-gelap');
         var lanjut = function () { beranda(); }; el.querySelector('.mv-lewati').addEventListener('click', lanjut); S.jeda(function () { if (root.querySelector('.mv-splash')) lanjut(); }, 4200);
       }
@@ -70,6 +71,7 @@
       }
 
       function putar(i) {
+        if (window.Suara) { window.Suara.tirai(); window.Suara.proyektor(); }
         var e = d.episode[i], n = 0;
         function adegan() {
           var el = layar('<div class="mv-pemutar"><img class="mv-bg" alt="" src="' + esc(S.src(e.foto, i)) + '"><div class="mv-vinyet"></div>' +
@@ -87,6 +89,7 @@
       }
 
       function penutup() {
+        if (window.Suara) { window.Suara.tirai(); window.Suara.tepuk(); window.Suara.fanfare(); }
         finalDilihat = true;
         var el = layar('<div class="mv-final"><div class="mv-cahaya" aria-hidden="true"></div><button type="button" class="mv-kembali" aria-label="Kembali">‹ Kembali</button><p class="mv-studio">FINAL</p><h1>' + esc(d.final.judul) + '</h1>' +
           '<figure class="mv-foto"><img alt="Foto pilihan" src="' + esc(S.src(d.final.foto, 2)) + '"></figure><p class="mv-pesan">' + S.kata(d.final.pesan, 7000, 90) + '</p>' +

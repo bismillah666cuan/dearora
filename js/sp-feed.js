@@ -63,7 +63,7 @@
       function komentar(btn) {
         var s = document.createElement('div'); s.className = 'fd-sheet'; s.innerHTML = '<div class="fd-sheet-isi" role="dialog" aria-modal="true" aria-label="Komentar"><div class="fd-sh-kep"><b>' + d.komentar.length + ' komentar</b><button type="button" data-tutup aria-label="Tutup">' + ic('x') + '</button></div><ul class="fd-kom"></ul><div class="fd-tulis" aria-hidden="true">Tambahkan komentar…</div></div>';
         root.appendChild(s); var ul = s.querySelector('.fd-kom');
-        d.komentar.forEach(function (k, i) { S.jeda(function () { if (!s.isConnected) return; var li = document.createElement('li'); li.innerHTML = '<span class="fd-kava">' + esc(k.nama.charAt(0).toUpperCase()) + '</span><div><b>' + esc(k.nama) + '</b><p>' + esc(k.teks) + '</p></div>'; ul.appendChild(li); }, 350 + i * 700); });
+        d.komentar.forEach(function (k, i) { S.jeda(function () { if (!s.isConnected) return; var li = document.createElement('li'); li.innerHTML = '<span class="fd-kava">' + esc(k.nama.charAt(0).toUpperCase()) + '</span><div><b>' + esc(k.nama) + '</b><p>' + esc(k.teks) + '</p></div>'; ul.appendChild(li); if (window.Suara) window.Suara.notif(); }, 350 + i * 700); });
         s.addEventListener('click', function (e) { if (e.target === s || e.target.closest('[data-tutup]')) s.remove(); });
       }
       function panjang() {

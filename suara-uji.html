@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Uji Suara Dearora</title>
+<style>
+  body { font: 16px/1.5 system-ui, sans-serif; margin: 0; padding: 1rem; background: #FCF9F7; color: #261C24; }
+  main { max-width: 46rem; margin: 0 auto; } h1 { font-size: 1.4rem; margin: 0 0 .25rem; } p.k { color: #6E616B; margin: 0 0 1rem; }
+  h2 { font-size: 1rem; margin: 1.4rem 0 .5rem; color: #AB274E; } .g { display: flex; flex-wrap: wrap; gap: .4rem; }
+  button { min-height: 44px; padding: 0 .9rem; border-radius: 99px; border: 1.5px solid #E85D75; background: #fff; color: #AB274E; font-weight: 700; cursor: pointer; } button:active { background: #FDF2F4; } button.stop { border-color: #6E616B; color: #6E616B; }
+  .sel { padding: .6rem .8rem; border: 1.5px solid #E8CF8A; border-radius: 12px; background: #fff; }
+</style>
+</head>
+<body><main>
+<h1>Uji Suara Dearora</h1>
+<p class="k">Halaman bantu untuk mencoba semua bunyi (tanpa pesanan). Ketuk tombol untuk mendengarkan. Pastikan volume HP menyala dan mode senyap mati. Sebutkan nama bunyi yang kurang pas, nanti saya perbaiki.</p>
+<div class="sel"><strong>Tema klik tombol</strong> <span class="k">Setiap desain punya bunyi klik tombolnya sendiri. Pilih tema lalu ketuk "Coba klik".</span><br>
+  <select id="tema" aria-label="Tema klik"></select> <button id="cobaKlik">Coba klik</button></div>
+<div id="isi"></div>
+<script src="/js/suara.js"></script>
+<script>
+(function () {
+  var S = window.Suara, isi = document.getElementById('isi');
+  var TEMA = ['', 'movie', 'mall', 'bestie', 'feed', 'musik', 'misi', 'romantique', 'wisuda', 'lebaran', 'imlek', 'mancing', 'awards', 'resep', 'rumah', 'brankas', 'hujan', 'lahir', 'uelegan', 'uceria', 'uhangat'];
+  var KEL = [
+    ['Umum (semua desain)', ['klik', 'buka', 'hadiah', 'sukses', 'salah', 'pop', 'kertas', 'balon', 'konfeti', 'percik', 'drum', 'whoosh', 'ding', 'gosok', 'tumbuh', 'tiup', 'kunci']],
+    ['Air dan alam (Fish It, Hujan Reda, Romantique)', ['air', 'cipratan', 'ombak', 'gesekKaca', 'pasir', 'angin', 'kelopak', 'burung', 'pelangi']],
+    ['Memancing (Fish It)', ['lempar', 'gigit', 'tarik', 'ikan', 'peti']],
+    ['Film, panggung, penghargaan', ['klaket', 'proyektor', 'tirai', 'popcorn', 'tepuk', 'fanfare', 'terompet', 'lampu']],
+    ['Belanja, kota, sahabat, feed', ['kasir', 'pindai', 'kardus', 'kumpul', 'langkah', 'notif']],
+    ['Musik, radio, bayi', ['petik', 'piano', 'kotakMusik', 'radio', 'kartuBalik']],
+    ['Tradisi (Idul Fitri, Imlek) dan rumah', ['bedug', 'kenong', 'gong', 'petasan', 'koin', 'angpao', 'barongsai', 'toples', 'lonceng', 'ketukPintu', 'pintu', 'laci']],
+    ['Dapur, brankas, menulis, undangan', ['tuang', 'sizzle', 'aduk', 'roda', 'gembok', 'besi', 'pena', 'segel']]
+  ];
+  var sel = document.getElementById('tema'); TEMA.forEach(function (k) { var o = document.createElement('option'); o.value = k; o.textContent = k || '(bawaan)'; sel.appendChild(o); });
+  document.getElementById('cobaKlik').addEventListener('click', function () { S.tema(sel.value); S.klik(); });
+  KEL.forEach(function (g) {
+    var h = document.createElement('h2'); h.textContent = g[0]; isi.appendChild(h); var d = document.createElement('div'); d.className = 'g'; isi.appendChild(d);
+    g[1].forEach(function (n) { var b = document.createElement('button'); b.type = 'button'; b.textContent = n; b.addEventListener('click', function () { S.tema(''); S[n](); }); d.appendChild(b); });
+  });
+  var h2 = document.createElement('h2'); h2.textContent = 'Latar berulang (hujan dan ombak)'; isi.appendChild(h2); var dl = document.createElement('div'); dl.className = 'g'; isi.appendChild(dl);
+  [['Hujan deras', function () { S.hujanMulai(1); }], ['Hujan mereda', function () { S.hujanAtur(0.15); }], ['Hujan berhenti', function () { S.hujanStop(); }], ['Ombak mulai', function () { S.ombakMulai(); }], ['Ombak berhenti', function () { S.ombakStop(); }]].forEach(function (x, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = x[0]; if (i === 2 || i === 4) b.className = 'stop'; b.addEventListener('click', x[1]); dl.appendChild(b);
+  });
+  var jaga = document.createElement('p'); jaga.className = 'k'; jaga.textContent = 'Di halaman ini latar tidak berhenti sendiri; di desain asli latar berhenti otomatis saat layar ditutup.'; isi.appendChild(jaga);
+  document.addEventListener('visibilitychange', function () { if (document.hidden) S.berhenti(); });
+})();
+</script>
+</main></body></html>

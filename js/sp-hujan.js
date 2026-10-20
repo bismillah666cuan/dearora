@@ -27,6 +27,7 @@
           raf = requestAnimationFrame(hujan);
         }
         if (S.reduce) { level = 0.6; hujan(); cancelAnimationFrame(raf); } else raf = requestAnimationFrame(hujan);
+        if (window.Suara) window.Suara.hujanMulai(1);
         var teks = el.querySelectorAll('.hj-teks'), pet = el.querySelector('#hjP');
         function rect(p) { var a = p.getBoundingClientRect(), b = el.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; }
         function cek() {
@@ -38,18 +39,18 @@
           });
         }
         function terbaca(i2, p) {
-          baca[i2] = true; jumlah++; p.classList.add('baca'); if (window.Suara) window.Suara.tumbuh();
-          level = Math.max(0, 1 - (jumlah / n) * 0.9); el.style.setProperty('--terang', (jumlah / n).toFixed(2)); pet.textContent = jumlah + ' dari ' + n + ' kalimat terbaca. Hujan mulai mereda.';
+          baca[i2] = true; jumlah++; p.classList.add('baca'); if (window.Suara) window.Suara.air();
+          level = Math.max(0, 1 - (jumlah / n) * 0.9); if (window.Suara) window.Suara.hujanAtur(level); el.style.setProperty('--terang', (jumlah / n).toFixed(2)); pet.textContent = jumlah + ' dari ' + n + ' kalimat terbaca. Hujan mulai mereda.';
           if (jumlah === n) reda();
         }
         function reda() {
-          if (tuntas) return; tuntas = true; level = 0; pet.textContent = 'Hujan sudah reda.'; if (window.Suara) window.Suara.sukses(); kb.classList.add('hilang'); el.classList.add('reda');
+          if (tuntas) return; tuntas = true; level = 0; pet.textContent = 'Hujan sudah reda.'; if (window.Suara) { window.Suara.hujanStop(); window.Suara.pelangi(); window.Suara.burung(); } kb.classList.add('hilang'); el.classList.add('reda');
           S.jeda(function () { cancelAnimationFrame(raf); rx.clearRect(0, 0, W, H); }, 1400);
           var lw = el.querySelector('.hj-lewat'); if (lw) lw.hidden = true;
           S.jeda(function () { pet.textContent = 'Hujan sudah reda. Baca dulu kalimat-kalimatnya, lalu tekan Lanjut.'; var b = document.createElement('button'); b.type = 'button'; b.className = 'hj-lewat hj-lanjut'; b.textContent = 'Lanjut ›'; el.appendChild(b); b.addEventListener('click', function () { if (window.Suara) window.Suara.buka(); penutup(); }); }, 2200);
         }
         var turun = false, hitung = 0;
-        function usap(e) { if (!turun) return; kx.globalCompositeOperation = 'destination-out'; var gr = kx.createRadialGradient(e.clientX, e.clientY, 4, e.clientX, e.clientY, 46); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.65, 'rgba(0,0,0,.92)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); kx.fillStyle = gr; kx.beginPath(); kx.arc(e.clientX, e.clientY, 46, 0, 6.3); kx.fill(); kx.globalCompositeOperation = 'source-over'; if (window.Suara) window.Suara.gosok(); if (++hitung % 5 === 0) cek(); }
+        function usap(e) { if (!turun) return; kx.globalCompositeOperation = 'destination-out'; var gr = kx.createRadialGradient(e.clientX, e.clientY, 4, e.clientX, e.clientY, 46); gr.addColorStop(0, 'rgba(0,0,0,1)'); gr.addColorStop(0.65, 'rgba(0,0,0,.92)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); kx.fillStyle = gr; kx.beginPath(); kx.arc(e.clientX, e.clientY, 46, 0, 6.3); kx.fill(); kx.globalCompositeOperation = 'source-over'; if (window.Suara) window.Suara.gesekKaca(); if (++hitung % 5 === 0) cek(); }
         el.addEventListener('pointerdown', function (e) { turun = true; usap(e); }); el.addEventListener('pointermove', usap);
         ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (nm) { el.addEventListener(nm, function () { turun = false; cek(); }); });
         S.jeda(function () { var b = el.querySelector('.hj-lewat'); if (b) b.hidden = false; }, 12000);

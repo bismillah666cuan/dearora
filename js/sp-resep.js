@@ -25,16 +25,16 @@
         el.querySelectorAll('.rs-jar').forEach(function (j) {
           j.addEventListener('click', function () {
             if (j.classList.contains('pakai')) return; j.classList.add('pakai'); pakai++; var b = d.bahan[Number(j.dataset.i)];
-            if (window.Suara) window.Suara.tumbuh(); el.querySelector('#rsPc').style.setProperty('--isi', (pakai / n * 70) + '%'); el.querySelector('#rsPc').classList.add('masuk'); S.jeda(function () { var p = el.querySelector('#rsPc'); if (p) p.classList.remove('masuk'); }, 600);
+            if (window.Suara) window.Suara.tuang(); el.querySelector('#rsPc').style.setProperty('--isi', (pakai / n * 70) + '%'); el.querySelector('#rsPc').classList.add('masuk'); S.jeda(function () { var p = el.querySelector('#rsPc'); if (p) p.classList.remove('masuk'); }, 600);
             el.querySelector('#rsC').innerHTML = '<div class="rs-bahan"><h3>' + esc(b.nama) + '</h3>' + (b.foto ? '<img alt="" src="' + esc(S.src(b.foto, pakai)) + '">' : '') + '<p>' + esc(b.cerita) + '</p></div>'; el.querySelector('#rsP').textContent = pakai + ' dari ' + n + ' bahan sudah masuk';
             if (pakai === n) el.querySelector('#rsSaji').hidden = false;
           });
         });
-        el.querySelector('#rsSaji').addEventListener('click', function (e) { e.currentTarget.hidden = true; el.querySelector('#rsPc').classList.add('aduk'); if (window.Suara) window.Suara.whoosh(); S.jeda(sajikan, 1700); });
+        el.querySelector('#rsSaji').addEventListener('click', function (e) { e.currentTarget.hidden = true; el.querySelector('#rsPc').classList.add('aduk'); if (window.Suara) window.Suara.aduk(); S.jeda(sajikan, 1700); });
       }
       function sajikan() {
         layar('<div class="rs-hidang"><div class="rs-mangkuk" aria-hidden="true">' + MANGKUK + '</div><p class="rs-kop">HIDANGAN SIAP</p><h2>' + esc(d.hidangan.nama) + '</h2><p class="rs-pesan">' + S.kata(d.hidangan.pesan, 4500, 52) + '</p>' + S.kredit(d.pengirim) + '</div>', 'rs-hidangl');
-        if (window.Suara) window.Suara.sukses(); S.confetti(innerWidth / 2, innerHeight * 0.3, 44, ['#E8745A', '#F2B45A', '#F28B82', '#fff'], { kuat: 8 }); S.akhir();
+        if (window.Suara) { window.Suara.sizzle(); window.Suara.sukses(); } S.confetti(innerWidth / 2, innerHeight * 0.3, 44, ['#E8745A', '#F2B45A', '#F28B82', '#fff'], { kuat: 8 }); S.akhir();
       }
       kartu();
     }

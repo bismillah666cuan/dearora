@@ -153,11 +153,24 @@
 
   /* ---------------- Daftar pesanan ---------------- */
   var cari = { q: '', status: '', paket: '', hal: 1 }, tm = null;
+  var pilihMode = false, terpilih = {}, statusId = {};
+  function bisaHapus(o) { return ['Dibayar', 'Diproses'].indexOf(o.status) < 0; }
+  function cekBox(o) { return pilihMode ? '<input type="checkbox" class="pilih-cek" data-pilih="' + esc(o.orderId) + '"' + (bisaHapus(o) ? '' : ' disabled title="Sedang dikerjakan, tidak bisa dihapus"') + (terpilih[o.orderId] ? ' checked' : '') + ' aria-label="Pilih ' + esc(o.orderId) + '">' : ''; }
+  function jmlTerpilih() { return Object.keys(terpilih).length; }
+  function barPilih() {
+    var n = jmlTerpilih();
+    return '<div class="pilih-bar" role="region" aria-label="Hapus pesanan terpilih"><span id="pilihN" role="status">' + n + ' dipilih</span><button type="button" class="btn sm" data-a="pilih-semua">Pilih semua yang bisa dihapus</button>' +
+      '<button type="button" class="btn danger sm" data-a="hapus-pilihan" id="btnHapusPilih"' + (n ? '' : ' disabled') + '>' + ic('x') + ' Hapus terpilih</button><button type="button" class="btn sm" data-a="selesai-pilih">Selesai</button></div>';
+  }
+  function perbaruiBar() { var n = jmlTerpilih(), el = document.getElementById('pilihN'), bt = document.getElementById('btnHapusPilih'); if (el) el.textContent = n + ' dipilih'; if (bt) bt.disabled = !n; }
   function barisDaftar(o) {
-    return '<tr><td><a class="id" href="#/detail?o=' + encodeURIComponent(o.orderId) + '">' + esc(o.orderId) + '</a><div class="small muted">' + esc(tglJam(o.tglOrder)) + '</div></td>' +
+    return '<tr>' + (pilihMode ? '<td class="cek">' + cekBox(o) + '</td>' : '') + '<td><a class="id" href="#/detail?o=' + encodeURIComponent(o.orderId) + '">' + esc(o.orderId) + '</a><div class="small muted">' + esc(tglJam(o.tglOrder)) + '</div></td>' +
       '<td>' + esc(o.pembeli) + '<div class="small muted">' + esc(o.email) + '</div></td><td>' + esc(o.penerima) + '</td><td>' + esc(o.paket) + '</td><td>' + rp(o.nominal) + '</td><td>' + badge(o.status) + '</td></tr>';
   }
   function kartuDaftar(o) {
+    return '<div class="o-wrap' + (pilihMode ? ' pilih' : '') + '">' + cekBox(o) + kartuDaftar0(o) + '</div>';
+  }
+  function kartuDaftar0(o) {
     return '<a class="o-card" href="#/detail?o=' + encodeURIComponent(o.orderId) + '"><div class="t"><strong>' + esc(o.orderId) + '</strong>' + badge(o.status) + '</div>' +
       '<div class="small" style="margin-top:.25rem">' + esc(o.pembeli) + ' → ' + esc(o.penerima) + '</div><div class="small muted">' + esc(o.paket) + ' · ' + rp(o.nominal) + ' · ' + esc(tgl(o.tglOrder)) + '</div></a>';
   }
@@ -168,16 +181,17 @@
     box.removeAttribute('aria-busy');
     if (!r.success) { box.innerHTML = '<p class="err" role="alert">' + esc(r.message) + '</p>'; return; }
     var d = r.data, maks = Math.max(1, Math.ceil(d.total / d.perHalaman));
-    box.innerHTML = '<p class="small muted" role="status">' + d.total + ' pesanan</p>' + (d.daftar.length
-      ? '<div class="only-desk tbl-wrap"><table><thead><tr><th>Pesanan</th><th>Pembeli</th><th>Untuk</th><th>Paket</th><th>Nominal</th><th>Status</th></tr></thead><tbody>' + d.daftar.map(barisDaftar).join('') + '</tbody></table></div>' +
+    d.daftar.forEach(function (o) { statusId[o.orderId] = o.status; });
+    box.innerHTML = (pilihMode ? barPilih() : '') + '<p class="small muted" role="status">' + d.total + ' pesanan</p>' + (d.daftar.length
+      ? '<div class="only-desk tbl-wrap"><table><thead><tr>' + (pilihMode ? '<th class="cek"><span class="sr">Pilih</span></th>' : '') + '<th>Pesanan</th><th>Pembeli</th><th>Untuk</th><th>Paket</th><th>Nominal</th><th>Status</th></tr></thead><tbody>' + d.daftar.map(barisDaftar).join('') + '</tbody></table></div>' +
         '<div class="only-mob">' + d.daftar.map(kartuDaftar).join('') + '</div>'
       : '<div class="card empty">Tidak ada pesanan yang cocok.</div>') +
       '<div class="pager"><button class="btn sm" data-a="hal-" ' + (d.halaman <= 1 ? 'disabled' : '') + '>← Sebelumnya</button><span class="small muted">Hal. ' + d.halaman + ' dari ' + maks + '</span><button class="btn sm" data-a="hal+" ' + (d.halaman >= maks ? 'disabled' : '') + '>Berikutnya →</button></div>';
   }
   function simpanCariKeUrl() { history.replaceState(null, '', '#/pesanan' + qs({ q: cari.q, status: cari.status, paket: cari.paket, hal: cari.hal > 1 ? String(cari.hal) : '' })); }
   function viewPesanan(my, q) {
-    cari = { q: q.q || '', status: q.status || '', paket: q.paket || '', hal: Math.max(1, Number(q.hal) || 1) };
-    document.getElementById('main').innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Pesanan</h1><div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn sm" data-a="bersih-riwayat" title="Hapus semua pesanan Kedaluwarsa dan Dibatalkan">' + ic('x') + ' Bersihkan riwayat</button><button class="btn sm" data-a="csv">' + ic('dl') + ' Ekspor CSV</button></div></div>' +
+    cari = { q: q.q || '', status: q.status || '', paket: q.paket || '', hal: Math.max(1, Number(q.hal) || 1) }; pilihMode = false; terpilih = {};
+    document.getElementById('main').innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Pesanan</h1><div style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn sm" data-a="mode-pilih" aria-pressed="false" id="btnPilih" title="Pilih beberapa pesanan lalu hapus sekaligus">' + ic('check') + ' Pilih untuk dihapus</button><button class="btn sm" data-a="bersih-riwayat" title="Hapus semua pesanan Kedaluwarsa dan Dibatalkan">' + ic('x') + ' Bersihkan riwayat</button><button class="btn sm" data-a="csv">' + ic('dl') + ' Ekspor CSV</button></div></div>' +
       '<div class="filters"><div class="wide"><label class="sr" for="fq">Cari</label><input id="fq" type="search" placeholder="Cari ID, nama, email, WhatsApp…" value="' + esc(cari.q) + '"></div>' +
       '<div><label class="sr" for="fs">Status</label><select id="fs"><option value="">Semua status</option>' + STATUS.map(function (s) { return '<option' + (s === cari.status ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select></div>' +
       '<div><label class="sr" for="fp">Paket</label><select id="fp"><option value="">Semua paket</option>' + ['basic', 'premium', 'special'].map(function (p) { return '<option value="' + p + '"' + (p === cari.paket ? ' selected' : '') + '>' + p.charAt(0).toUpperCase() + p.slice(1) + '</option>'; }).join('') + '</select></div></div>' +
@@ -509,6 +523,10 @@
     if (my === run) { var h1 = document.getElementById('h1'); if (h1 && h.rute !== 'pesanan') h1.focus({ preventScroll: true }); if (h.rute !== 'pesanan') window.scrollTo(0, 0); }
   }
 
+  document.addEventListener('change', function (ev) {
+    var c = ev.target.closest && ev.target.closest('input[data-pilih]'); if (!c) return;
+    if (c.checked) terpilih[c.dataset.pilih] = true; else delete terpilih[c.dataset.pilih]; perbaruiBar();
+  });
   document.addEventListener('click', async function (ev) {
     var b = ev.target.closest('[data-a]'); if (!b || b.dataset.a === 'toggle') return;
     var a = b.dataset.a;
@@ -519,6 +537,20 @@
     if (a === 'tambah') { bukaEditor(b.dataset.j, ''); return; }
     if (a === 'tutup-editor') { tutupEditor(); return; }
     if (a === 'hal-' || a === 'hal+') { cari.hal = Math.max(1, cari.hal + (a === 'hal+' ? 1 : -1)); simpanCariKeUrl(); muatDaftar(run); window.scrollTo(0, 0); return; }
+    if (a === 'mode-pilih') { pilihMode = !pilihMode; terpilih = {}; b.setAttribute('aria-pressed', String(pilihMode)); b.classList.toggle('on', pilihMode); muatDaftar(run); return; }
+    if (a === 'selesai-pilih') { pilihMode = false; terpilih = {}; var bp = document.getElementById('btnPilih'); if (bp) { bp.setAttribute('aria-pressed', 'false'); bp.classList.remove('on'); } muatDaftar(run); return; }
+    if (a === 'pilih-semua') { document.querySelectorAll('input[data-pilih]:not(:disabled)').forEach(function (c) { c.checked = true; terpilih[c.dataset.pilih] = true; }); perbaruiBar(); return; }
+    if (a === 'hapus-pilihan') {
+      var ids = Object.keys(terpilih); if (!ids.length) return;
+      var aktif = ids.filter(function (id) { return statusId[id] === 'Aktif'; }).length;
+      var vp = await tanya({ judul: 'Hapus ' + ids.length + ' pesanan?', teks: 'Pesanan terpilih dihapus permanen beserta berkas, chat, balasan, dan jawaban tamunya.' + (aktif ? ' ' + aktif + ' di antaranya masih AKTIF: link ucapannya ikut mati.' : '') + ' Pesanan yang sedang dikerjakan otomatis dilewati.', bahaya: true, ya: 'Hapus ' + ids.length });
+      if (!vp) return; b.disabled = true;
+      try {
+        var rp2 = await call('adminHapusPilihan', { ids: ids, pastikan: true });
+        if (rp2.success) { var lw = rp2.data.dilewati.length; toast(rp2.data.dihapus + ' pesanan dihapus' + (lw ? ', ' + lw + ' dilewati' : '')); terpilih = {}; muatDaftar(run); } else toast(rp2.message);
+      } catch (e) { /* sesi */ }
+      b.disabled = false; return;
+    }
     if (a === 'bersih-riwayat') {
       var vb = await tanya({ judul: 'Bersihkan riwayat?', teks: 'Semua pesanan berstatus Kedaluwarsa dan Dibatalkan dihapus permanen beserta berkas, chat, dan balasannya. Pesanan aktif atau yang sedang dikerjakan tidak disentuh.', bahaya: true, ya: 'Bersihkan' });
       if (!vb) return; b.disabled = true;

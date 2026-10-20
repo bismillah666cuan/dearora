@@ -46,6 +46,12 @@
       if (r.success) simpan(r.data.token, r.data.profil);
       return r;
     },
+    async lupaMinta(email) { return API.post('lupaMinta', { email: email }, { timeout: 25000 }); },
+    async lupaTetapkan(email, kode, password) {
+      var r = await API.post('lupaTetapkan', { email: email, kode: kode, password: password }, { timeout: 30000 });
+      if (r.success) simpan(r.data.token, r.data.profil);
+      return r;
+    },
     async keluar() {
       var s = baca(); hapus();
       if (s) { try { await API.post('customerLogout', {}, { token: s.token, timeout: 8000 }); } catch (e) { /* sesi lokal sudah dihapus */ } }

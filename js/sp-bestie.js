@@ -79,7 +79,7 @@
           var b = ev.target.closest('.bw-lok'); if (!b) return;
           if (b.classList.contains('terkunci')) { S.toast('Kumpulkan ' + d.syaratPulau + ' memori dulu untuk membuka Pulau Harta.'); return; }
           lokasiSkr = b.dataset.lok; var t = el.querySelector('.bw-tokoh'); t.className = t.className.replace(/p-\w+/, 'p-' + lokasiSkr) + ' jalan';
-          S.jeda(function () { lokasi(lokasiSkr); }, 900);
+          if (window.Suara) window.Suara.langkah(); S.jeda(function () { lokasi(lokasiSkr); }, 900);
         });
       }
 
@@ -95,7 +95,7 @@
           if (ev.target.closest('[data-a="koleksi"]')) { koleksi(); return; }
           var b = ev.target.closest('.bw-item'); if (!b) return; var it = l.item[Number(b.dataset.i)];
           S.dariEl(b, 30, ['#FFC93C', '#FF5D8F', '#5AD1FF', '#fff'], { kuat: 8 });
-          if (window.Suara) window.Suara.tumbuh(); var baru = !temu[b.dataset.k]; temu[b.dataset.k] = true; b.classList.add('ambil');
+          if (window.Suara) window.Suara.kumpul(); var baru = !temu[b.dataset.k]; temu[b.dataset.k] = true; b.classList.add('ambil');
           kartu(it, baru, function () { lokasi(id); });
         });
       }
@@ -119,7 +119,7 @@
         var el = layar(hud() + '<div class="bw-scene"><h2>' + esc(l.nama) + '</h2><p>Peti harta karun menunggumu. Ketuk untuk membukanya!</p><div class="bw-area bw-pantai"><button type="button" class="bw-peti" id="bwPeti" aria-label="Buka peti harta karun"><i class="tutup"></i><i class="badan"></i><i class="kunci"></i></button>' + avatar(d.avatar, 'kecil bw-tengahnya') + '</div><button type="button" class="bw-balik" data-a="peta">‹ Kembali ke peta</button></div>', 'bw-langit', l.warna);
         el.querySelector('[data-a="peta"]').addEventListener('click', peta);
         el.querySelector('#bwPeti').addEventListener('click', function () {
-          var p = el.querySelector('#bwPeti'); if (p.classList.contains('buka')) return; if (window.Suara) window.Suara.hadiah(); p.classList.add('buka'); S.dariEl(p, 80, ['#FFC93C', '#FFE08A', '#fff', '#FF5D8F'], { kuat: 11, naik: 9 });
+          var p = el.querySelector('#bwPeti'); if (p.classList.contains('buka')) return; if (window.Suara) window.Suara.peti(); if (window.Suara) window.Suara.hadiah(); p.classList.add('buka'); S.dariEl(p, 80, ['#FFC93C', '#FFE08A', '#fff', '#FF5D8F'], { kuat: 11, naik: 9 });
           S.jeda(akhir, 1300);
         });
       }

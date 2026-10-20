@@ -20,7 +20,7 @@
       function laut() { return '<div class="mc-awan a1" aria-hidden="true"></div><div class="mc-awan a2" aria-hidden="true"></div><div class="mc-ombak o1" aria-hidden="true"></div><div class="mc-ombak o2" aria-hidden="true"></div><div class="mc-ombak o3" aria-hidden="true"></div>'; }
       function awal() {
         var el = layar(laut() + '<div class="mc-pulau" aria-hidden="true">' + PULAU + '</div><div class="mc-perahu b" aria-hidden="true">' + PERAHU + '</div><div class="mc-isi"><p class="mc-kicker">HARI INI KITA MEMANCING</p><h1>Fish It</h1><p class="mc-untuk">Untuk ' + esc(d.penerima) + '</p><button type="button" class="mc-btn">Mulai Mancing</button></div>', 'mc-awal');
-        el.querySelector('.mc-btn').addEventListener('click', function () { if (window.Suara) window.Suara.buka(); peta(); });
+        el.querySelector('.mc-btn').addEventListener('click', function () { if (window.Suara) window.Suara.ombak(); if (window.Suara) window.Suara.ombakMulai(); peta(); });
       }
       var SPOT = { mem: { nama: 'Memory Bay', desk: 'Tempat menemukan kenangan', n: function () { return d.kenangan.length; } }, love: { nama: 'Love Lagoon', desk: 'Tempat menemukan pesan manis', n: function () { return d.manis.length; } }, harta: { nama: 'Treasure Cove', desk: 'Tempat mencari hadiah utama', n: function () { return 1; } } };
       function terbuka(k) { return k !== 'harta' || (tangkap.mem >= d.kenangan.length && tangkap.love >= d.manis.length); }
@@ -33,7 +33,7 @@
         el.querySelectorAll('.mc-spot:not(:disabled)').forEach(function (b) {
           b.addEventListener('click', function () {
             var k = b.dataset.k; el.querySelectorAll('.mc-spot').forEach(function (x) { x.disabled = true; }); b.classList.add('pilih');
-            el.querySelector('#mcP').className = 'mc-perahu peta ke-' + k; if (window.Suara) window.Suara.whoosh();
+            el.querySelector('#mcP').className = 'mc-perahu peta ke-' + k; if (window.Suara) window.Suara.lempar();
             el.querySelector('#mcL').textContent = 'Kita lihat ya, kamu dapet apa!'; tmr = setTimeout(function () { pancing(k); }, S.reduce ? 60 : 1900);
           });
         });
@@ -45,10 +45,10 @@
         function reset(msg) { fase = 'siap'; el.classList.remove('lempar', 'gigit'); a.textContent = 'Lempar Kail'; a.classList.remove('tarik'); info.textContent = msg; }
         a.addEventListener('click', function () {
           if (fase === 'siap') {
-            fase = 'tunggu'; el.classList.add('lempar'); a.textContent = 'Tunggu…'; info.textContent = 'Pelampung jatuh ke air. Sabar ya…'; if (window.Suara) window.Suara.percik();
-            tmr = setTimeout(function () { fase = 'gigit'; el.classList.add('gigit'); a.textContent = 'Tarik Kail!'; a.classList.add('tarik'); info.textContent = 'Ada sesuatu nih!'; if (window.Suara) window.Suara.ding(); gigitT = setTimeout(function () { reset('Yah, lepas! Coba lempar lagi.'); }, 2600); }, S.reduce ? 300 : 1800 + Math.random() * 2000);
+            fase = 'tunggu'; el.classList.add('lempar'); a.textContent = 'Tunggu…'; info.textContent = 'Pelampung jatuh ke air. Sabar ya…'; if (window.Suara) window.Suara.cipratan();
+            tmr = setTimeout(function () { fase = 'gigit'; el.classList.add('gigit'); a.textContent = 'Tarik Kail!'; a.classList.add('tarik'); info.textContent = 'Ada sesuatu nih!'; if (window.Suara) window.Suara.gigit(); gigitT = setTimeout(function () { reset('Yah, lepas! Coba lempar lagi.'); }, 2600); }, S.reduce ? 300 : 1800 + Math.random() * 2000);
           } else if (fase === 'tunggu') { clearTimeout(tmr); reset('Terlalu cepat! Tunggu sampai ada sesuatu, ya.'); }
-          else if (fase === 'gigit') { clearTimeout(gigitT); fase = 'dapat'; if (window.Suara) window.Suara.percik(); dapat(k); }
+          else if (fase === 'gigit') { clearTimeout(gigitT); fase = 'dapat'; if (window.Suara) window.Suara.tarik(); dapat(k); }
         });
       }
       function dapat(k) {
@@ -56,14 +56,14 @@
         var i = tangkap[k], isi = k === 'mem' ? d.kenangan[i] : d.manis[i], ikon = k === 'mem' ? '<div class="mc-ikan">' + IKAN[i % IKAN.length] + '</div>' : '<div class="mc-botol">' + BOTOL + '</div>';
         tangkap[k]++; var sisa = SPOT[k].n() - tangkap[k];
         var el = layar(laut() + '<div class="mc-dapat">' + ikon + '<div class="mc-kartu"><p class="mc-kicker">' + (k === 'mem' ? 'KARTU KENANGAN' : 'PESAN DI BOTOL') + '</p><h2>' + esc(isi.judul) + '</h2>' + (isi.foto ? '<img class="mc-foto" alt="" src="' + esc(S.src(isi.foto, i)) + '">' : '') + '<p>' + esc(isi.teks) + '</p></div><button type="button" class="mc-btn">' + (sisa > 0 ? 'Memancing lagi ›' : 'Kembali ke peta ›') + '</button></div>', 'mc-dapatl');
-        if (window.Suara) window.Suara.sukses(); S.dariEl(el.querySelector('.mc-kartu'), 24, ['#7FD1E8', '#FFD76A', '#fff'], { kuat: 6, naik: 6 });
+        if (window.Suara) window.Suara.ikan(); if (window.Suara) window.Suara.sukses(); S.dariEl(el.querySelector('.mc-kartu'), 24, ['#7FD1E8', '#FFD76A', '#fff'], { kuat: 6, naik: 6 });
         el.querySelector('.mc-btn').addEventListener('click', function () { if (sisa > 0) pancing(k); else peta(); });
       }
       function peti() {
         var el = layar(laut() + '<div class="mc-peti-l"><p class="mc-kicker">TREASURE COVE</p><h2>Wah, peti harta karun!</h2><button type="button" class="mc-peti" aria-label="Buka peti harta karun">' + PETI + '</button><p class="mc-pet" id="mcT">Ketuk petinya untuk membukanya.</p><div class="mc-isi-peti" id="mcIP" hidden></div></div>', 'mc-petil');
         var b = el.querySelector('.mc-peti'), buka = false;
         b.addEventListener('click', function () {
-          if (buka) return; buka = true; b.classList.add('buka'); if (window.Suara) window.Suara.hadiah(); S.dariEl(b, 50, ['#FFD76A', '#FFB3C7', '#7FD1E8', '#fff'], { kuat: 9, naik: 8 }); el.querySelector('#mcT').hidden = true;
+          if (buka) return; buka = true; b.classList.add('buka'); if (window.Suara) window.Suara.peti(); if (window.Suara) window.Suara.hadiah(); S.dariEl(b, 50, ['#FFD76A', '#FFB3C7', '#7FD1E8', '#fff'], { kuat: 9, naik: 8 }); el.querySelector('#mcT').hidden = true;
           S.jeda(function () { var ip = el.querySelector('#mcIP'); ip.hidden = false; ip.innerHTML = (d.peti.foto ? '<img class="mc-foto" alt="" src="' + esc(S.src(d.peti.foto, 3)) + '">' : '') + '<p class="mc-pesan">' + S.kata(d.peti.pesan, 4000, 55) + '</p>' + S.kredit(d.pengirim); S.akhir(); }, 700);
         });
       }

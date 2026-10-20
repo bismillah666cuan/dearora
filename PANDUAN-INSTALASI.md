@@ -313,3 +313,16 @@ Isi Desain tetap setelah Foto karena pilihan foto di situ memakai foto yang suda
 - **Pembeli yang sudah login:** pemberitahuan "Masuk sebagai ..." muncul di langkah Data Pemesan di akhir.
 - **Data pemesan diingat di perangkat** (nama, WhatsApp, email) setelah langkahnya dilewati, agar pesanan berikutnya, terutama di keranjang, tidak mengetik ulang. Disimpan hanya di browser pembeli, dapat diubah, dan tidak membuat draf kosong. (Kunci penyimpanan: `dearora:pemesan`.)
 - Perubahan ini **hanya di frontend**; tidak ada file GAS yang perlu diganti.
+
+
+## Pembaruan: akun, hapus massal, musik Premium, dan suara per desain
+**Pemasangan GAS (urutan penting):** ganti isi file `Kode`, `Pesanan`, `Kartu`, `Admin`, `Portal`, dan `Email` di Apps Script (bukan file baru) → jalankan **`setupAppEnvironment`** (menambah 4 kolom di sheet **Akun**: `ResetHash`, `ResetSalt`, `ResetSampai`, `ResetCoba`) → deploy **versi baru**. Lalu timpa frontend, isi ulang `GAS_URL`, `git push`.
+
+**1. Masuk dan lupa password.** Pembeli masuk dengan **email atau kode redeem** + password. Kode redeem tetap dipakai pertama kali untuk membuat password. Tersedia **"Lupa password atau kehilangan kode?"**: kode 6 angka dikirim ke email pemesan (berlaku 30 menit, maksimal 3 permintaan per jam per email, terkunci setelah 5 tebakan salah). Berlaku juga bagi pembeli yang belum pernah membuat password atau kehilangan kodenya. Setelah password diganti, sesi lama di perangkat lain berakhir. Jika satu email dipakai pada beberapa akun lama, atur ulang berlaku untuk semuanya. Sistem tidak membocorkan apakah sebuah email terdaftar.
+**Email:** tanda terima (saat pembayaran terverifikasi) dan "Ucapanmu sudah jadi" (saat link aktif; untuk Special saat admin menyelesaikan) sudah ada sebelumnya; teksnya kini menjelaskan cara masuk. Bila email tidak diterima, periksa sheet **EmailLog** (kolom Status), izin pengiriman email di Apps Script, dan jalankan `cekKesiapanRilis`.
+
+**2. Hapus beberapa pesanan sekaligus (admin).** Admin → Pesanan → **Pilih untuk dihapus**: centang pesanan, atau "Pilih semua yang bisa dihapus", lalu **Hapus terpilih**. Pesanan Dibayar/Diproses dilewati otomatis; pesanan Aktif hanya terhapus setelah konfirmasi. Maksimal 100 pesanan per permintaan. Berkas, chat, balasan, dan jawaban tamu ikut terhapus.
+
+**3. Musik latar hanya untuk Premium.** Pilihan musik muncul di bagian terakhir *Isi Desain* (Premium). Basic, Special, dan Invitation tidak menawarkan musik; langkah Catatan pada Basic dan Invitation tidak lagi menyebut permintaan lagu. Server mengabaikan musik untuk paket selain Premium.
+
+**4. Suara per desain.** Setiap desain punya bunyi klik tombolnya sendiri dan bunyi khas pada interaksinya (air, gesekan kaca, kertas, bedug, gong, kasir, klaket, tepuk tangan, dan lainnya); latar hujan/ombak berhenti otomatis saat layar desain ditutup. Semua bunyi disintesis di browser (tanpa berkas, tanpa hak cipta). Untuk menyetel: buka **`https://dearora.app/suara-uji.html`** (halaman bantu, tidak diindeks), dengarkan satu per satu, lalu sebutkan nama bunyi yang kurang pas. Bunyi baru hanya terdengar setelah penerima menyentuh layar dan mengikuti tombol suara.

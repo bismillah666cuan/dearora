@@ -69,63 +69,106 @@
 
     function paintProses() {
       var m = S.sukses ? ['Berhasil! Membuka portalmu…', 'Sebentar lagi kamu diarahkan ke Pesanan Saya.']
-        : S.langkah === 'kode' ? ['Memeriksa kode…', 'Sebentar ya.']
+        : S.langkah === 'kode' ? ['Memeriksa…', 'Sebentar ya.']
         : S.langkah === 'buat' ? ['Sedang membuat akunmu…', 'Password kamu sedang diamankan. Ini bisa memakan waktu beberapa detik. Mohon jangan tutup halaman ini.']
+        : S.langkah === 'lupa1' ? ['Mengirim kode…', 'Kode 6 angka sedang dikirim ke emailmu.']
+        : S.langkah === 'lupa2' ? ['Menyimpan password baru…', 'Password kamu sedang diamankan. Mohon jangan tutup halaman ini.']
         : ['Sedang masuk…', 'Mohon tunggu beberapa detik.'];
       root.innerHTML = '<div class="proses-box" role="status" aria-live="polite"><span class="spinner" aria-hidden="true"></span><h1 class="h2" id="mTitle" tabindex="-1">' + esc(m[0]) + '</h1><p class="muted">' + esc(m[1]) + '</p><div class="bar" aria-hidden="true"><span></span></div></div>';
       var h = $('mTitle'); if (h) h.focus({ preventScroll: true });
     }
+    function galatHTML() { return S.galat ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(S.galat) + '</p>' : ''; }
     function paint() {
       if (S.sibuk || S.sukses) { paintProses(); return; }
-      var judul = S.langkah === 'kode' ? 'Masuk ke Portal' : S.langkah === 'buat' ? 'Buat Password' : 'Masukkan Password';
-      var isi = '';
+      var judul = { kode: 'Masuk ke Portal', buat: 'Buat Password', masuk: 'Masukkan Password', lupa1: 'Lupa Password', lupa2: 'Atur Password Baru' }[S.langkah];
+      var isi = '', tombolKiri = '<span></span>', tombolUtama = 'Lanjut';
       if (S.langkah === 'kode') {
-        isi = '<p class="muted" style="margin-bottom:1.25rem">Gunakan kode redeem yang kamu terima setelah pembayaran.</p>' +
-          '<div class="field' + (S.galat ? ' has-error' : '') + '"><label for="mKode">Kode redeem</label>' +
-          '<input class="input" id="mKode" name="username" autocomplete="username" inputmode="text" autocapitalize="characters" spellcheck="false" placeholder="DRA-XXXX-XXXX" value="' + esc(S.kode) + '" maxlength="14">' +
-          (S.galat ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(S.galat) + '</p>' : '') + '</div>';
+        isi = '<p class="muted" style="margin-bottom:1.25rem">Masuk dengan <strong>email</strong> yang kamu pakai saat memesan, atau <strong>kode redeem</strong> dari email tanda terima. Pertama kali masuk? Pakai kode redeem untuk membuat password.</p>' +
+          '<div class="field' + (S.galat ? ' has-error' : '') + '"><label for="mKode">Email atau kode redeem</label>' +
+          '<input class="input" id="mKode" name="username" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" placeholder="email@contoh.com atau DRA-XXXX-XXXX" value="' + esc(S.kode) + '" maxlength="100">' + galatHTML() + '</div>' +
+          '<p class="small" style="margin-top:.75rem"><button type="button" class="link-btn" data-m="lupa">Lupa password atau kehilangan kode?</button></p>';
+      } else if (S.langkah === 'lupa1') {
+        isi = '<p class="muted" style="margin-bottom:1.25rem">Kami kirim <strong>kode 6 angka</strong> ke email yang kamu pakai saat memesan. Ini juga jalan keluar kalau kode redeem hilang.</p>' +
+          '<div class="field' + (S.galat ? ' has-error' : '') + '"><label for="mEmail">Email</label><input class="input" id="mEmail" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="100" value="' + esc(S.email || '') + '">' + galatHTML() + '</div>';
+        tombolKiri = '<button type="button" class="btn btn-secondary" data-m="ganti">Kembali</button>'; tombolUtama = 'Kirim kode';
+      } else if (S.langkah === 'lupa2') {
+        isi = '<p class="muted" style="margin-bottom:1rem">' + esc(S.info || 'Kode dikirim ke emailmu.') + '</p><p class="small muted" style="margin-bottom:1rem">Dikirim ke <strong>' + esc(S.email) + '</strong>. Kode berlaku 30 menit.</p>' +
+          '<div class="field' + (S.galat ? ' has-error' : '') + '"><label for="mOtp">Kode 6 angka</label><input class="input" id="mOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" value="' + esc(S.otp || '') + '">' + galatHTML() + '</div>' +
+          '<div class="field"><label for="mPw">Password baru</label><input class="input" id="mPw" type="password" autocomplete="new-password" maxlength="72"><p class="hint">Minimal 8 karakter. Simpan baik-baik, tidak bisa dilihat lagi.</p></div>' +
+          '<div class="field"><label for="mPw2">Ulangi password</label><input class="input" id="mPw2" type="password" autocomplete="new-password" maxlength="72"></div>' +
+          '<p class="small"><button type="button" class="link-btn" data-m="kirim-ulang">Kirim ulang kode</button></p>';
+        tombolKiri = '<button type="button" class="btn btn-secondary" data-m="ganti">Batal</button>'; tombolUtama = 'Simpan & Masuk';
       } else {
-        isi = '<p class="muted" style="margin-bottom:1.25rem">Kode <strong>' + esc(S.kode) + '</strong>' + (S.langkah === 'buat' ? ' dipakai pertama kali. Buat password (minimal 8 karakter) untuk akunmu.' : '') + '</p>' +
+        isi = '<p class="muted" style="margin-bottom:1.25rem"><strong>' + esc(S.kode) + '</strong>' + (S.langkah === 'buat' ? ' dipakai pertama kali. Buat password (minimal 8 karakter) untuk akunmu.' : '') + '</p>' +
           '<input type="hidden" name="username" autocomplete="username" value="' + esc(S.kode) + '">' +
           '<div class="field' + (S.galat ? ' has-error' : '') + '"><label for="mPw">' + (S.langkah === 'buat' ? 'Password baru' : 'Password') + '</label>' +
           '<input class="input" id="mPw" type="password" autocomplete="' + (S.langkah === 'buat' ? 'new-password' : 'current-password') + '" maxlength="72">' +
           (S.langkah === 'buat' ? '<p class="hint">Minimal 8 karakter. Simpan baik-baik, tidak bisa dilihat lagi.</p>' : '') + '</div>' +
-          (S.langkah === 'buat' ? '<div class="field"><label for="mPw2">Ulangi password</label><input class="input" id="mPw2" type="password" autocomplete="new-password" maxlength="72"></div>' : '') +
-          (S.galat ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(S.galat) + '</p>' : '');
+          (S.langkah === 'buat' ? '<div class="field"><label for="mPw2">Ulangi password</label><input class="input" id="mPw2" type="password" autocomplete="new-password" maxlength="72"></div>' : '') + galatHTML() +
+          (S.langkah === 'masuk' ? '<p class="small" style="margin-top:.5rem"><button type="button" class="link-btn" data-m="lupa">Lupa password?</button></p>' : '');
+        tombolKiri = '<button type="button" class="btn btn-secondary" data-m="ganti">Ganti akun</button>'; tombolUtama = S.langkah === 'buat' ? 'Simpan & Masuk' : 'Masuk';
       }
       root.innerHTML = '<h1 class="h2" id="mTitle" tabindex="-1">' + judul + '</h1><form id="mForm" novalidate>' + isi +
-        '<div class="form-nav" style="margin-top:1rem">' + (S.langkah !== 'kode' ? '<button type="button" class="btn btn-secondary" data-m="ganti">Ganti kode</button>' : '<span></span>') +
-        '<button type="submit" class="btn btn-primary"' + (S.sibuk ? ' disabled' : '') + '>' + (S.sibuk ? 'Memproses…' : S.langkah === 'kode' ? 'Lanjut' : S.langkah === 'buat' ? 'Simpan & Masuk' : 'Masuk') + '</button></div></form>';
-      var f = $(S.langkah === 'kode' ? 'mKode' : 'mPw'); if (f) f.focus({ preventScroll: true });
+        '<div class="form-nav" style="margin-top:1rem">' + tombolKiri + '<button type="submit" class="btn btn-primary">' + tombolUtama + '</button></div></form>';
+      var f = $({ kode: 'mKode', lupa1: 'mEmail', lupa2: 'mOtp' }[S.langkah] || 'mPw'); if (f) f.focus({ preventScroll: true });
     }
+    function kePortal() { S.sibuk = false; S.sukses = true; paint(); location.hash = lanjut; }
 
     root.addEventListener('submit', async function (ev) {
       ev.preventDefault(); if (S.sibuk) return;
       S.galat = '';
-      if (S.langkah === 'kode') {
-        S.kode = ($('mKode').value || '').toUpperCase().replace(/\s+/g, '');
-        if (!/^DRA-[2-9A-Z]{4}-[2-9A-Z]{4}$/.test(S.kode)) { S.galat = 'Format kode tidak valid. Contoh: DRA-7K3M-9QXA'; paint(); return; }
-        S.sibuk = true; paint();
-        try { var r = await A.cek(S.kode); S.sibuk = false;
-          if (!r.success) { S.galat = r.message || 'Kode tidak ditemukan.'; paint(); return; }
-          S.langkah = r.data.perluPassword ? 'buat' : 'masuk'; paint();
-        } catch (e) { S.sibuk = false; S.galat = 'Koneksi bermasalah. Coba lagi.'; paint(); }
-        return;
-      }
-      var pw = $('mPw').value || '';
-      if (S.langkah === 'buat') {
-        if (pw.length < 8) { S.galat = 'Password minimal 8 karakter.'; paint(); return; }
-        if (pw !== $('mPw2').value) { S.galat = 'Kedua password tidak sama.'; paint(); return; }
-      } else if (!pw) { S.galat = 'Password wajib diisi.'; paint(); return; }
-      S.sibuk = true; paint();
       try {
+        if (S.langkah === 'kode') {
+          var v = ($('mKode').value || '').trim();
+          if (v.indexOf('@') >= 0) {                                   // email: langsung ke password (server tidak membocorkan apakah email terdaftar)
+            S.kode = v.toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(S.kode)) { S.galat = 'Format email tidak valid.'; paint(); return; }
+            S.langkah = 'masuk'; paint(); return;
+          }
+          S.kode = v.toUpperCase().replace(/\s+/g, '');
+          if (!/^DRA-[2-9A-Z]{4}-[2-9A-Z]{4}$/.test(S.kode)) { S.galat = 'Tulis email atau kode dengan format DRA-7K3M-9QXA.'; paint(); return; }
+          S.sibuk = true; paint();
+          var r = await A.cek(S.kode); S.sibuk = false;
+          if (!r.success) { S.galat = r.message || 'Kode tidak ditemukan.'; paint(); return; }
+          S.langkah = r.data.perluPassword ? 'buat' : 'masuk'; paint(); return;
+        }
+        if (S.langkah === 'lupa1') {
+          S.email = ($('mEmail').value || '').trim().toLowerCase();
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(S.email)) { S.galat = 'Format email tidak valid.'; paint(); return; }
+          S.sibuk = true; paint(); var rm = await A.lupaMinta(S.email); S.sibuk = false;
+          if (!rm.success) { S.galat = rm.message || 'Gagal mengirim kode.'; paint(); return; }
+          S.info = rm.data.pesan; S.otp = ''; S.langkah = 'lupa2'; paint(); return;
+        }
+        if (S.langkah === 'lupa2') {
+          S.otp = ($('mOtp').value || '').replace(/\s+/g, ''); var pw1 = $('mPw').value || '';
+          if (!/^[0-9]{6}$/.test(S.otp)) { S.galat = 'Kode terdiri dari 6 angka.'; paint(); return; }
+          if (pw1.length < 8) { S.galat = 'Password minimal 8 karakter.'; paint(); return; }
+          if (pw1 !== $('mPw2').value) { S.galat = 'Kedua password tidak sama.'; paint(); return; }
+          S.sibuk = true; paint(); var rt = await A.lupaTetapkan(S.email, S.otp, pw1); S.sibuk = false;
+          if (!rt.success) { S.galat = rt.message || 'Gagal menyimpan.'; paint(); return; }
+          kePortal(); return;
+        }
+        var pw = $('mPw').value || '';
+        if (S.langkah === 'buat') {
+          if (pw.length < 8) { S.galat = 'Password minimal 8 karakter.'; paint(); return; }
+          if (pw !== $('mPw2').value) { S.galat = 'Kedua password tidak sama.'; paint(); return; }
+        } else if (!pw) { S.galat = 'Password wajib diisi.'; paint(); return; }
+        S.sibuk = true; paint();
         var h = S.langkah === 'buat' ? await A.buatPassword(S.kode, pw) : await A.masuk(S.kode, pw);
         S.sibuk = false;
         if (!h.success) { S.galat = h.message || 'Gagal masuk.'; paint(); return; }
-        S.sukses = true; paint(); location.hash = lanjut;
+        kePortal();
       } catch (e) { S.sibuk = false; S.galat = 'Koneksi bermasalah. Coba lagi.'; paint(); }
     });
-    root.addEventListener('click', function (ev) { if (ev.target.closest('[data-m="ganti"]')) { S = { langkah: 'kode', kode: S.kode, galat: '', sibuk: false }; paint(); } });
+    root.addEventListener('click', async function (ev) {
+      var b = ev.target.closest('[data-m]'); if (!b) return; var m = b.dataset.m;
+      if (m === 'ganti') { S = { langkah: 'kode', kode: S.kode, galat: '', sibuk: false }; paint(); return; }
+      if (m === 'lupa') { S = { langkah: 'lupa1', kode: S.kode, email: S.kode.indexOf('@') >= 0 ? S.kode : '', galat: '', sibuk: false }; paint(); return; }
+      if (m === 'kirim-ulang') {
+        S.sibuk = true; S.langkah = 'lupa1'; paint();
+        try { var rm2 = await A.lupaMinta(S.email); S.sibuk = false; S.langkah = 'lupa2'; if (rm2.success) S.info = 'Kode baru sudah dikirim.'; else S.galat = rm2.message || 'Gagal mengirim ulang.'; } catch (e) { S.sibuk = false; S.langkah = 'lupa2'; S.galat = 'Koneksi bermasalah. Coba lagi.'; }
+        paint();
+      }
+    });
     paint();
   }
 

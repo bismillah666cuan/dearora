@@ -61,7 +61,7 @@
         var s = sheet('<button type="button" class="ml-x" data-tutup aria-label="Tutup">' + ic('x') + '</button><div class="ml-det-img" style="background:' + h.warna + '">' + ILUS[h.ilus]() + '</div><h2>' + esc(h.nama) + '</h2><p class="ml-harga">' + esc(h.harga) + '</p><p>' + esc(h.desk) + '</p><p class="ml-tag">Kategori: ' + esc(h.kat) + '</p>' +
           '<button type="button" class="ml-klaim' + (on ? ' sudah' : '') + '">' + (on ? 'Sudah di Keranjang' : 'Klaim Hadiah Ini') + '</button>');
         s.querySelector('.ml-klaim').addEventListener('click', function () {
-          if (pilih.indexOf(id) < 0) { pilih.push(id); if (window.Suara) window.Suara.ding(); S.dariEl(s.querySelector('.ml-klaim'), 22, ['#FF7A1A', '#FFB020', '#fff'], { kuat: 6 }); S.toast('Masuk keranjang digital'); }
+          if (pilih.indexOf(id) < 0) { pilih.push(id); if (window.Suara) window.Suara.pindai(); if (window.Suara) window.Suara.kumpul(); S.dariEl(s.querySelector('.ml-klaim'), 22, ['#FF7A1A', '#FFB020', '#fff'], { kuat: 6 }); S.toast('Masuk keranjang digital'); }
           s.remove(); beranda();
         });
       }
@@ -80,6 +80,7 @@
         s.querySelector('.ml-klaim').addEventListener('click', function () { if (cukup) { s.remove(); kirim(); } });
       }
       function kirim() {
+        if (window.Suara) window.Suara.kasir();
         var el = layar('<div class="ml-kirim"><div class="ml-truk-b" aria-hidden="true">' + ic('gift') + '</div><h1>Pesanan Dikirim</h1><ol class="ml-langkah">' + LANGKAH.map(function (l, i) { return '<li data-i="' + i + '"><i></i><span>' + esc(l) + '</span></li>'; }).join('') + '</ol><button type="button" class="ml-klaim" id="mlBuka" hidden>Buka Paketku</button></div>');
         LANGKAH.forEach(function (_, i) { S.jeda(function () { var li = el.querySelector('[data-i="' + i + '"]'); if (li) { li.classList.add('on'); if (i === 3) { var b = el.querySelector('#mlBuka'); b.hidden = false; S.dariEl(b, 40, ['#FF7A1A', '#FFB020', '#fff'], { kuat: 8 }); } } }, 700 + i * 1300); });
         el.querySelector('#mlBuka').addEventListener('click', buka);
@@ -91,7 +92,7 @@
         kartu.push({ judul: d.utama.judul, teks: d.utama.pesan, warna: '#FFD9C2', ilus: 'hati', utama: true, foto: d.utama.foto });
         var i = 0;
         var el = layar('<div class="ml-paket"><div class="ml-kotak" id="mlKotak" aria-hidden="true"><i class="ml-tutup"></i><i class="ml-badan"></i></div><div class="ml-isi-paket" id="mlIsi" hidden></div></div>');
-        S.jeda(function () { el.querySelector('#mlKotak').classList.add('terbuka'); if (window.Suara) window.Suara.hadiah(); S.dariEl(el.querySelector('#mlKotak'), 70, ['#FF7A1A', '#FFB020', '#E8336D', '#fff'], { kuat: 10, naik: 8 }); }, 400);
+        S.jeda(function () { el.querySelector('#mlKotak').classList.add('terbuka'); if (window.Suara) { window.Suara.kardus(); window.Suara.hadiah(); } S.dariEl(el.querySelector('#mlKotak'), 70, ['#FF7A1A', '#FFB020', '#E8336D', '#fff'], { kuat: 10, naik: 8 }); }, 400);
         S.jeda(function () { el.querySelector('#mlKotak').classList.add('hilang'); tampil(); }, 1800);
         function tampil() {
           var k = kartu[i], box = el.querySelector('#mlIsi'); box.hidden = false;

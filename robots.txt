@@ -3,3 +3,4 @@ Allow: /
 Disallow: /u/
 Disallow: /special/
 Disallow: /admin
+Disallow: /suara-uji.html

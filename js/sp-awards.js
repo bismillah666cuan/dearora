@@ -17,7 +17,7 @@
       function panggung() { return '<div class="aw-sorot s1" aria-hidden="true"></div><div class="aw-sorot s2" aria-hidden="true"></div><div class="aw-tirai" aria-hidden="true"></div>'; }
       function karpet() {
         var el = layar(panggung() + '<div class="aw-marquee">' + lampu() + '<p class="aw-kicker">MALAM PENGHARGAAN</p><h1>' + esc(d.acara) + '</h1><p class="aw-untuk">Untuk ' + esc(d.penerima) + '</p></div><div class="aw-karpet" aria-hidden="true"></div><button type="button" class="aw-btn">Mulai Acara ▶</button>', 'aw-karpetl');
-        el.querySelector('.aw-btn').addEventListener('click', function () { if (window.Suara) window.Suara.buka(); beri(0); });
+        el.querySelector('.aw-btn').addEventListener('click', function () { if (window.Suara) window.Suara.lampu(); window.Suara.buka(); beri(0); });
       }
       function beri(i) {
         var h = d.hadiah[i], akhir = i === d.hadiah.length - 1;
@@ -29,14 +29,14 @@
           S.jeda(function () {
             p.hidden = true; b.hidden = true; var m = el.querySelector('#awM'); m.hidden = false;
             m.innerHTML = '<div class="aw-piala" aria-hidden="true">' + PIALA + '</div><p class="aw-pemenang">' + esc(d.penerima) + '</p><p class="aw-alasan">' + esc(h.alasan) + '</p><button type="button" class="aw-btn">' + (akhir ? 'Pidato kemenangan ›' : 'Penghargaan berikutnya ›') + '</button>';
-            if (window.Suara) window.Suara.sukses(); S.dariEl(m, 56, ['#F5C242', '#FFF3B0', '#fff', '#E8336D'], { kuat: 10, naik: 8 });
+            if (window.Suara) { window.Suara.sukses(); window.Suara.tepuk(); } S.dariEl(m, 56, ['#F5C242', '#FFF3B0', '#fff', '#E8336D'], { kuat: 10, naik: 8 });
             m.querySelector('.aw-btn').addEventListener('click', function () { if (akhir) pidato(); else beri(i + 1); });
           }, S.reduce ? 80 : 1900);
         });
       }
       function pidato() {
         layar(panggung() + '<div class="aw-isi"><p class="aw-no">PIDATO KEMENANGAN</p><div class="aw-podium"><span class="aw-mik" aria-hidden="true">' + MIK + '</span><span class="aw-piala kecil" aria-hidden="true">' + PIALA + '</span></div><p class="aw-pidato">' + S.kata(d.pidato, 4600, 52) + '</p>' + S.kredit(d.pengirim) + '</div>', 'aw-pidatol');
-        S.confetti(innerWidth / 2, innerHeight * 0.3, 60, ['#F5C242', '#FFF3B0', '#fff'], { kuat: 9 }); if (window.Suara) window.Suara.konfeti(); S.akhir();
+        S.confetti(innerWidth / 2, innerHeight * 0.3, 60, ['#F5C242', '#FFF3B0', '#fff'], { kuat: 9 }); if (window.Suara) { window.Suara.fanfare(); window.Suara.tepuk(); } S.akhir();
       }
       karpet();
     }

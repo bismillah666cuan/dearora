@@ -52,6 +52,8 @@
   }
   function setPath(o, path, val) { var p = path.split('.'), c = o; for (var i = 0; i < p.length - 1; i++) { if (c[p[i]] == null) return; c = c[p[i]]; } c[p[p.length - 1]] = val; }
   function templatPaket() { return ST.paket === 'basic' || ST.paket === 'premium'; }
+  /** Musik latar hanya untuk paket Premium (Basic, Special, dan Invitation tidak menawarkannya). */
+  function musikPaket() { return ST.paket === 'premium'; }
 
   function baru() {
     return isiDariIngatan({ kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
@@ -490,7 +492,7 @@
       '<ol class="sk-langkah" aria-label="Bagian isian">' + chips + '</ol>' +
       (gi === 0 ? '<p class="notice" style="margin-bottom:1rem">Nama penerima dan pengirim diambil dari langkah sebelumnya. Foto dipilih dari ' + nf + ' foto yang sudah kamu unggah (<a href="#" data-f="goto" data-ke="foto">ubah foto</a>).</p>' : '') +
       '<div class="sk-bagian"><div class="sk-judul"><h2 class="h3">' + esc(g.judul) + '</h2>' + (sk.skema.contoh ? '<button type="button" class="btn btn-quiet btn-sm" data-f="sk-contoh">' + ic('sparkles') + ' Isi dengan contoh</button>' : '') + '</div>' +
-      skHTML(g.bagian, '') + '</div>' + (gi === gr.length - 1 ? musikHTML() : '') +
+      skHTML(g.bagian, '') + '</div>' + (gi === gr.length - 1 && musikPaket() ? musikHTML() : '') +
       (errors.dataDesain && !errors.sk ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.dataDesain) + '</p>' : '');
   };
   function musikHTML() {
@@ -618,7 +620,7 @@
         '<button type="button" class="btn btn-quiet btn-sm btn-block" data-action="demo" data-id="' + esc(x.id) + '">' + ic('play') + ' Lihat Demo</button></div>';
     }).join('') + '</div>' : '<p class="state-box">Belum ada desain untuk paket ini.</p>';
     return '<p class="lead small" style="margin-bottom:1rem">' + (ST.paket === 'premium' ? 'Pilih satu desain eksklusif. Di langkah berikutnya kamu mengisi bahan-bahannya sendiri, dan link langsung jadi setelah pembayaran.' : 'Pilih satu desain. Coba demonya dulu sebelum memilih.') + '</p>' +
-      filterUI + pilih + opsiDesainHTML() + (ST.paket === 'basic' ? musikHTML() : '') + (errors.desain ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.desain) + '</p>' : '');
+      filterUI + pilih + opsiDesainHTML() + (errors.desain ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.desain) + '</p>' : '');
   };
   VIEW.ekstra = function () {
     var d = data(), html = '';
@@ -653,7 +655,8 @@
   };
 
   VIEW.catatan = function () {
-    return fld('catatan', 'Catatan khusus', ta('catatan', LIM.catatan, 5), 'Mis. lagu yang diinginkan, hal yang perlu dihindari, atau permintaan lain.', true);
+    var lagu = ST.paket === 'premium' || ST.paket === 'special';                      // Basic dan Invitation tidak memiliki musik latar
+    return fld('catatan', 'Catatan khusus', ta('catatan', LIM.catatan, 5), lagu ? 'Mis. lagu yang diinginkan, hal yang perlu dihindari, atau permintaan lain.' : 'Mis. hal yang perlu dihindari atau permintaan lain.', true);
   };
 
   function ringkasBaris(label, nilai, ke) {
@@ -677,7 +680,7 @@
       (templatPaket() ? ringkasBaris('Kejutan akhir', esc((JENIS_KEJUTAN.filter(function (j) { return j.id === ST.kejutan.jenis; })[0] || {}).nama || '') + '<br><span class="clip muted small">' + esc(ST.kejutan.ucapan) + '</span>', 'kejutan') : '') +
       ringkasBaris('Foto', files.filter(function (f) { return f.jenis === 'foto'; }).length + ' foto' + (files.some(function (f) { return f.jenis === 'video'; }) ? ' + 1 video' : ''), 'foto') +
       (ST.paket !== 'special' ? ringkasBaris('Desain', esc(ds), 'desain') : '') +
-      (templatPaket() && musikAda() ? ringkasBaris('Musik latar', esc((d.musik.filter(function (m) { return m.id === ST.musikId; })[0] || {}).judul || 'Tanpa musik'), ST.paket === 'premium' ? 'isi' : 'desain') : '') +
+      (musikPaket() && musikAda() ? ringkasBaris('Musik latar', esc((d.musik.filter(function (m) { return m.id === ST.musikId; })[0] || {}).judul || 'Tanpa musik'), ST.paket === 'premium' ? 'isi' : 'desain') : '') +
       '</dl>' +
       '<div class="total-box"><span>Total</span><strong>Rp ' + esc(U.rupiah(pk.harga)) + '</strong></div>' +
       '<div class="field' + (errors.setuju ? ' has-error' : '') + '"><label class="check" for="setuju"><input type="checkbox" id="setuju" data-k="setuju"' + (ST.setuju ? ' checked' : '') + '>' +
@@ -905,7 +908,7 @@
       paketId: ST.paket, namaPembeli: ST.namaPembeli.trim(), whatsapp: ST.whatsapp.trim(), email: ST.email.trim(),
       penerima: ST.penerima.trim(), tipeDari: ST.tipeDari, nilaiDari: ST.tipeDari === 'anonim' ? '' : ST.nilaiDari.trim(),
       pesan: ST.pesan.trim(), desainId: ST.paket === 'special' ? '' : ST.desainId, ideSendiri: ST.paket === 'special' ? ST.ideSendiri.trim() : '',
-      catatan: ST.catatan.trim(), setuju: ST.setuju === true, website: '', musikId: (ST.paket === 'special' || ST.paket === 'invitation') ? '' : (ST.musikId || '')
+      catatan: ST.catatan.trim(), setuju: ST.setuju === true, website: '', musikId: musikPaket() ? (ST.musikId || '') : ''
     };
     if (templatPaket()) p.kejutan = kejutanPayload();
     if (ST.paket === 'basic') p.opsiDesain = ST.desainId ? ST.opsiDesain : {};
@@ -1032,7 +1035,7 @@
       if (pk && nf.length > pk.maksFoto) { nf.slice(pk.maksFoto).forEach(function (f) { hapusTanpaPaint(f.id); }); ui.pesanFile = 'Kelebihan foto dihapus (maks. ' + pk.maksFoto + ')'; }
       if (ST.paket !== 'special') files.filter(function (f) { return f.jenis === 'video'; }).forEach(function (f) { hapusTanpaPaint(f.id); });
       if (order) order = null;
-      ST.desainId = (ST.desainId && data().desain.some(function (x) { return x.id === ST.desainId && x.paket.indexOf(ST.paket) >= 0; })) ? ST.desainId : ''; ST.dataDesain = {}; ST._skKunci = '';
+      ST.desainId = (ST.desainId && data().desain.some(function (x) { return x.id === ST.desainId && x.paket.indexOf(ST.paket) >= 0; })) ? ST.desainId : ''; ST.dataDesain = {}; ST._skKunci = ''; ST.opsiDesain = {}; if (!musikPaket()) ST.musikId = '';
     }
     paint();
     var again = document.getElementById(el.id); if (again) again.focus({ preventScroll: true });

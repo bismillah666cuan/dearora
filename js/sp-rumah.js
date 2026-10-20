@@ -20,20 +20,20 @@
       function layar(h, k) { root.innerHTML = '<div class="sp-layar rh-layar ' + (k || '') + '">' + h + '</div>'; root.firstChild.scrollTop = 0; return root.firstChild; }
       function depan() {
         var el = layar('<div class="rh-awan" aria-hidden="true"></div><div class="rh-depan"><p class="rh-kicker">SELAMAT DATANG</p><h1>' + esc(d.judul) + '</h1><p class="rh-untuk">Untuk ' + esc(d.penerima) + '</p><div class="rh-rumah" aria-hidden="true">' + RUMAH + '</div><button type="button" class="rh-btn">Ketuk pintu</button></div>', 'rh-depanl');
-        el.querySelector('.rh-btn').addEventListener('click', function (e) { e.currentTarget.disabled = true; el.querySelector('.rh-rumah').classList.add('terbuka'); if (window.Suara) window.Suara.buka(); S.jeda(dalam, S.reduce ? 60 : 1100); });
+        el.querySelector('.rh-btn').addEventListener('click', function (e) { e.currentTarget.disabled = true; el.querySelector('.rh-rumah').classList.add('terbuka'); if (window.Suara) window.Suara.ketukPintu(); S.jeda(function () { if (window.Suara) window.Suara.pintu(); }, 520); S.jeda(dalam, S.reduce ? 60 : 1500); });
       }
       function dalam() {
         var n = d.ruang.length, sudah = Object.keys(buka).length;
         var tile = d.ruang.map(function (r, i) { return '<button type="button" class="rh-ruang' + (buka[i] ? ' sudah' : '') + '" data-i="' + i + '"><span class="rh-ik" aria-hidden="true">' + IKON[i % IKON.length] + '</span><b>' + esc(r.nama) + '</b><em>' + (buka[i] ? 'Sudah dibuka ✓' : 'Ketuk untuk masuk') + '</em></button>'; }).join('');
         var el = layar('<div class="rh-potong"><h2>' + esc(d.judul) + '</h2><p class="rh-pet" role="status">' + sudah + ' dari ' + n + ' ruangan dikunjungi</p><div class="rh-atap" aria-hidden="true"></div><div class="rh-lantai">' + tile + '</div>' + (sudah === n ? '<button type="button" class="rh-loteng">Naik ke loteng ›</button>' : '<p class="rh-pet kecil">Kunjungi semua ruangan untuk membuka loteng.</p>') + '</div>', 'rh-dalaml');
-        el.querySelectorAll('.rh-ruang').forEach(function (b) { b.addEventListener('click', function () { if (window.Suara) window.Suara.klik(); ruang(Number(b.dataset.i)); }); });
-        var l = el.querySelector('.rh-loteng'); if (l) l.addEventListener('click', function () { if (window.Suara) window.Suara.buka(); loteng(); });
+        el.querySelectorAll('.rh-ruang').forEach(function (b) { b.addEventListener('click', function () { if (window.Suara) window.Suara.langkah(); ruang(Number(b.dataset.i)); }); });
+        var l = el.querySelector('.rh-loteng'); if (l) l.addEventListener('click', function () { if (window.Suara) window.Suara.pintu(); loteng(); });
       }
       function ruang(i) {
         var r = d.ruang[i];
         var el = layar('<div class="rh-kamar"><p class="rh-kicker">' + esc(r.nama).toUpperCase() + '</p><button type="button" class="rh-benda" aria-label="Buka kenangan: ' + esc(r.benda || r.judul) + '"><span class="rh-ik besar" aria-hidden="true">' + IKON[i % IKON.length] + '</span><i class="rh-kilau" aria-hidden="true"></i></button><p class="rh-pet" id="rhP">Ketuk ' + esc(r.benda || 'benda ini') + ' untuk membuka kenangannya.</p><div class="rh-kenang" id="rhK" hidden></div></div>', 'rh-kamarl');
         el.querySelector('.rh-benda').addEventListener('click', function (e) {
-          var b = e.currentTarget; if (b.classList.contains('buka')) return; b.classList.add('buka'); buka[i] = true; if (window.Suara) window.Suara.tumbuh(); el.querySelector('#rhP').hidden = true;
+          var b = e.currentTarget; if (b.classList.contains('buka')) return; b.classList.add('buka'); buka[i] = true; if (window.Suara) window.Suara.laci(); el.querySelector('#rhP').hidden = true;
           var k = el.querySelector('#rhK'); k.hidden = false; k.innerHTML = '<h3>' + esc(r.judul) + '</h3>' + (r.foto ? '<img alt="" src="' + esc(S.src(r.foto, i)) + '">' : '') + '<p>' + esc(r.cerita) + '</p><button type="button" class="rh-btn">Kembali ke rumah ›</button>';
           S.dariEl(b, 22, ['#F5C242', '#F28B82', '#9AD18B', '#fff'], { kuat: 6, naik: 6 }); k.querySelector('.rh-btn').addEventListener('click', dalam);
         });

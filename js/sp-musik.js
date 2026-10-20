@@ -47,6 +47,7 @@
       }
 
       function sedangMain(i) {
+        if (window.Suara) window.Suara.petik();
         berhenti(); var l = d.lagu[i]; dengar[i] = true;
         var punya = /^https:\/\//.test(l.audio || '');
         var el = layar('<div class="sk-main"><button type="button" class="sk-kembali" data-a="awal" aria-label="Kembali ke playlist">‹</button><p class="sk-kpd">SEDANG DIPUTAR</p>' + cover(l.warna, true) + '<h2>' + esc(l.judul) + '</h2><p class="sk-label">' + esc(l.no) + ' — ' + esc(l.label) + '</p>' +
@@ -70,7 +71,7 @@
         berhenti();
         var el = layar('<div class="sk-rahasia"><button type="button" class="sk-kembali" data-a="awal" aria-label="Kembali">‹</button><p class="sk-kpd">★ ' + esc(d.tersembunyi.judul).toUpperCase() + '</p><h2>' + esc(d.tersembunyi.label) + '</h2><button type="button" class="sk-amplop" aria-label="Buka pesan rahasia">' + ic('lock') + '<span>Ketuk untuk membuka</span></button><div class="sk-pesan" hidden><p>' + esc(d.tersembunyi.pesan) + '</p></div><p class="sk-penutup" hidden>' + esc(d.penutup) + '</p>' + S.kredit(d.pengirim) + '<button type="button" class="sk-play" data-a="awal" hidden>↻ Putar dari Awal</button></div>', 'sk-gelap');
         el.querySelector('.sk-kembali').addEventListener('click', awal);
-        el.querySelector('.sk-amplop').addEventListener('click', function (e) { e.currentTarget.hidden = true; if (window.Suara) window.Suara.kertas(); el.querySelector('.sk-pesan').hidden = false; el.querySelector('.sk-pesan').classList.add('muncul'); S.dariEl(el.querySelector('.sk-pesan'), 50, ['#F107A3', '#7B2FF7', '#fff'], { kuat: 8 }); S.jeda(function () { var pn = el.querySelector('.sk-penutup'); pn.hidden = false; pn.classList.add('muncul'); var u = el.querySelector('.sk-play'); u.hidden = false; S.akhir(); }, 1800); });
+        el.querySelector('.sk-amplop').addEventListener('click', function (e) { e.currentTarget.hidden = true; if (window.Suara) window.Suara.kertas(); if (window.Suara) window.Suara.piano(); el.querySelector('.sk-pesan').hidden = false; el.querySelector('.sk-pesan').classList.add('muncul'); S.dariEl(el.querySelector('.sk-pesan'), 50, ['#F107A3', '#7B2FF7', '#fff'], { kuat: 8 }); S.jeda(function () { var pn = el.querySelector('.sk-penutup'); pn.hidden = false; pn.classList.add('muncul'); var u = el.querySelector('.sk-play'); u.hidden = false; S.akhir(); }, 1800); });
         el.querySelector('.sk-play').addEventListener('click', function () { dengar = {}; awal(); });
       }
       awal();

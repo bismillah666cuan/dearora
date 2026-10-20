@@ -38,9 +38,9 @@
         S.jeda(function () { var n = el.querySelector('.rm-nama'); if (n) n.classList.add('muncul'); }, 1900);
         S.jeda(function () { var b = el.querySelector('.rm-lewat'); if (b) b.hidden = false; }, 9000);
         var turun = false, hitung = 0;
-        function tuntas() { if (selesai) return; selesai = true; cancelAnimationFrame(raf); cv.classList.add('hilang'); if (window.Suara) window.Suara.whoosh(); S.jeda(pasir, 900); }
+        function tuntas() { if (selesai) return; selesai = true; cancelAnimationFrame(raf); cv.classList.add('hilang'); if (window.Suara) window.Suara.angin(); S.jeda(pasir, 900); }
         function cek() { var sm = document.createElement('canvas'); sm.width = 24; sm.height = 36; var sx = sm.getContext('2d'); sx.drawImage(mask, 0, 0, 24, 36); var dta = sx.getImageData(0, 0, 24, 36).data, n = 0, q; for (q = 3; q < dta.length; q += 4) if (dta[q] > 128) n++; if (n / (24 * 36) > 0.34) tuntas(); }
-        function sapu(e) { if (!turun) return; mx.beginPath(); mx.arc(e.clientX, e.clientY, 46, 0, 6.3); mx.fill(); if (window.Suara) window.Suara.gosok(); if (++hitung % 6 === 0) cek(); }
+        function sapu(e) { if (!turun) return; mx.beginPath(); mx.arc(e.clientX, e.clientY, 46, 0, 6.3); mx.fill(); if (window.Suara) window.Suara.kelopak(); if (++hitung % 6 === 0) cek(); }
         el.addEventListener('pointerdown', function (e) { turun = true; sapu(e); }); el.addEventListener('pointermove', sapu);
         ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (n) { el.addEventListener(n, function () { turun = false; }); });
         el.querySelector('.rm-lewat').addEventListener('click', function (e) { e.stopPropagation(); mx.fillRect(0, 0, W, H); tuntas(); });
@@ -53,7 +53,7 @@
         var turun = false, last = null, panjang = 0, btn = el.querySelector('.rm-lanjut');
         function garis(a, b) { ctx.strokeStyle = 'rgba(70,45,20,.5)'; ctx.lineWidth = 11; ctx.beginPath(); ctx.moveTo(a.x + 2, a.y + 2); ctx.lineTo(b.x + 2, b.y + 2); ctx.stroke(); ctx.strokeStyle = 'rgba(255,238,200,.78)'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(a.x - 1, a.y - 1); ctx.lineTo(b.x - 1, b.y - 1); ctx.stroke(); }
         el.addEventListener('pointerdown', function (e) { turun = true; last = { x: e.clientX, y: e.clientY }; });
-        el.addEventListener('pointermove', function (e) { if (!turun) return; var p = { x: e.clientX, y: e.clientY }; garis(last, p); panjang += Math.hypot(p.x - last.x, p.y - last.y); last = p; if (window.Suara) window.Suara.gosok(); if (panjang > 260) btn.hidden = false; });
+        el.addEventListener('pointermove', function (e) { if (!turun) return; var p = { x: e.clientX, y: e.clientY }; garis(last, p); panjang += Math.hypot(p.x - last.x, p.y - last.y); last = p; if (window.Suara) window.Suara.pasir(); if (panjang > 260) btn.hidden = false; });
         ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (n) { el.addEventListener(n, function () { turun = false; }); });
         btn.addEventListener('click', function () { halaman(0); });
         S.jeda(function () { btn.hidden = false; }, 14000);
@@ -62,7 +62,7 @@
       function halaman(i) {
         var h = d.halaman[i], akhir = i === d.halaman.length - 1;
         var el = layar('<div class="rm-hal"><div class="rm-foto" style="background-image:url(' + "'" + esc(S.src(h.foto, i)) + "'" + ')"></div><div class="rm-grad"></div><p class="rm-no">' + (i + 1) + ' / ' + d.halaman.length + '</p><p class="rm-kata">' + S.kata(h.kata, 2600, 85) + '</p><button type="button" class="rm-lanjut">' + (akhir ? 'Satu pesan terakhir ›' : 'Lanjut ›') + '</button></div>', 'rm-hal-l');
-        if (window.Suara) window.Suara.kertas();
+        if (window.Suara) window.Suara.piano();
         el.querySelector('.rm-lanjut').addEventListener('click', function () { if (akhir) penutup(); else halaman(i + 1); });
       }
 
