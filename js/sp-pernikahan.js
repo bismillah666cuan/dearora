@@ -42,7 +42,7 @@
         galeri: (f.galeri || []).slice(0, 15), rekening: (f.rekening || []).slice(0, 3), rsvp: { maksTamu: Math.max(1, Math.min(10, Number(r.maksTamu) || 4)), catatan: r.catatan || '' } };
     },
     mulai: function (root, d) {
-      var tamu = ''; try { tamu = String(new URLSearchParams(location.search).get('u') || '').replace(/[<>]/g, '').trim().slice(0, 60); } catch (e) { /* abaikan */ }
+      var tm = U.tamu(), tamu = tm.nama, sapa = tm.sapa;
       d.galeri = d.galeri.filter(ada);
       var timer = 0, demo = !!S.konteks.demo || !window.DearoraAPI, slug = S.konteks.slug || 'demo', pj = String(d.judul || '').split(/\s*[&+]\s*/), ml = awal(pj[0]) || awal(d.wanita.nama), mr = awal(pj[1]) || awal(d.pria.nama);
       var acr = T.mode === 'acara';
@@ -84,7 +84,7 @@
       function segel() {
         var jenis = T.buka || 'amplop', B0 = (BUKA[jenis] || BUKA.amplop)(), wkt = T.waktuBuka || [1500, 2200];
         var el = layar(B0.bg + '<div class="nk-amplop-l nk-bk-' + jenis + '"><p class="nk-kicker">' + esc(T.kicker || 'THE WEDDING OF') + '</p><h1 class="nk-nama">' + namaP + '</h1>' + B0.inti +
-          '<p class="ud-kepada">Kepada Yth.<br><b>' + esc(tamu || 'Bapak/Ibu/Saudara/i') + '</b></p><p class="ud-pet">Ketuk segel untuk membuka undangan</p></div>', 'nk-segell'); kelopak(el, 12, T);
+          '<p class="ud-kepada">Kepada Yth.<br><b>' + esc(sapa || 'Bapak/Ibu/Saudara/i') + '</b></p><p class="ud-pet">Ketuk segel untuk membuka undangan</p></div>', 'nk-segell'); kelopak(el, 12, T);
         el.querySelector('.ud-segel').addEventListener('click', function (e) {
           var b = e.currentTarget, r = b.getBoundingClientRect(); b.classList.add('pecah'); b.disabled = true; el.classList.add('membuka'); el.querySelector('.nk-stage').classList.add('buka'); if (window.Suara) window.Suara[T.suaraBuka || 'segel']();
           ledak(el, r.left + r.width / 2, r.top + r.height / 2, T); S.jeda(function () { el.classList.add('nk-keluar'); }, S.reduce ? 40 : wkt[0]); S.jeda(halaman, S.reduce ? 60 : wkt[1]);
@@ -114,7 +114,7 @@
         var rek = d.rekening.length ? '<section class="ud-sek ud-rek"><h2>Amplop Digital</h2><p class="ud-cat">Doa restu Anda sudah sangat berarti. Jika ingin memberi tanda kasih, dapat melalui:</p>' + d.rekening.map(function (r, n) { return '<div class="ud-bank"><div><b>' + esc(r.bank) + '</b><span>a.n. ' + esc(r.atasNama) + '</span><code>' + esc(r.nomor) + '</code></div><button type="button" class="ud-btn ghost" data-salin="' + n + '">Salin</button></div>'; }).join('') + '<p class="ud-cat kecil">Informasi ini hanya ditampilkan; Dearora tidak memproses pembayaran.</p></section>' : '';
         var sudutHTML = T.sudut ? ['a', 'b', 'c', 'd'].map(function (p) { return '<span class="nk-s ' + p + '">' + T.sudut(p) + '</span>'; }).join('') : '';
         var el = layar('<div class="nk-dekor" aria-hidden="true">' + sudutHTML + '</div>' +
-          '<div class="ud-hero nk-hero">' + (T.atas ? T.atas(d) : '') + '<p class="nk-kicker nk-rev">' + esc(T.kicker || 'THE WEDDING OF') + '</p>' + monogram() + '<h1 class="nk-nama nk-judul">' + namaP + '</h1>' + (a0 ? '<p class="ud-tanggal nk-rev">' + U.tgl(a0.tanggal) + '</p>' : '') + '<div class="nk-pemb nk-rev">' + (T.pembatas ? T.pembatas() : '') + '</div><p class="ud-sapa nk-rev">' + esc(d.sapaan) + '</p>' + (tamu ? '<p class="ud-kepada nk-rev">Kepada Yth. <b>' + esc(tamu) + '</b></p>' : '') + '</div>' +
+          '<div class="ud-hero nk-hero">' + (T.atas ? T.atas(d) : '') + '<p class="nk-kicker nk-rev">' + esc(T.kicker || 'THE WEDDING OF') + '</p>' + monogram() + '<h1 class="nk-nama nk-judul">' + namaP + '</h1>' + (a0 ? '<p class="ud-tanggal nk-rev">' + U.tgl(a0.tanggal) + '</p>' : '') + '<div class="nk-pemb nk-rev">' + (T.pembatas ? T.pembatas() : '') + '</div><p class="ud-sapa nk-rev">' + esc(d.sapaan) + '</p>' + (sapa ? '<p class="ud-kepada nk-rev">Kepada Yth. <b>' + esc(sapa) + '</b></p>' : '') + '</div>' +
           (d.kutipan ? '<section class="ud-sek nk-ayat"><p class="nk-kutip">“' + esc(d.kutipan) + '”</p></section>' : '') +
           (acr ? '<section class="ud-sek nk-mempelai nk-tokoh"><h2>' + esc(T.judulTokoh || 'Yang Berbahagia') + '</h2><div class="nk-dua">' + potret(d.tokoh, 't', 1) + '</div></section>' : '<section class="ud-sek nk-mempelai"><h2>Mempelai</h2><div class="nk-dua">' + potret(d.wanita, 'w', 1) + '<span class="nk-dan" aria-hidden="true">&amp;</span>' + potret(d.pria, 'p', 2) + '</div></section>') +
           '<section class="ud-sek"><h2>Acara</h2>' + acara + (d.dresscode ? '<p class="ud-cat">Dress code: <b>' + esc(d.dresscode) + '</b></p>' : '') + '</section>' +

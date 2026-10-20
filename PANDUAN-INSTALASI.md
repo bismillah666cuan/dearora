@@ -382,3 +382,15 @@ Paket Invitation kini punya **12 desain**. Empat desain baru untuk **acara kelua
 **Modal demo di katalog:** untuk desain **undangan**, pilihan "Coba kejutan" (Kado, Kuis, Gosok, dst.) dan keterangan "Paket Premium" sudah dihapus karena konsepnya berbeda; diganti keterangan "Demo undangan interaktif: amplop pembuka → halaman undangan → konfirmasi hadir (simulasi)". Desain Basic dan Premium tidak berubah.
 **Catatan konten:** doa dan istilah (walimatul khitan, tasyakuran) adalah contoh yang mudah diubah pembeli; mohon periksa kesesuaiannya.
 **Pemasangan:** ganti isi `Kode`, `Pesanan`, `Kartu`, `Admin`, `Portal`, `Email`, `Pembayaran`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, jalankan **`isiUlangKatalogDesain`** (menambah 4 desain), lalu timpa frontend, isi ulang `GAS_URL`, `git push`.
+
+
+## Undangan dengan sapaan sesuai nama tamu ("Kepada Yth. Saudari Siska")
+Setiap tamu kini dapat disapa **sesuai nama dan sebutannya** di semua desain undangan (12 desain): pada amplop pembuka dan bagian awal halaman tampil mis. **"Kepada Yth. Saudari Siska"**, **"Kepada Yth. Bapak Budi Santoso"**, **"Kepada Yth. Ibu Ani beserta Keluarga"**, **"Kepada Yth. Kak Dewi & Pasangan"**. Tanpa tautan personal tampil "Bapak/Ibu/Saudara/i".
+**Cara kerja:** tautan membawa tiga parameter: `u` (nama), `s` (sebutan: bapak, ibu, saudara, saudari, kak, bapakibu, saudarai), `x` (sufiks: keluarga atau pasangan). Hanya nilai dari daftar itu yang dipakai; nama dibersihkan dari tanda HTML (aman). Kolom nama di formulir konfirmasi hadir terisi **nama saja** ("Siska"), sehingga jawaban tersimpan tanpa sebutan.
+**Pembuat tautan di Portal** (Pesanan Saya → detail pesanan undangan → "Buat tautan personal untuk tiap tamu"):
+1. Tempel nama tamu, **satu per baris**. Tulis sebutan di depan nama bila perlu: *Saudari Siska*, *Bapak Budi*, *Bpk. Budi*, *Ibu Ani*, *Kak Dewi*, *Sdr. Raka*. Tambahkan *keluarga* atau *pasangan* di belakang (mis. *Ibu Ani dan keluarga*).
+2. Untuk nama tanpa sebutan, pakai pilihan **"Sebutan untuk nama tanpa sebutan"** (mis. semua jadi "Saudara/i" atau "Kak").
+3. Ubah **pesan pengantar** bila perlu. `{sapa}` dan `{link}` diganti otomatis untuk tiap tamu.
+4. Klik **Buat tautan**: tiap tamu menampilkan sapaannya (untuk diperiksa), tombol **Salin**, dan tombol **WhatsApp** yang membuka WhatsApp dengan pesan jadi (pembeli memilih penerimanya). Tersedia juga **Salin semua**.
+**Privasi:** daftar nama, sebutan, dan pesan hanya diproses di browser pembeli dan **tidak disimpan di server**. Nomor WhatsApp tamu tidak diminta.
+**Batasan yang perlu diketahui:** nama ada di alamat tautan, jadi tamu dapat mengubahnya sendiri (hanya memengaruhi sapaan di layarnya). Pelacakan "siapa yang sudah membuka atau belum menjawab" belum ada (rencana tingkat berikutnya, dengan daftar tamu di server). **Hanya frontend yang berubah; tidak ada file GAS yang perlu diganti.**

@@ -52,6 +52,14 @@
           });
           ubahStatus();
   }
+  /** Tamu dari tautan personal: ?u=Nama&s=sebutan&x=sufiks → "Saudari Siska", "Ibu Ani beserta Keluarga". Hanya nilai dari daftar yang dikenal; tanpa HTML. */
+  var SEBUTAN = { bapak: 'Bapak', ibu: 'Ibu', saudara: 'Saudara', saudari: 'Saudari', kak: 'Kak', bapakibu: 'Bapak/Ibu', saudarai: 'Saudara/i' }, SUFIKS = { keluarga: 'beserta Keluarga', pasangan: '& Pasangan' };
+  function tamuInfo() {
+    var q = null; try { q = new URLSearchParams(location.search); } catch (e) { /* abaikan */ }
+    function ambil(k) { return q ? String(q.get(k) || '') : ''; }
+    var nama = ambil('u').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60), seb = SEBUTAN[ambil('s').toLowerCase()] || '', suf = SUFIKS[ambil('x').toLowerCase()] || '';
+    return { nama: nama, sapa: nama ? [seb, nama, suf].filter(Boolean).join(' ') : '' };
+  }
   var KUNCI = function (slug) { return 'dearora:rsvp:' + slug; };
   function buat(kunci, gaya, kata) {
     S.reg(kunci, {
@@ -62,11 +70,11 @@
           dresscode: f.dresscode || '', galeri: (f.galeri || []).slice(0, 15), rekening: (f.rekening || []).slice(0, 3), rsvp: { maksTamu: Math.max(1, Math.min(10, Number(r.maksTamu) || 4)), catatan: r.catatan || '' }, penutup: f.penutup || '' };
       },
       mulai: function (root, d) {
-        var tamu = ''; try { tamu = String(new URLSearchParams(location.search).get('u') || '').replace(/[<>]/g, '').trim().slice(0, 60); } catch (e) { /* abaikan */ }
+        var tm = tamuInfo(), tamu = tm.nama, sapa = tm.sapa;
         var timer = 0, demo = !!S.konteks.demo || !window.DearoraAPI, slug = S.konteks.slug || 'demo';
         function layar(h, k) { clearInterval(timer); root.innerHTML = '<div class="sp-layar ud ud-' + gaya + ' ' + (k || '') + '">' + h + '</div>'; root.firstChild.scrollTop = 0; return root.firstChild; }
         function segel() {
-          var el = layar('<div class="ud-amplop-l"><p class="ud-kicker">UNDANGAN</p><h1>' + esc(d.judul) + '</h1><div class="ud-amplop"><i class="ud-tutup" aria-hidden="true"></i><i class="ud-badan" aria-hidden="true"></i><button type="button" class="ud-segel" aria-label="Buka undangan"><span>♥</span></button></div><p class="ud-kepada">Kepada Yth.<br><b>' + esc(tamu || 'Bapak/Ibu/Saudara/i') + '</b></p><p class="ud-pet">Ketuk segel untuk membuka undangan</p></div>', 'ud-segell');
+          var el = layar('<div class="ud-amplop-l"><p class="ud-kicker">UNDANGAN</p><h1>' + esc(d.judul) + '</h1><div class="ud-amplop"><i class="ud-tutup" aria-hidden="true"></i><i class="ud-badan" aria-hidden="true"></i><button type="button" class="ud-segel" aria-label="Buka undangan"><span>♥</span></button></div><p class="ud-kepada">Kepada Yth.<br><b>' + esc(sapa || 'Bapak/Ibu/Saudara/i') + '</b></p><p class="ud-pet">Ketuk segel untuk membuka undangan</p></div>', 'ud-segell');
           el.querySelector('.ud-segel').addEventListener('click', function (e) { var b = e.currentTarget; b.classList.add('pecah'); el.querySelector('.ud-amplop').classList.add('buka'); b.disabled = true; if (window.Suara) window.Suara.segel(); S.dariEl(b, 26, ['#fff', '#F5C242', '#FF8FB1'], { kuat: 6 }); S.jeda(halaman, S.reduce ? 60 : 1000); });
         }
         function halaman() {
@@ -79,7 +87,7 @@
           }).join('');
           var galeri = d.galeri.length ? '<section class="ud-sek ud-galeri"><h2>Galeri</h2><div class="ud-grid">' + d.galeri.map(function (f, i) { return '<img alt="Foto ' + (i + 1) + '" loading="lazy" src="' + esc(S.src(f, i)) + '">'; }).join('') + '</div></section>' : '';
           var rek = d.rekening.length ? '<section class="ud-sek ud-rek"><h2>Amplop Digital</h2><p class="ud-cat">Doa restu Anda sudah sangat berarti. Jika ingin memberi tanda kasih, dapat melalui:</p>' + d.rekening.map(function (r, i) { return '<div class="ud-bank"><div><b>' + esc(r.bank) + '</b><span>a.n. ' + esc(r.atasNama) + '</span><code>' + esc(r.nomor) + '</code></div><button type="button" class="ud-btn ghost" data-salin="' + i + '">Salin</button></div>'; }).join('') + '<p class="ud-cat kecil">Informasi ini hanya ditampilkan; Dearora tidak memproses pembayaran.</p></section>' : '';
-          var el = layar('<div class="ud-hero"><p class="ud-kicker">KAMI MENGUNDANG</p><h1>' + esc(d.judul) + '</h1>' + (a0 ? '<p class="ud-tanggal">' + tgl(a0.tanggal) + '</p>' : '') + '<p class="ud-sapa">' + esc(d.sapaan) + '</p>' + (tamu ? '<p class="ud-kepada">Kepada Yth. <b>' + esc(tamu) + '</b></p>' : '') + '</div>' +
+          var el = layar('<div class="ud-hero"><p class="ud-kicker">KAMI MENGUNDANG</p><h1>' + esc(d.judul) + '</h1>' + (a0 ? '<p class="ud-tanggal">' + tgl(a0.tanggal) + '</p>' : '') + '<p class="ud-sapa">' + esc(d.sapaan) + '</p>' + (sapa ? '<p class="ud-kepada">Kepada Yth. <b>' + esc(sapa) + '</b></p>' : '') + '</div>' +
             '<section class="ud-sek"><h2>Acara</h2>' + acara + (d.dresscode ? '<p class="ud-cat">Dress code: <b>' + esc(d.dresscode) + '</b></p>' : '') + '</section>' +
             (t0 ? '<section class="ud-sek ud-hitung"><h2>Menuju Hari Bahagia</h2><div class="ud-detik" id="udD" aria-live="off"></div></section>' : '') + galeri + rek +
             rsvpHTML(d, tamu) +
@@ -97,6 +105,6 @@
       }
     });
   }
-  S.ud = { tgl: tgl, waktu: waktu, unduhIcs: unduhIcs, salin: salin, rsvpHTML: rsvpHTML, rsvpPasang: rsvpPasang, KUNCI: KUNCI };
+  S.ud = { tamu: tamuInfo, tgl: tgl, waktu: waktu, unduhIcs: unduhIcs, salin: salin, rsvpHTML: rsvpHTML, rsvpPasang: rsvpPasang, KUNCI: KUNCI };
   buat('uceria', 'ceria', 'Ceria'); buat('uhangat', 'hangat', 'Hangat');
 })();
