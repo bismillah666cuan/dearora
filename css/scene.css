@@ -131,3 +131,9 @@
 .sc-ud-amplop { left: 20%; right: 20%; top: 26%; height: 40%; background: #fff; border: 2px solid #B8923A; border-radius: 4px; box-shadow: 0 10px 20px -12px #0006; } .sc-ud-amplop.c { border-color: #FF6FA5; border-radius: 12px; } .sc-ud-amplop.h { border-color: #C8573D; border-radius: 10px; }
 .sc-ud-segel { left: 44%; width: 12%; aspect-ratio: 1; top: 52%; border-radius: 50%; background: #B8923A; color: #fff; display: grid; place-items: center; font-size: .9rem; animation: scAyun 2s ease-in-out infinite alternate; } .sc-ud-segel.c { background: #FF6FA5; } .sc-ud-segel.h { background: #C8573D; }
 .sc-ud-teks { left: 0; right: 0; top: 10%; text-align: center; font: 600 1.3rem 'Playfair Display', Georgia, serif; color: #8A6B1E; } .sc-ud-teks.c { font-family: 'Fredoka', sans-serif; color: #D8407F; } .sc-ud-teks.h { font-family: 'Caveat', cursive; color: #8E3623; font-size: 1.6rem; }
+
+/* Adegan katalog: Undangan Pernikahan */
+.scene-uelegan { background: radial-gradient(ellipse at 50% 0, #fff, #FFF1EC 60%, #FBE3E3); }
+.sc-nk-lingkar { left: 50%; top: 14%; width: 46%; aspect-ratio: 1; margin-left: -23%; border-radius: 50%; border: 2px solid #C9A25A; box-shadow: 0 0 0 6px #fff, 0 0 0 7px rgba(201, 162, 90, .5), 0 0 0 16px rgba(244, 181, 196, .45), 0 0 0 26px rgba(248, 213, 220, .5); background: radial-gradient(circle, #fff, #FFF3EE); animation: scAyun 4s ease-in-out infinite alternate; }
+.sc-nk-sdt { width: 34%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #F9D9DF 0 25%, #EA93A9 26% 45%, #F3B9C6 46% 62%, transparent 63%); } .sc-nk-sdt.a { left: -8%; top: -10%; } .sc-nk-sdt.b { right: -8%; bottom: 4%; transform: scale(.8); }
+.sc-nk-nama { left: 0; right: 0; bottom: 14%; text-align: center; font: 400 1.5rem 'Great Vibes', Georgia, serif; color: #A34864; } .sc-nk-pemb { left: 28%; right: 28%; bottom: 10%; height: 1px; background: linear-gradient(90deg, transparent, #C9A25A, transparent); }

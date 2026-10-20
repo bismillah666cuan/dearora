@@ -339,3 +339,17 @@ Isi Desain tetap setelah Foto karena pilihan foto di situ memakai foto yang suda
 
 ## Perbaikan: kilasan slide surat sebelum desain Premium tampil
 **Gejala:** pada desain Premium (mis. Imlek), setelah layar penyambung, slide *surat* sempat muncul sekitar 1 detik lalu hilang sendiri. **Penyebab:** halaman desain Premium dipasang *di atas* slide kartu, tetapi tiap layar desain muncul dengan fade-in dari transparan (dan layar penyambung juga memudar masuk/keluar), sehingga slide kartu di bawahnya tembus sesaat. **Perbaikan (hanya frontend):** slide kartu disembunyikan selama halaman konsep tampil dan dipulihkan saat kembali ke Kejutan, setiap desain memakai warna dasar sendiri di belakang layarnya, dan fade layar penyambung kini hanya memudarkan isinya (bukan seluruh lapisan). Pengujian per-frame (±140 frame per desain) untuk Imlek, Romantique, Resep, Malam Film, Fish It, dan Idul Fitri tidak lagi menemukan slide kartu yang tembus; uji yang sama gagal di versi sebelumnya.
+
+
+## Undangan Pernikahan (versi baru yang lebih estetik) dan foto opsional
+Desain **Undangan Pernikahan** (sebelumnya "Undangan Elegan", DSN-028) dirancang ulang dengan tema pernikahan:
+- **Amplop bunga:** tirai bunga menggantung, amplop dengan segel monogram, kelopak berguguran. Saat segel diketuk: tutup amplop terbuka, kartu naik, kelopak berhamburan, lalu layar berganti dengan transisi halus.
+- **Hiasan bunga SVG orisinal** (mawar, daun, ranting, karangan, pembatas emas) di empat sudut dengan gerak goyang pelan dan parallax lembut saat digulir. Kelopak berguguran terus selama dibaca.
+- **Isi:** karangan bunga melingkar berisi monogram atau foto pasangan, nama pasangan, **mempelai** (nama + "putra/putri dari"), kutipan atau ayat, 1–3 acara (peta, tambah ke kalender), hitung mundur, **Kisah Kita** (garis waktu hingga 4 momen), galeri foto dengan perbesar (zoom), amplop digital, konfirmasi hadir dengan ucapan, dan penutup.
+- **Foto semuanya opsional:** foto utama, foto mempelai, foto kisah, dan galeri. Tanpa foto, undangan memakai monogram dan mawar sebagai pengganti. Di form, langkah Foto untuk paket Invitation **boleh dilewati tanpa mengunggah foto** (di server, hanya Invitation yang boleh tanpa foto; Basic dan Premium tetap wajib).
+- **Gerak halus:** semua animasi dihentikan bagi pengguna yang mengaktifkan "kurangi gerak" di perangkatnya.
+- **Akun pembeli:** ucapan dan kehadiran tamu tampil di Portal → detail pesanan (nama, hadir/belum pasti/tidak hadir, jumlah, ucapan, waktu) dan daftar pesanan menandai "n tamu merespons". Unduh CSV dan tautan personal tetap tersedia.
+- **Font:** nama pasangan memakai font tulisan tangan *Great Vibes* dari Google Fonts (dimuat otomatis; bila gagal dimuat, tampil huruf serif biasa).
+
+**Pemasangan:** ganti isi file `Kode`, `Pesanan`, `Kartu`, `Admin`, `Portal`, `Email`, `Pembayaran`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, lalu jalankan **`isiUlangKatalogDesain`** agar nama desain berubah menjadi "Undangan Pernikahan" (atau ubah namanya manual di Admin → Desain). Timpa frontend, isi ulang `GAS_URL`, `git push`.
+**Catatan pesanan lama:** pesanan Undangan Elegan yang sudah dibuat dengan skema lama tetap tampil (nama pasangan diambil dari judul, tanpa bagian mempelai), tetapi tidak memiliki mempelai, kutipan, dan kisah. Undangan Ceria dan Hangat tidak berubah.

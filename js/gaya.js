@@ -204,7 +204,7 @@
     ['Kartu gosok berisi kabar bahagia', 'Pecahkan balon untuk membuka fakta tentang si kecil', 'Hitung mundur menuju hari lahir'],
     ['Kabar bahagia + foto', '3–5 balon fakta', 'Perkiraan hari lahir (opsional) dan pesan penutup'], 'lahir');
 
-  G.uelegan = sp('Undangan Elegan', 'Pernikahan', ['#FBF6EA', '#B8923A'], 'Pernikahan dan lamaran: ivory dan emas, serif klasik, amplop bersegel lilin.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dan amplop digital'], ['Judul, sambutan, 1–3 acara', 'Galeri, amplop digital, dress code', 'Pengaturan form konfirmasi hadir'], 'uelegan');
+  G.uelegan = sp('Undangan Pernikahan', 'Pernikahan', ['#FFF9F2', '#C9657F'], 'Pernikahan dan lamaran: hiasan bunga, kelopak berguguran, amplop bersegel, mempelai, kisah cinta, dan konfirmasi hadir. Foto opsional.', ['Amplop bunga yang terbuka dengan kelopak berguguran', 'Mempelai, kisah kita, acara, peta, dan hitung mundur', 'Konfirmasi hadir dan ucapan tamu masuk ke akunmu'], ['Nama pasangan dan mempelai (foto opsional)', '1–3 acara, kisah kita, galeri (opsional)', 'Amplop digital dan pengaturan konfirmasi hadir'], 'uelegan');
   G.uceria = sp('Undangan Ceria', 'Ulang Tahun', ['#FFE45E', '#FF6FA5'], 'Ulang tahun dan reuni: warna-warni ceria, nuansa pesta.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dengan jumlah tamu'], ['Judul, sambutan, 1–3 acara', 'Galeri dan dress code', 'Pengaturan form konfirmasi hadir'], 'uceria');
   G.uhangat = sp('Undangan Hangat', 'Syukuran', ['#C8573D', '#FFF4E4'], 'Syukuran, aqiqah, dan acara keluarga: hangat dan bersahaja.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dan amplop digital'], ['Judul, sambutan, 1–3 acara', 'Galeri, amplop digital', 'Pengaturan form konfirmasi hadir'], 'uhangat');
   ['uelegan', 'uceria', 'uhangat'].forEach(function (k) { G[k].undangan = true; });
@@ -242,7 +242,7 @@
     brankas: function () { return P('sc-bk-pintu', '') + P('sc-bk-roda', '') + P('sc-bk-gembok', ''); },
     hujan: function () { return P('sc-hj-kaca', '') + P('sc-hj-tetes t1', '') + P('sc-hj-tetes t2', '') + P('sc-hj-tetes t3', '') + P('sc-hj-pelangi', ''); },
     lahir: function () { return P('sc-lh-kartu', '<i>Kabar<br>Bahagia</i>') + P('sc-lh-balon b1', '') + P('sc-lh-balon b2', '') + P('sc-lh-balon b3', ''); },
-    uelegan: function () { return P('sc-ud-amplop', '') + P('sc-ud-segel', '♥') + P('sc-ud-teks e', 'Undangan'); },
+    uelegan: function () { return P('sc-nk-sdt a', '') + P('sc-nk-sdt b', '') + P('sc-nk-lingkar', '') + P('sc-nk-nama', 'Rani &amp; Dimas') + P('sc-nk-pemb', ''); },
     uceria: function () { return P('sc-ud-amplop c', '') + P('sc-ud-segel c', '♥') + P('sc-ud-teks c', 'Pesta!'); },
     uhangat: function () { return P('sc-ud-amplop h', '') + P('sc-ud-segel h', '♥') + P('sc-ud-teks h', 'Syukuran'); },
     classic: function () { return P('sc-hati', A.hati('#D84A6E')) + P('sc-doodle d1', A.kilau('#F78DA7')); },

@@ -229,13 +229,35 @@
       A('penutup', 'Kalimat penutup', 300, { wajib: true })
     ];
   }
-  SKEMA.uelegan = { nama: 'Undangan Elegan', bagian: undanganBagian() };
+  /* Undangan Pernikahan: bagian khusus mempelai, kutipan, kisah; foto semuanya opsional (tanpa foto → hiasan bunga). */
+  function nikahBagian() {
+    var acara = undanganBagian().filter(function (b) { return b.k === 'acara'; })[0], galeri = { k: 'galeri', tipe: 'daftarfoto', label: 'Galeri foto (opsional, hingga 15)', maks: 15 };
+    var rek = undanganBagian().filter(function (b) { return b.k === 'rekening'; })[0], rsvp = undanganBagian().filter(function (b) { return b.k === 'rsvp'; })[0];
+    return [
+      T('judul', 'Nama pasangan (tampil besar)', 40, { wajib: true, hint: 'Mis. Rani & Dimas' }),
+      A('sapaan', 'Kalimat sambutan', 220, { wajib: true, hint: 'Mis. Dengan memohon rahmat dan ridho-Nya, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di hari bahagia kami.' }),
+      A('kutipan', 'Kutipan atau ayat (opsional)', 200, { hint: 'Mis. "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup..."' }),
+      T('dresscode', 'Dress code (opsional)', 80, { hint: 'Mis. Nuansa pastel' }),
+      F('fotoSampul', 'Foto utama pasangan (opsional)'),
+      A('penutup', 'Kalimat penutup', 300, { wajib: true }),
+      { k: 'mempelai', tipe: 'objek', label: 'Mempelai', item: [
+        T('wanita', 'Nama mempelai wanita', 50, { wajib: true }), T('wanitaOrtu', 'Putri dari (opsional)', 100, { hint: 'Mis. Bapak Hendra & Ibu Sari' }), F('wanitaFoto', 'Foto mempelai wanita (opsional)'),
+        T('pria', 'Nama mempelai pria', 50, { wajib: true }), T('priaOrtu', 'Putra dari (opsional)', 100, { hint: 'Mis. Bapak Budi & Ibu Ani' }), F('priaFoto', 'Foto mempelai pria (opsional)')] },
+      acara,
+      { k: 'kisah', tipe: 'daftar', label: 'Kisah kita (opsional)', hint: 'Hingga 4 momen perjalanan cinta, ditampilkan sebagai garis waktu.', min: 0, maks: 4, namaItem: 'Momen', item: [T('waktu', 'Kapan', 30, { wajib: true, hint: 'Mis. 2019 atau Maret 2021' }), T('judul', 'Judul momen', 40, { wajib: true }), A('cerita', 'Ceritanya', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      galeri, rek, rsvp
+    ];
+  }
+  SKEMA.uelegan = { nama: 'Undangan Pernikahan', bagian: nikahBagian() };
   SKEMA.uceria = { nama: 'Undangan Ceria', bagian: undanganBagian() };
   SKEMA.uhangat = { nama: 'Undangan Hangat', bagian: undanganBagian() };
-  SKEMA.uelegan.contoh = { judul: 'Pernikahan Rani & Dimas', sapaan: 'Dengan memohon rahmat dan ridho-Nya, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu di hari bahagia kami.',
+  SKEMA.uelegan.contoh = { judul: 'Rani & Dimas', sapaan: 'Dengan memohon rahmat dan ridho-Nya, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu di hari bahagia kami.',
+    kutipan: 'Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup agar kamu merasa tenteram kepadanya.', dresscode: 'Nuansa pastel', fotoSampul: '',
+    penutup: 'Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Terima kasih atas doa dan restunya.',
+    mempelai: { wanita: 'Rani Putri Lestari', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Dimas Aditya Pratama', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
     acara: [{ nama: 'Akad Nikah', tanggal: '2027-03-15', jam: '09.00 WIB', tempat: 'Masjid Al-Ikhlas', alamat: 'Jl. Melati No. 12, Karawang', peta: '' }, { nama: 'Resepsi', tanggal: '2027-03-15', jam: '11.00–14.00 WIB', tempat: 'Gedung Serbaguna Asri', alamat: 'Jl. Pemuda No. 3, Karawang', peta: '' }],
-    dresscode: 'Nuansa pastel', galeri: [], rekening: [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Rani Putri' }], rsvp: { maksTamu: 4, catatan: 'Mohon konfirmasi kehadiran sebelum 1 Maret 2027.' },
-    penutup: 'Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Terima kasih atas doa dan restunya.' };
+    kisah: [{ waktu: '2019', judul: 'Pertama Bertemu', cerita: 'Di sebuah acara kampus, kami saling melempar senyum untuk pertama kalinya.', foto: '' }, { waktu: '2022', judul: 'Menjadi Kita', cerita: 'Setelah bertahun-tahun berteman, kami memutuskan berjalan bersama.', foto: '' }, { waktu: '2026', judul: 'Lamaran', cerita: 'Dengan restu keluarga, kami melangkah ke jenjang yang lebih serius.', foto: '' }],
+    galeri: [], rekening: [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Rani Putri' }], rsvp: { maksTamu: 4, catatan: 'Mohon konfirmasi kehadiran sebelum 1 Maret 2027.' } };
   SKEMA.uceria.contoh = { judul: 'Ulang Tahun ke-7 Nara', sapaan: 'Yuk, rayakan hari spesial Nara bersama! Ada kue, permainan, dan banyak tawa menunggu.',
     acara: [{ nama: 'Pesta Ulang Tahun', tanggal: '2027-05-22', jam: '14.00–17.00 WIB', tempat: 'Rumah Nara', alamat: 'Jl. Kenanga No. 8, Bekasi', peta: '' }],
     dresscode: 'Pakai baju warna-warni', galeri: [], rekening: [], rsvp: { maksTamu: 4, catatan: 'Kabari kami ya supaya kuenya cukup!' }, penutup: 'Terima kasih sudah datang dan membuat hari Nara makin seru.' };

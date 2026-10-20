@@ -577,7 +577,7 @@
         '<button type="button" class="icon-btn sm" data-f="rm" data-id="' + f.id + '" aria-label="Hapus ' + esc(f.nama) + '">' + ic('x') + '</button></div></li>';
     }).join('');
     return '<div class="dropzone"><p class="dz-title">' + ic('image') + ' Unggah foto terbaikmu</p>' +
-      '<p class="small muted">JPG, PNG, atau WebP. Foto otomatis diperkecil agar cepat terunggah. Wajib minimal 1 foto, maksimal ' + pk.maksFoto + '.' +
+      '<p class="small muted">JPG, PNG, atau WebP. Foto otomatis diperkecil agar cepat terunggah. ' + (ST.paket === 'invitation' ? 'Foto bersifat opsional: tanpa foto, undangan memakai hiasan bunga. Maksimal ' : 'Wajib minimal 1 foto, maksimal ') + pk.maksFoto + '.' +
       (video ? ' Paket Special boleh menambah 1 video MP4 (maks. ' + LIM.videoMB + ' MB).' : '') + '</p>' +
       '<input class="sr-only" type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp' + (video ? ',video/mp4' : '') + '">' +
       '<label for="fileInput" class="btn btn-secondary btn-sm' + (ui.kompres ? ' disabled' : '') + '">' + (ui.kompres ? 'Memproses…' : 'Pilih Berkas') + '</label>' +
@@ -757,7 +757,7 @@
       if (uc.length < 5) e.kejutanUcapan = 'Ucapan kejutan minimal 5 karakter.'; else if (uc.length > 300) e.kejutanUcapan = 'Ucapan kejutan maksimal 300 karakter.';
       if (dt) e.kejutanDetail = dt;
     }
-    if (id === 'foto') { if (!files.some(function (f) { return f.jenis === 'foto'; })) e.foto = 'Unggah minimal 1 foto.'; }
+    if (id === 'foto') { if (ST.paket !== 'invitation' && !files.some(function (f) { return f.jenis === 'foto'; })) e.foto = 'Unggah minimal 1 foto.'; }
     if (id === 'desain') { if (!ST.desainId) e.desain = 'Pilih satu desain.'; }
     if (id === 'ekstra' && ST.paket === 'special' && ST.jenisSurprise.indexOf('pesan-rahasia') >= 0) {
       if (t('pesanRahasia').length < 3) e.pesanRahasia = 'Isi pesan rahasia (minimal 3 karakter).';

@@ -183,6 +183,7 @@
     if (o.status !== 'Aktif' && o.status !== 'Selesai' && o.status !== 'Diproses' && o.status !== 'Kedaluwarsa') return '';
     var lihat = o.dilihat ? '<span class="tag sage">' + ic('check') + ' Sudah dilihat penerima · ' + esc(tglJam(o.dilihat)) + '</span>' : '<span class="tag">Belum dilihat penerima</span>';
     var bls = o.jumlahBalasan ? ' <span class="tag rose">' + ic('heart') + ' ' + o.jumlahBalasan + ' balasan</span>' : '';
+    if (o.paketId === 'invitation' && o.jumlahRsvp) bls += ' <span class="tag sage">' + ic('heart') + ' ' + o.jumlahRsvp + ' tamu merespons</span>';
     return '<p class="small" style="margin:.5rem 0">' + lihat + bls + '</p>';
   }
   function kartuPesanan(o) {
