@@ -147,6 +147,7 @@
     var d = state.data.desain.filter(function (x) { return x.id === id; })[0];
     if (!d) return;
     var tema = U.temaDari(d.thumbnail), kat = '', gs = window.Gaya && Gaya.G[tema], khusus = !!(gs && gs.special);
+    var undangan = (d.paket || []).indexOf('invitation') >= 0 && (d.paket || []).indexOf('premium') < 0 && (d.paket || []).indexOf('basic') < 0;          // desain undangan: tanpa kejutan Basic
     var tags = (d.paket || []).map(function (p) { return U.badgePaket(p, state.data.paket); }).join(' ');
     var urlDemoLengkap = U.amanHttps(d.urlDemo);
     $dialog.innerHTML =
@@ -155,7 +156,7 @@
         '<button type="button" class="icon-btn" data-action="close-demo" aria-label="Tutup demo">' + ic('x') + '</button></div>' +
         '<div class="demo-mode" role="group" aria-label="Ukuran tampilan demo"><button type="button" class="chip on" data-demo-m="hp" aria-pressed="true">Tampilan HP</button><button type="button" class="chip" data-demo-m="desk" aria-pressed="false">Tampilan Desktop</button></div>' +
         '<div class="demo-stage"><iframe class="demo-frame" id="demoFrame" title="Demo ucapan: ' + esc(d.nama) + '" src="' + esc(urlDemo(tema, kat, 'kado')) + '"></iframe></div>' +
-        (khusus ? '<div class="demo-jenis"><span class="small muted">Demo lengkap Paket Premium: pembuka → ucapan → surat → halaman ' + esc(d.nama) + ' → kejutan → kenangan.</span></div>' : '') + ('<div class="demo-jenis" role="group" aria-label="Coba jenis kejutan"><span class="small muted">Coba kejutan:</span>' + DEMO_JENIS.map(function (j, i) { return '<button type="button" class="chip' + (i === 0 ? ' on' : '') + '" data-demo-j="' + j[0] + '" aria-pressed="' + (i === 0) + '">' + esc(j[1]) + '</button>'; }).join('') + '</div>') +
+        (undangan ? '<div class="demo-jenis"><span class="small muted">Demo undangan interaktif: amplop pembuka → halaman undangan → konfirmasi hadir (di demo hanya simulasi, tidak terkirim ke siapa pun).</span></div>' : (khusus ? '<div class="demo-jenis"><span class="small muted">Demo lengkap Paket Premium: pembuka → ucapan → surat → halaman ' + esc(d.nama) + ' → kejutan → kenangan.</span></div>' : '') + ('<div class="demo-jenis" role="group" aria-label="Coba jenis kejutan"><span class="small muted">Coba kejutan:</span>' + DEMO_JENIS.map(function (j, i) { return '<button type="button" class="chip' + (i === 0 ? ' on' : '') + '" data-demo-j="' + j[0] + '" aria-pressed="' + (i === 0) + '">' + esc(j[1]) + '</button>'; }).join('') + '</div>')) +
         '<div class="modal-foot"><div style="display:flex;flex-wrap:wrap;gap:.375rem;justify-content:center">' + tags + '</div>' +
           '<a class="btn btn-primary" data-action="close-demo" href="#/buat?desain=' + encodeURIComponent(d.id) + '">Pakai Desain Ini</a>' +
           (urlDemoLengkap ? '<a class="btn btn-secondary" href="' + esc(urlDemoLengkap) + '" target="_blank" rel="noopener noreferrer">Buka Demo Lengkap</a>' : '') +

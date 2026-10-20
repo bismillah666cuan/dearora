@@ -26,6 +26,14 @@
   S.reg(kunci, {
     nama: T.nama,
     adapt: function (f, c) {
+      if (T.mode === 'acara') {
+        var tk = f.tokoh || {}, rr = f.rsvp || {};
+        return { penerima: c.penerima, pengirim: c.pengirim, judul: f.judul || T.nama, sapaan: f.sapaan || '', kutipan: f.kutipan || '', dresscode: f.dresscode || '', penutup: f.penutup || '', fotoSampul: f.fotoSampul || '',
+          tokoh: { nama: tk.nama || '', ortu: tk.ortu || '', foto: tk.foto || '' }, wanita: { nama: '', ortu: '', foto: '' }, pria: { nama: '', ortu: '', foto: '' },
+          acara: (f.acara || []).map(function (a) { return { nama: a.nama, tanggal: a.tanggal, jam: a.jam, tempat: a.tempat, alamat: a.alamat, peta: a.peta || '' }; }),
+          susunan: (f.susunan || []).slice(0, 6).map(function (s) { return { jam: s.jam, kegiatan: s.kegiatan }; }), denah: f.denah || '', siaran: f.siaran || '', kisah: [],
+          galeri: (f.galeri || []).slice(0, 15), rekening: (f.rekening || []).slice(0, 3), rsvp: { maksTamu: Math.max(1, Math.min(10, Number(rr.maksTamu) || 4)), catatan: rr.catatan || '' } };
+      }
       var m = f.mempelai || {}, r = f.rsvp || {}, pc = String(f.judul || '').split(/\s*[&+]\s*/);
       return { penerima: c.penerima, pengirim: c.pengirim, judul: f.judul || 'Undangan Pernikahan', sapaan: f.sapaan || '', kutipan: f.kutipan || '', dresscode: f.dresscode || '', penutup: f.penutup || '', fotoSampul: f.fotoSampul || '',
         wanita: { nama: m.wanita || pc[0] || '', ortu: m.wanitaOrtu || '', foto: m.wanitaFoto || '' }, pria: { nama: m.pria || pc[1] || '', ortu: m.priaOrtu || '', foto: m.priaFoto || '' },
@@ -37,9 +45,10 @@
       var tamu = ''; try { tamu = String(new URLSearchParams(location.search).get('u') || '').replace(/[<>]/g, '').trim().slice(0, 60); } catch (e) { /* abaikan */ }
       d.galeri = d.galeri.filter(ada);
       var timer = 0, demo = !!S.konteks.demo || !window.DearoraAPI, slug = S.konteks.slug || 'demo', pj = String(d.judul || '').split(/\s*[&+]\s*/), ml = awal(pj[0]) || awal(d.wanita.nama), mr = awal(pj[1]) || awal(d.pria.nama);
-      var inisial = ml && mr ? ml + ' <i>&amp;</i> ' + mr : esc((ml || mr || '♥'));
+      var acr = T.mode === 'acara';
+      var inisial = acr ? esc(awal(d.tokoh.nama) || awal(d.judul) || '♥') : (ml && mr ? ml + ' <i>&amp;</i> ' + mr : esc((ml || mr || '♥')));
       var namaP = esc(d.judul).replace(/&amp;/g, '<i>&amp;</i>');                       // nama panggilan pasangan = judul ("Rani & Dimas")
-      function layar(h, k) { clearInterval(timer); root.innerHTML = '<div class="sp-layar ud ' + (T.root || 'ud-elegan') + ' nk nk-' + T.id + ' ' + (k || '') + '">' + h + '</div>'; root.firstChild.scrollTop = 0; return root.firstChild; }
+      function layar(h, k) { clearInterval(timer); root.innerHTML = '<div class="sp-layar ud ' + (T.root || 'ud-elegan') + ' nk nk-' + T.id + (String(d.judul || '').length > 18 ? ' nk-panjang' : '') + ' ' + (k || '') + '">' + h + '</div>'; root.firstChild.scrollTop = 0; return root.firstChild; }
       /** Kerangka tiap jenis pembuka: amplop, mihrab (pintu lengkung), bintang (langit malam), kelir (layar wayang), tirai (beludru). */
       var BUKA = {
         amplop: function () {
@@ -57,6 +66,20 @@
         tirai: function () {
           return { bg: '<div class="nk-bg-tr" aria-hidden="true"></div>', inti: '<div class="nk-tr nk-stage"><div class="nk-tr-kartu" aria-hidden="true">' + (T.bingkai ? T.bingkai() : '') + '<b>' + inisial + '</b></div><i class="nk-tr-tirai kiri" aria-hidden="true"></i><i class="nk-tr-tirai kanan" aria-hidden="true"></i><i class="nk-tr-rumbai" aria-hidden="true"></i><button type="button" class="ud-segel nk-segel" aria-label="Buka undangan"><span>' + inisial + '</span></button></div>' };
         }
+      };
+      /** Pembuka tambahan untuk acara keluarga: mahkota, lentera, tumpeng, rumah. */
+      BUKA.mahkota = function () {
+        return { bg: '<div class="nk-bg-mk" aria-hidden="true"></div>', inti: '<div class="nk-mk nk-stage"><div class="nk-mk-bantal" aria-hidden="true"></div><div class="nk-mk-kartu" aria-hidden="true"><b>' + inisial + '</b></div><div class="nk-mk-mahkota" aria-hidden="true">' + (T.mahkota ? T.mahkota() : '') + '</div><button type="button" class="ud-segel nk-segel" aria-label="Buka undangan"><span>' + inisial + '</span></button></div>' };
+      };
+      BUKA.lentera = function () {
+        var l = [0, 1, 2].map(function (i) { return '<div class="nk-ln-l l' + i + '" aria-hidden="true">' + (T.lentera ? T.lentera(i) : '') + '</div>'; }).join('');
+        return { bg: '<div class="nk-bg-ln" aria-hidden="true"></div>', inti: '<div class="nk-ln nk-stage"><i class="nk-ln-tali" aria-hidden="true"></i><div class="nk-ln-cahaya" aria-hidden="true"></div>' + l + '<div class="nk-ln-kartu" aria-hidden="true"><b>' + inisial + '</b></div><button type="button" class="ud-segel nk-segel" aria-label="Buka undangan"><span>' + inisial + '</span></button></div>' };
+      };
+      BUKA.tumpeng = function () {
+        return { bg: '<div class="nk-bg-tp" aria-hidden="true"></div>', inti: '<div class="nk-tp nk-stage"><div class="nk-tp-kartu" aria-hidden="true"><b>' + inisial + '</b></div><div class="nk-tp-gambar" aria-hidden="true">' + (T.tumpeng ? T.tumpeng() : '') + '</div><div class="nk-tp-uap" aria-hidden="true"><i></i><i></i><i></i></div><button type="button" class="ud-segel nk-segel" aria-label="Buka undangan"><span>' + inisial + '</span></button></div>' };
+      };
+      BUKA.rumah = function () {
+        return { bg: '<div class="nk-bg-rm" aria-hidden="true"></div>', inti: '<div class="nk-rm nk-stage"><div class="nk-rm-rumah" aria-hidden="true">' + (T.rumah ? T.rumah() : '') + '</div><div class="nk-rm-terang" aria-hidden="true"></div><div class="nk-rm-kartu" aria-hidden="true"><b>' + inisial + '</b></div><div class="nk-rm-pintu" aria-hidden="true"></div><i class="nk-rm-jendela a" aria-hidden="true"></i><i class="nk-rm-jendela b" aria-hidden="true"></i><button type="button" class="ud-segel nk-segel" aria-label="Buka undangan"><span>' + inisial + '</span></button></div>' };
       };
       function segel() {
         var jenis = T.buka || 'amplop', B0 = (BUKA[jenis] || BUKA.amplop)(), wkt = T.waktuBuka || [1500, 2200];
@@ -84,15 +107,18 @@
             (U.waktu(a) ? '<button type="button" class="ud-btn ghost" data-ics="' + k + '">Tambah ke kalender</button>' : '') + '</div></article>';
         }).join('');
         var kisah = d.kisah.length ? '<section class="ud-sek nk-kisah"><h2>Kisah Kita</h2><ol class="nk-garis">' + d.kisah.map(function (k, n) { return '<li class="nk-rev" style="--i:' + n + '"><span class="nk-titik" aria-hidden="true"></span><time>' + esc(k.waktu) + '</time><h3>' + esc(k.judul) + '</h3>' + (ada(k.foto) ? '<div class="nk-kfoto">' + foto(k.foto, n + 5, k.judul) + '</div>' : '') + '<p>' + esc(k.cerita) + '</p></li>'; }).join('') + '</ol></section>' : '';
+        var susunan = d.susunan && d.susunan.length ? '<section class="ud-sek nk-kisah nk-susunan"><h2>Susunan Acara</h2><ol class="nk-garis">' + d.susunan.map(function (s, n) { return '<li class="nk-rev" style="--i:' + n + '"><span class="nk-titik" aria-hidden="true"></span><time>' + esc(s.jam) + '</time><h3>' + esc(s.kegiatan) + '</h3></li>'; }).join('') + '</ol></section>' : '';
+        var sir = /^https:\/\/[^\s]{4,300}$/.test(d.siaran || '') ? '<a class="ud-btn nk-siaran" href="' + esc(d.siaran) + '" target="_blank" rel="noopener noreferrer">Tonton siaran langsung</a>' : '';
+        var extra = (d.denah || sir) ? '<section class="ud-sek nk-denah"><h2>Petunjuk Lokasi</h2>' + (d.denah ? '<p class="ud-cat">' + esc(d.denah) + '</p>' : '') + (sir ? '<p class="ud-cat">Tidak bisa hadir langsung? Ikuti dari jauh:</p>' + sir : '') + '</section>' : '';
         var galeri = d.galeri.length ? '<section class="ud-sek ud-galeri"><h2>Galeri</h2><div class="ud-grid nk-grid">' + d.galeri.map(function (f, n) { return '<button type="button" class="nk-gf nk-rev" style="--i:' + (n % 4) + '" data-zoom="' + n + '" aria-label="Perbesar foto ' + (n + 1) + '">' + foto(f, n, 'Foto ' + (n + 1)) + '</button>'; }).join('') + '</div></section>' : '';
         var rek = d.rekening.length ? '<section class="ud-sek ud-rek"><h2>Amplop Digital</h2><p class="ud-cat">Doa restu Anda sudah sangat berarti. Jika ingin memberi tanda kasih, dapat melalui:</p>' + d.rekening.map(function (r, n) { return '<div class="ud-bank"><div><b>' + esc(r.bank) + '</b><span>a.n. ' + esc(r.atasNama) + '</span><code>' + esc(r.nomor) + '</code></div><button type="button" class="ud-btn ghost" data-salin="' + n + '">Salin</button></div>'; }).join('') + '<p class="ud-cat kecil">Informasi ini hanya ditampilkan; Dearora tidak memproses pembayaran.</p></section>' : '';
         var sudutHTML = T.sudut ? ['a', 'b', 'c', 'd'].map(function (p) { return '<span class="nk-s ' + p + '">' + T.sudut(p) + '</span>'; }).join('') : '';
         var el = layar('<div class="nk-dekor" aria-hidden="true">' + sudutHTML + '</div>' +
           '<div class="ud-hero nk-hero">' + (T.atas ? T.atas(d) : '') + '<p class="nk-kicker nk-rev">' + esc(T.kicker || 'THE WEDDING OF') + '</p>' + monogram() + '<h1 class="nk-nama nk-judul">' + namaP + '</h1>' + (a0 ? '<p class="ud-tanggal nk-rev">' + U.tgl(a0.tanggal) + '</p>' : '') + '<div class="nk-pemb nk-rev">' + (T.pembatas ? T.pembatas() : '') + '</div><p class="ud-sapa nk-rev">' + esc(d.sapaan) + '</p>' + (tamu ? '<p class="ud-kepada nk-rev">Kepada Yth. <b>' + esc(tamu) + '</b></p>' : '') + '</div>' +
           (d.kutipan ? '<section class="ud-sek nk-ayat"><p class="nk-kutip">“' + esc(d.kutipan) + '”</p></section>' : '') +
-          '<section class="ud-sek nk-mempelai"><h2>Mempelai</h2><div class="nk-dua">' + potret(d.wanita, 'w', 1) + '<span class="nk-dan" aria-hidden="true">&amp;</span>' + potret(d.pria, 'p', 2) + '</div></section>' +
+          (acr ? '<section class="ud-sek nk-mempelai nk-tokoh"><h2>' + esc(T.judulTokoh || 'Yang Berbahagia') + '</h2><div class="nk-dua">' + potret(d.tokoh, 't', 1) + '</div></section>' : '<section class="ud-sek nk-mempelai"><h2>Mempelai</h2><div class="nk-dua">' + potret(d.wanita, 'w', 1) + '<span class="nk-dan" aria-hidden="true">&amp;</span>' + potret(d.pria, 'p', 2) + '</div></section>') +
           '<section class="ud-sek"><h2>Acara</h2>' + acara + (d.dresscode ? '<p class="ud-cat">Dress code: <b>' + esc(d.dresscode) + '</b></p>' : '') + '</section>' +
-          (t0 ? '<section class="ud-sek ud-hitung"><h2>Menuju Hari Bahagia</h2><div class="ud-detik nk-detik" id="udD" aria-live="off"></div></section>' : '') + kisah + galeri + rek +
+          (acr ? susunan : '') + (t0 ? '<section class="ud-sek ud-hitung"><h2>' + (acr ? 'Menuju Hari H' : 'Menuju Hari Bahagia') + '</h2><div class="ud-detik nk-detik" id="udD" aria-live="off"></div></section>' : '') + (acr ? extra : kisah) + galeri + rek +
           U.rsvpHTML(d, tamu) +
           '<section class="ud-sek ud-akhir nk-akhir"><div class="nk-pemb">' + (T.pembatas ? T.pembatas() : '') + '</div><p class="ud-penutup">' + esc(d.penutup) + '</p><p class="nk-salam">Dengan penuh cinta,</p><p class="nk-nama nk-tt">' + namaP + '</p></section>', 'ud-halamanl nk-halaman');
         kelopak(el, T.partikel ? T.partikel.n || 10 : 0, T);

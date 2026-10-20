@@ -368,3 +368,17 @@ Selain **Undangan Pernikahan** (bunga), tersedia: **Undangan Islami Elegan**, **
 **Catatan konten (mohon diperiksa sendiri):** teks Arab hanya bismillah standar; contoh ayat (QS. Ar-Rum: 21) berupa terjemahan Indonesia; contoh "Sugeng rawuh" dan istilah adat/upacara bersifat contoh. Pembeli dapat mengubah semua teks. Periksa kesesuaian budaya dan agama sebelum dijual.
 **Font:** *Amiri* (Arab) dan *Great Vibes* dimuat dari Google Fonts; bila gagal dimuat, tampil huruf biasa.
 **Pemasangan:** ganti isi `Kode`, `Pesanan`, `Kartu`, `Admin`, `Portal`, `Email`, `Pembayaran`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, jalankan **`isiUlangKatalogDesain`** (menambah 5 desain baru), lalu timpa frontend, isi ulang `GAS_URL`, `git push`.
+
+
+## Undangan khitanan dan syukuran (4 desain baru) + modal demo undangan
+Paket Invitation kini punya **12 desain**. Empat desain baru untuk **acara keluarga**:
+| Desain | Acara | Pembuka | Ciri khas |
+|---|---|---|---|
+| **Sultan Cilik** | Khitanan | Mahkota emas turun ke bantal beludru | Bendera segitiga warna-warni, bintang berhamburan, bismillah |
+| **Islami Ceria** | Khitanan | Tiga lentera menyala satu per satu | Bulan sabit dan bintang, bismillah dan salam, hijau dan kuning |
+| **Tumpeng & Doa** | Syukuran/tasyakuran | Tumpeng beruap di atas daun pisang terbuka | Daun pisang dan marigold berguguran |
+| **Rumah Baru** | Syukuran rumah | Pintu rumah terbuka, jendela menyala | Lampu hias dan tanaman rambat, bunyi ketuk lalu pintu berderit |
+**Isian (berbeda dari pernikahan):** judul acara, sambutan, doa atau harapan, dress code, foto utama (opsional), penutup; **satu tokoh** (nama anak atau tuan rumah, keterangan, foto opsional); 1–3 acara; **petunjuk lokasi atau parkir**; **tautan siaran langsung** (opsional, wajib https, tampil sebagai tombol "Tonton siaran langsung"); **susunan acara** (hingga 6 kegiatan berjam); galeri; amplop digital; konfirmasi hadir (jumlah tamu membantu perkiraan porsi dan terlihat di akun pembeli). Semua foto opsional; tanpa foto tampil ornamen (mahkota, bulan sabit, tumpeng, rumah).
+**Modal demo di katalog:** untuk desain **undangan**, pilihan "Coba kejutan" (Kado, Kuis, Gosok, dst.) dan keterangan "Paket Premium" sudah dihapus karena konsepnya berbeda; diganti keterangan "Demo undangan interaktif: amplop pembuka → halaman undangan → konfirmasi hadir (simulasi)". Desain Basic dan Premium tidak berubah.
+**Catatan konten:** doa dan istilah (walimatul khitan, tasyakuran) adalah contoh yang mudah diubah pembeli; mohon periksa kesesuaiannya.
+**Pemasangan:** ganti isi `Kode`, `Pesanan`, `Kartu`, `Admin`, `Portal`, `Email`, `Pembayaran`, dan `Skema` di Apps Script (bukan file baru), deploy **versi baru**, jalankan **`isiUlangKatalogDesain`** (menambah 4 desain), lalu timpa frontend, isi ulang `GAS_URL`, `git push`.

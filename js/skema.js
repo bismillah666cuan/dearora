@@ -295,6 +295,45 @@
     penutup: 'Kehormatan bagi kami bila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu. Terima kasih.',
     mempelai: { wanita: 'Anindya Paramita', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Raditya Wicaksana', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
     acara: ACARA2(['Upacara Pemberkatan', '10.00 WIB', 'Gereja Santa Maria', 'Jl. Merdeka No. 5, Jakarta'], ['Gala Dinner', '19.00 WIB', 'Ballroom Grand Mahkota', 'Jl. Sudirman No. 1, Jakarta']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+
+  /* ===== Tema acara keluarga (khitanan dan syukuran): satu tokoh, susunan acara, petunjuk lokasi, siaran langsung ===== */
+  function acaraBagian() {
+    var nk = nikahBagian(), acara = nk.filter(function (b) { return b.k === 'acara'; })[0], galeri = nk.filter(function (b) { return b.k === 'galeri'; })[0], rek = nk.filter(function (b) { return b.k === 'rekening'; })[0], rsvp = nk.filter(function (b) { return b.k === 'rsvp'; })[0];
+    return [
+      T('judul', 'Judul acara (tampil besar)', 60, { wajib: true, hint: 'Mis. Khitanan Fauzan, atau Syukuran Rumah Baru' }),
+      A('sapaan', 'Kalimat sambutan', 220, { wajib: true, hint: 'Mis. Dengan memohon rahmat Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa terbaik.' }),
+      A('kutipan', 'Doa atau harapan (opsional)', 320, { hint: 'Mis. doa untuk si kecil atau untuk rumah baru.' }),
+      T('dresscode', 'Dress code (opsional)', 80, { hint: 'Mis. Busana muslim atau batik' }),
+      F('fotoSampul', 'Foto utama (opsional)'),
+      A('penutup', 'Kalimat penutup', 300, { wajib: true }),
+      { k: 'tokoh', tipe: 'objek', label: 'Yang berbahagia', item: [T('nama', 'Nama anak atau tuan rumah', 60, { wajib: true, hint: 'Mis. Muhammad Fauzan, atau Keluarga Bapak Santoso' }), T('ortu', 'Keterangan (opsional)', 100, { hint: 'Mis. Putra dari Bapak Hendra & Ibu Sari' }), F('foto', 'Foto (opsional)')] },
+      acara,
+      T('denah', 'Petunjuk lokasi atau parkir (opsional)', 240, { hint: 'Mis. Parkir di lapangan sebelah rumah; masuk gang dekat warung.' }),
+      T('siaran', 'Tautan siaran langsung (opsional)', 300, { pola: '^https://[^\\s]{4,290}$', hint: 'Tautan YouTube atau Zoom, diawali https://' }),
+      { k: 'susunan', tipe: 'daftar', label: 'Susunan acara (opsional)', hint: 'Hingga 6 kegiatan dengan jamnya.', min: 0, maks: 6, namaItem: 'Kegiatan', item: [T('jam', 'Jam', 20, { wajib: true, hint: 'Mis. 10.00 WIB' }), T('kegiatan', 'Kegiatan', 60, { wajib: true, hint: 'Mis. Pembacaan doa' })] },
+      galeri, rek, rsvp
+    ];
+  }
+  function temaAcara(kunci, nama, c) { SKEMA[kunci] = { nama: nama, bagian: acaraBagian() }; SKEMA[kunci].contoh = c; }
+  var SUSUN = function (a) { return a.map(function (x) { return { jam: x[0], kegiatan: x[1] }; }); };
+  var ACR = function (nama, jam, tempat, alamat) { return [{ nama: nama, tanggal: '2027-03-20', jam: jam, tempat: tempat, alamat: alamat, peta: '' }]; };
+  var REK2 = [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Tuan Rumah' }], RSVP2 = { maksTamu: 5, catatan: 'Mohon konfirmasi kehadiran dan jumlah tamu agar kami dapat menyiapkan hidangan.' };
+  temaAcara('usultan', 'Undangan Sultan Cilik', { judul: 'Khitanan Muhammad Fauzan', sapaan: 'Dengan memohon rahmat Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri syukuran khitanan putra kami tercinta dan memberikan doa terbaik untuknya.',
+    kutipan: 'Ya Allah, jadikanlah anak kami anak yang saleh, sehat, dan bermanfaat bagi agama dan bangsa. Aamiin.', dresscode: 'Busana muslim atau batik', fotoSampul: '', penutup: 'Kehadiran dan doa Bapak/Ibu/Saudara/i sangat berarti bagi kami. Jazakumullahu khairan.',
+    tokoh: { nama: 'Muhammad Fauzan Al-Fatih', ortu: 'Putra dari Bapak Hendra & Ibu Sari', foto: '' }, acara: ACR('Syukuran Khitanan', '10.00 WIB', 'Rumah Keluarga Hendra', 'Jl. Melati No. 12, Karawang'),
+    denah: 'Parkir tersedia di lapangan sebelah rumah. Masuk gang dekat warung Bu Siti, rumah kedua dengan pagar hijau.', siaran: '', susunan: SUSUN([['09.30 WIB', 'Registrasi tamu'], ['10.00 WIB', 'Pembukaan dan doa'], ['10.30 WIB', 'Tausiyah singkat'], ['11.00 WIB', 'Makan bersama']]), galeri: [], rekening: REK2, rsvp: RSVP2 });
+  temaAcara('ulentera', 'Undangan Islami Ceria', { judul: 'Khitanan Abdullah', sapaan: 'Assalamu’alaikum. Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada acara khitanan putra kami dan memberikan doa terbaik.',
+    kutipan: 'Semoga Allah menjadikan anak kami anak yang saleh, sehat, dan menjadi kebanggaan keluarga. Aamiin.', dresscode: 'Nuansa hijau dan kuning', fotoSampul: '', penutup: 'Terima kasih atas kehadiran dan doa Bapak/Ibu/Saudara/i. Wassalamu’alaikum Warahmatullahi Wabarakatuh.',
+    tokoh: { nama: 'Abdullah Rizky Pratama', ortu: 'Putra dari Bapak Budi & Ibu Ani', foto: '' }, acara: ACR('Walimatul Khitan', '09.00 WIB', 'Aula Masjid Al-Hidayah', 'Jl. Kenanga No. 8, Bekasi'),
+    denah: 'Gunakan pintu samping aula. Parkir motor di halaman masjid, parkir mobil di lahan kosong seberang jalan.', siaran: '', susunan: SUSUN([['08.30 WIB', 'Tamu tiba'], ['09.00 WIB', 'Pembacaan Al-Qur’an dan doa'], ['09.30 WIB', 'Sambutan keluarga'], ['10.00 WIB', 'Makan bersama dan hiburan anak']]), galeri: [], rekening: REK2, rsvp: RSVP2 });
+  temaAcara('utumpeng', 'Undangan Tumpeng & Doa', { judul: 'Syukuran Keluarga Santoso', sapaan: 'Sebagai wujud syukur atas nikmat kesehatan dan rezeki, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam acara tasyakuran dan doa bersama.',
+    kutipan: 'Ya Allah, berkahilah keluarga kami, lapangkan rezeki kami, dan jadikan kami hamba yang pandai bersyukur. Aamiin.', dresscode: 'Busana batik atau muslim', fotoSampul: '', penutup: 'Terima kasih atas kehadiran, doa, dan silaturahminya.',
+    tokoh: { nama: 'Keluarga Bapak Santoso', ortu: 'Dalam rangka tasyakuran dan doa bersama', foto: '' }, acara: ACR('Tasyakuran dan Doa Bersama', '16.00 WIB', 'Kediaman Bapak Santoso', 'Perum Griya Asri Blok C No. 5, Bekasi'),
+    denah: 'Dari gerbang utama perumahan, belok kiri di pos satpam. Rumah bercat krem di sebelah kanan.', siaran: '', susunan: SUSUN([['15.30 WIB', 'Tamu tiba'], ['16.00 WIB', 'Pembacaan doa dan tahlil'], ['16.30 WIB', 'Tausiyah'], ['17.00 WIB', 'Makan tumpeng bersama']]), galeri: [], rekening: REK2, rsvp: RSVP2 });
+  temaAcara('urumah', 'Undangan Rumah Baru', { judul: 'Syukuran Rumah Baru', sapaan: 'Dengan penuh rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk bersilaturahmi dan berdoa bersama di rumah baru kami.',
+    kutipan: 'Ya Allah, jadikanlah rumah ini rumah yang penuh berkah, ketenteraman, dan kasih sayang bagi penghuninya. Aamiin.', dresscode: 'Santai dan rapi', fotoSampul: '', penutup: 'Doa dan kehadiran Bapak/Ibu/Saudara/i adalah keberkahan bagi rumah kami. Terima kasih.',
+    tokoh: { nama: 'Keluarga Bapak Andi & Ibu Dewi', ortu: 'Perum Griya Asri Blok C No. 5, Bekasi', foto: '' }, acara: ACR('Syukuran dan Doa Bersama', '10.00 WIB', 'Rumah Baru Keluarga Andi', 'Perum Griya Asri Blok C No. 5, Bekasi'),
+    denah: 'Dari gerbang utama perumahan, belok kiri di pos satpam, rumah cat krem di sebelah kanan. Parkir di depan rumah dan sepanjang jalan.', siaran: '', susunan: SUSUN([['09.30 WIB', 'Tamu tiba'], ['10.00 WIB', 'Doa bersama'], ['10.30 WIB', 'Tur rumah'], ['11.00 WIB', 'Makan bersama']]), galeri: [], rekening: REK2, rsvp: RSVP2 });
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();

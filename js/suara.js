@@ -91,6 +91,7 @@
     uelegan: function () { nada(523, 0, 0.6, 'sine', 0.07); nada(1047, 0.01, 0.3, 'sine', 0.02); },
     uceria: function () { nada(880, 0, 0.07, 'triangle', 0.1, 1320); },
     uhangat: function () { lonceng(330, 0, 0.06, 0.8); },
+    usultan: function () { nada(659, 0, 0.1, 'square', 0.05); nada(988, 0.05, 0.12, 'triangle', 0.06); }, ulentera: function () { lonceng(784, 0, 0.06, 0.8); }, utumpeng: function () { ketukKayu(0, 220, 0.14); }, urumah: function () { ketukKayu(0, 170, 0.18); },
     uislami: function () { lonceng(587, 0, 0.07, 0.9); }, urustik: function () { ketukKayu(0, 300, 0.12); nada(1500, 0.02, 0.06, 'triangle', 0.04); },
     ubintang: function () { nada(2093, 0, 0.14, 'sine', 0.06); nada(2794, 0.05, 0.12, 'sine', 0.04); }, ujawa: function () { lonceng(392, 0, 0.07, 1); }, uroyal: function () { nada(523, 0, 0.35, 'triangle', 0.1); nada(1047, 0.01, 0.15, 'sine', 0.04); }
   };
@@ -183,6 +184,7 @@
     tuang: function () { noise(0, 1, 0.12, 'bandpass', 1200, 2300, 0.8, 0.1); for (var i = 0; i < 5; i++) { var f = acak(500, 900); nada(f, 0.2 + i * 0.13, 0.07, 'sine', 0.06, f * 1.6); } },
     sizzle: function () { noise(0, 1.1, 0.13, 'highpass', 3200, 4200, 0.6, 0.08); },
     aduk: function () { for (var i = 0; i < 4; i++) { nada(1700 + i * 60, i * 0.18, 0.1, 'triangle', 0.07); ketukKayu(i * 0.18 + 0.02, 330, 0.08); } },
+    bukaPintu: function () { S.ketukPintu(); setTimeout(function () { S.pintu(); }, 780); },
     kerlip: function () { [2093, 2637, 3136, 2349, 3520].forEach(function (f, i) { nada(f, i * 0.09, 0.28, 'sine', 0.05); }); noise(0.3, 1.1, 0.04, 'highpass', 6000, 8000, 0.5, 0.2); },
     /* ===== BRANKAS & MENULIS ===== */
     roda: function () { for (var i = 0; i < 10; i++) { nada(1900 - i * 40, i * (0.07 + i * 0.006), 0.02, 'square', 0.06); noise(i * (0.07 + i * 0.006), 0.02, 0.05, 'highpass', 3000, 2500, 0.5, 0.001); } },
