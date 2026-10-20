@@ -525,7 +525,8 @@
   /** Halaman konsep Premium (film, toko online, dll.) dibuka di antara surat dan kejutan, lalu kembali ke alur utama. */
   function mulaiKonsep() {
     var host = document.createElement('div'); host.id = 'konsep'; document.body.appendChild(host);
-    Special.mountInto(host, konsep, { penerima: data.penerima, pengirim: dariTeks(data), foto: data.foto || [], slug: slug, musik: null, demo: demo }, data.dataDesain, function () { host.remove(); konsepSelesai = true; if (window.Suara && window.Suara.tema) window.Suara.tema(''); ke(3); });
+    $root.setAttribute('inert', ''); $root.style.visibility = 'hidden';                 // slide kartu disembunyikan selama halaman konsep tampil (tidak ada kilasan slide sebelumnya)
+    Special.mountInto(host, konsep, { penerima: data.penerima, pengirim: dariTeks(data), foto: data.foto || [], slug: slug, musik: null, demo: demo }, data.dataDesain, function () { host.remove(); $root.removeAttribute('inert'); $root.style.visibility = ''; konsepSelesai = true; if (window.Suara && window.Suara.tema) window.Suara.tema(''); ke(3); });
   }
   /** Paket Invitation: tanpa slide Basic; desain undangan tampil langsung (RSVP ada di dalamnya). */
   function renderUndangan(kk, d) {

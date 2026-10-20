@@ -60,6 +60,11 @@
     var i = 0; return String(teks).split(/(\s+)/).map(function (k) { if (/^\s+$/.test(k)) return k; var d = reduce ? 0 : Math.min(i++ * (g || 70), ms || 3000); return '<span class="kt" style="animation-delay:' + d + 'ms">' + esc(k) + '</span>'; }).join('');
   }
 
+  /** Latar dasar layar desain = warna utama desain, agar saat layar berganti (fade-in) tidak ada slide lain yang tembus di baliknya. */
+  function latarDasar(el, k) {
+    var g = window.Gaya && window.Gaya.G && window.Gaya.G[k], w = g && g.warna && g.warna[0];
+    if (w && /^#[0-9a-f]{3,8}$/i.test(w)) el.style.background = w;
+  }
   var Special = {
     reg: function (k, def) { reg[k] = def; }, ada: function (k) { return !!reg[k]; }, daftar: function () { return Object.keys(reg); },
     esc: esc, ic: ic, reduce: reduce, rnd: rnd, pilih: pilih, confetti: confetti, dariEl: dariEl, jeda: jeda, foto: foto, src: src, toast: toast, kata: kata,
@@ -73,7 +78,7 @@
       $root = host; Special._akhir = false; Special._embed = function () { Special._embed = null; $root = lama; bersih(); selesai(); };
       Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: !!c.demo, tema: k };
       if (window.Suara && window.Suara.tema) window.Suara.tema(k);                // bunyi klik dan latar mengikuti tema desain
-      host.className = 'konsep-host sp-root sp-' + k; host.innerHTML = '';
+      host.className = 'konsep-host sp-root sp-' + k; host.innerHTML = ''; latarDasar(host, k);
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       var mulaiDesain = function () { host.innerHTML = ''; def.mulai(host, def.adapt(f || {}, c), Special); if (c.musik && k !== 'musik') Special.pasangMusik(c.musik); };
       var kata = String((f && f.transisi) || '').trim();
@@ -114,7 +119,7 @@
       Special.konteks = { slug: c.slug || '', pengirim: c.pengirim || '', demo: !!c.demo, tema: k };
       if (window.Suara && window.Suara.tema) window.Suara.tema(k);                // bunyi klik dan latar mengikuti tema desain
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
-      $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
+      $root.className = 'sp-root sp-' + k; $root.innerHTML = ''; latarDasar($root, k);
       document.title = 'Ucapan untukmu';
       def.mulai($root, def.adapt(f || {}, c), Special);
       if (c.musik && k !== 'musik') Special.pasangMusik(c.musik);

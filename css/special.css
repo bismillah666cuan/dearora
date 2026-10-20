@@ -252,7 +252,7 @@ button { font: inherit; cursor: pointer; }
 @keyframes konsepMuncul { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 /* ---------- Layar penyambung (jembatan) antara alur Basic dan desain Premium ---------- */
-.konsep-host.jb-keluar { opacity: 0; transition: opacity .26s ease; }
+.konsep-host.jb-keluar .jb { opacity: 0; transition: opacity .26s ease; }
 .jb { position: absolute; inset: 0; display: grid; place-items: center; padding: 2rem 1.5rem; text-align: center; overflow: hidden; animation: jbMasuk .9s ease both; }
 @keyframes jbMasuk { from { opacity: 0; } to { opacity: 1; } }
 .jb-in { max-width: 28rem; display: grid; gap: 1.5rem; justify-items: center; }
