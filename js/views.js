@@ -214,17 +214,12 @@
   /* ========================= HALAMAN ========================= */
 
   function home(ctx) {
-    return hero() + kategori(ctx) + keunggulan() + previewDesain(ctx) + paketHome(ctx) + caraKerjaHome() + faqHome(ctx) + ctaBand();
+    return hero() + keunggulan() + previewDesain(ctx) + paketHome(ctx) + caraKerjaHome() + faqHome(ctx) + ctaBand();
   }
 
   function contohDesain(ctx) {
     var q = ctx.query || {};
-    var fk = q.kategori || '';
     var fp = (q.paket || '').toLowerCase();
-    var kats = '<button type="button" class="chip" data-action="filter" data-k="kategori" data-v="" aria-pressed="' + (!fk) + '">Semua</button>' +
-      U.daftarKategori(ctx.data && ctx.data.desain).map(function (k) {
-        return '<button type="button" class="chip" data-action="filter" data-k="kategori" data-v="' + esc(k.key) + '" aria-pressed="' + (fk === k.key) + '">' + esc(k.judul.split(' & ')[0]) + '</button>';
-      }).join('');
     var desainAll = (ctx.data && ctx.data.desain) || [];
     var pakets = ((ctx.data && ctx.data.paket) || []).filter(function (p) { return desainAll.some(function (x) { return (x.paket || []).indexOf(p.id) >= 0; }); });     // paket tanpa contoh (Special) tidak jadi filter
     var pk = '<button type="button" class="chip" data-action="filter" data-k="paket" data-v="" aria-pressed="' + (!fp) + '">Semua paket</button>' +
@@ -237,16 +232,15 @@
     else if (ctx.status === 'error') body = U.errorBox();
     else {
       var list = ctx.data.desain.filter(function (d) {
-        return (!fk || d.kategori === fk) && (!fp || (d.paket || []).indexOf(fp) >= 0);
+        return !fp || (d.paket || []).indexOf(fp) >= 0;
       });
       body = list.length
         ? '<p class="small muted" role="status" style="margin-bottom:1rem">' + list.length + ' desain ditemukan</p><div class="grid grid-designs">' + list.map(function (d) { return U.designCard(d, ctx.data.paket); }).join('') + '</div>'
-        : '<div class="state-box" role="status"><p>Belum ada desain untuk filter ini. Coba pilih kategori atau paket lain.</p><button type="button" class="btn btn-secondary btn-sm" data-action="reset-filter">Hapus Filter</button></div>';
+        : '<div class="state-box" role="status"><p>Belum ada desain untuk filter ini. Coba pilih paket lain.</p><button type="button" class="btn btn-secondary btn-sm" data-action="reset-filter">Hapus Filter</button></div>';
     }
     return kepalaHalaman('Contoh Desain', 'Contoh Desain Website Ucapan', 'Setiap desain punya pengalaman sendiri: gerak, ilustrasi, dan suasana yang berbeda. Tekan Coba Demo untuk memainkannya.') +
       '<section class="section" style="padding-top:2rem"><div class="container">' +
-      '<div class="filters"><div><p class="filter-label">Kategori</p><div class="chip-row">' + kats + '</div></div>' +
-      '<div><p class="filter-label">Paket</p><div class="chip-row">' + pk + '</div></div></div>' + body +
+      '<div class="filters"><div><p class="filter-label">Paket</p><div class="chip-row">' + pk + '</div></div></div>' + body +
       '<div class="callout"><span class="icon-tile">' + ic('pencil') + '</span><div><p><strong>Punya ide sendiri?</strong></p>' +
       '<p>Tidak menemukan yang pas? Pesan <strong>paket Special</strong>, ceritakan konsep, warna, dan mood yang kamu inginkan, lalu kami kerjakan khusus untukmu.</p>' +
       '<p style="margin-top:.75rem"><a class="btn btn-primary btn-sm" href="#/buat?paket=special">Pesan Paket Special</a></p></div></div>'

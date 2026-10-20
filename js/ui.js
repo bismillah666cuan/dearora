@@ -111,13 +111,13 @@
 
   /* ---------- Komponen: kartu desain ---------- */
   function designCard(d, semuaPaket) {
-    var kat = infoKategori(d.kategori), g = window.Gaya ? window.Gaya.ambil(window.Gaya.dari(d.thumbnail)) : {};
+    var g = window.Gaya ? window.Gaya.ambil(window.Gaya.dari(d.thumbnail)) : {};
     var paketTags = (d.paket || []).map(function (id) { return badgePaket(id, semuaPaket); }).join('');
     var chip = (g.fitur || []).length ? '<ul class="fitur-chip" aria-label="Keistimewaan desain">' + g.fitur.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>' : '';
     return '<article class="card card-hover design-card reveal">' +
       thumbHTML(d, semuaPaket) +
       '<div class="design-meta">' +
-        '<div class="tags"><span class="tag lav">' + esc(kat.judul.split(' & ')[0]) + '</span>' + paketTags + '</div>' +
+        '<div class="tags">' + paketTags + '</div>' +
         '<h3>' + esc(d.nama) + '</h3>' + chip + (g.cocok ? '<p class="cocok"><strong>Cocok untuk:</strong> ' + esc(g.cocok) + '</p>' : '') +
         '<div class="design-actions">' +
           '<button type="button" class="btn btn-quiet btn-sm" data-action="demo" data-id="' + esc(d.id) + '">' + ic('play') + ' Coba Demo</button>' +

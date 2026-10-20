@@ -119,7 +119,7 @@
     var op = Gaya.opsiBawaan(gkd);
     if (qs.get('dekor')) op.dekor = qs.get('dekor');
     if (qs.get('ikon')) op.ikon = qs.get('ikon').split(',').slice(0, 4);
-    var hasil = { paket: 'basic', tema: gkd, kategori: dm.kat || 'Ulang Tahun', penerima: dm.penerima, dari: { tipe: 'nama', nilai: dm.dari }, pesan: dm.pesan,
+    var hasil = { paket: 'basic', tema: gkd, kategori: '', penerima: dm.penerima, dari: { tipe: 'nama', nilai: dm.dari }, pesan: dm.pesan,
       pesanPersonal: '', foto: ['demo:0', 'demo:1', 'demo:2'], video: '', musik: null, amplop: false, rahasia: j === 'kode', perluPassword: j === 'kode', pembuka: 'judul', kedaluwarsa: '', kejutan: KEJ_DEMO[j], opsi: op, _demo: true };
     if (g0.special && window.SKEMA && window.SKEMA[gkd] && window.SKEMA[gkd].contoh) { hasil.paket = g0.undangan ? 'invitation' : 'premium'; hasil.dataDesain = JSON.parse(JSON.stringify(window.SKEMA[gkd].contoh)); }   // demo Premium = 5 slide + halaman konsep
     return hasil;
@@ -139,7 +139,7 @@
   /* ---------------- Tahap 1: pembuka ---------------- */
   function tBuka(d) {
     if (gy.buka) return '<section class="stage buka" data-s="buka" aria-label="Pembuka"><div class="inner">' + gy.buka(d) + '</div></section>';
-    var kat = U.CONTOH[d.kategori] || { judul: 'Ada Pesan Untukmu' }, ikon = U.ikonTema(d.tema, d.kategori);
+    var kat = { judul: 'Ada Pesan Untukmu' }, ikon = U.ikonTema(d.tema, '');
     var foto = d.pembuka === 'foto' && d.foto.length ? ' foto" style="background-image:url(\'' + esc(fotoUrl(d.foto[0])) + '\')' : '';
     return '<section class="stage buka' + foto + '" data-s="buka" aria-label="Pembuka"><div class="inner">' + (foto ? '' : U.partikel(8, 'heart')) +
       '<span class="ico">' + ic(ikon) + '</span><p class="kpd">Untuk ' + esc(d.penerima) + '</p><h1 class="judul-buka" tabindex="-1">' + esc(kat.judul) + '</h1>' +
@@ -151,7 +151,7 @@
     return Array.from(String(n)).map(function (c, i) { return c === ' ' ? ' ' : '<span class="huruf" style="animation-delay:' + (i * 70 + 150) + 'ms">' + esc(c) + '</span>'; }).join('');
   }
   function tSapa(d) {
-    var s = gy.sapa || SAPAAN[d.kategori] || SAPAAN['Hari Spesial'], kpd = gy.kpd || 'Hai,';
+    var s = gy.sapa || SAPAAN['Hari Spesial'], kpd = gy.kpd || 'Hai,';
     var nama = (gk === 'joyful' || gk === 'kids') ? namaHuruf(d.penerima) : esc(d.penerima);
     return '<section class="stage sapa" data-s="sapa" aria-label="Sapaan"><div class="inner"><p class="kpd">' + esc(kpd) + '</p><h1 class="nama-besar" style="--nl:' + Array.from(String(d.penerima)).length + '" tabindex="-1" aria-label="' + esc(d.penerima) + '">' + nama + '<span class="sparkle" aria-hidden="true">✦</span></h1>' +
       '<p class="sapa-1">' + esc(s[0]) + '</p><p class="sapa-2">' + esc(s[1]) + '</p><button type="button" class="cbtn" data-go="2">Lanjut ' + ic('arrow') + '</button></div></section>';

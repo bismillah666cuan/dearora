@@ -361,7 +361,6 @@
   function isiFormDesain(x, data, errors) {
     var sel = String(x.paket || '').split(',').map(function (s) { return s.trim().toLowerCase(); }), th = String(x.thumbnail || 'tema:blossom'), pakaiTema = /^tema:/.test(th);
     return '<div class="row-2"><div class="field"><label for="e-nama">Nama desain</label><input id="e-nama" name="nama" type="text" value="' + esc(x.nama || '') + '" maxlength="60">' + errF(errors, 'nama') + '</div>' +
-      '<div class="field"><label for="e-kat">Kategori</label><input id="e-kat" name="kategori" type="text" list="dlKat" maxlength="30" autocomplete="off" value="' + esc(x.kategori || '') + '" placeholder="Pilih atau ketik kategori baru"><datalist id="dlKat">' + data.kategori.map(function (k) { return '<option value="' + esc(k) + '"></option>'; }).join('') + '</datalist><p class="hint">Pilih yang sudah ada, atau ketik kategori baru (mis. Ulang Tahun Pernikahan).</p>' + errF(errors, 'kategori') + '</div></div>' +
       '<fieldset class="field" style="border:0;padding:0;margin:0 0 .875rem"><legend>Tersedia di paket</legend><div class="actions">' + data.paket.map(function (p) { return '<label class="chk"><input type="checkbox" name="paket" value="' + esc(p.id) + '"' + (sel.indexOf(p.id) >= 0 ? ' checked' : '') + '> ' + esc(p.nama) + '</label>'; }).join('') + '</div>' + errF(errors, 'paket') + '</fieldset>' +
       '<div class="field"><label for="e-tema">Tampilan (tema bawaan)</label><div class="tema-pilih">' + data.tema.map(function (t) { var c = SW[t] || ['#eee', '#999']; return '<label class="tema-opt"><input type="radio" name="tema" value="' + esc(t) + '"' + (pakaiTema && swKey(th.slice(5)) === t ? ' checked' : (!x.id && t === 'cinematic' ? ' checked' : '')) + '><span class="sw" style="background:linear-gradient(135deg,' + c[0] + ',' + c[1] + ')"></span><span class="small">' + esc(t) + '</span></label>'; }).join('') + '</div></div>' +
       '<details class="lanjut"' + (!pakaiTema || x.urlDemo ? ' open' : '') + '><summary>Lanjutan: gambar sendiri &amp; demo</summary>' +
@@ -386,16 +385,15 @@
   }
   function barisDesain(data) {
     var q = filterDesain.q.toLowerCase(), k = filterDesain.k;
-    var arr = data.desain.filter(function (x) { return (!k || x.kategori === k) && (!q || (x.nama + ' ' + x.kategori).toLowerCase().indexOf(q) >= 0); });
+    var arr = data.desain.filter(function (x) { return !q || (x.nama + ' ' + x.paket).toLowerCase().indexOf(q) >= 0; });
     if (!arr.length) return '<div class="card empty">Tidak ada desain yang cocok.</div>';
     return '<ul class="rows">' + arr.map(function (x) {
-      return '<li class="row-item' + (x.aktif ? '' : ' off') + '">' + swatch(x.thumbnail) + '<div class="ri-main"><strong>' + esc(x.nama) + '</strong><span class="small muted">' + esc(x.kategori) + ' · ' + esc(x.paket.split(',').map(function (s) { return s.trim(); }).join(', ')) + '</span></div>' +
+      return '<li class="row-item' + (x.aktif ? '' : ' off') + '">' + swatch(x.thumbnail) + '<div class="ri-main"><strong>' + esc(x.nama) + '</strong><span class="small muted">' + esc(x.paket.split(',').map(function (s) { return s.trim(); }).join(', ')) + '</span></div>' +
         sakelar('desain', x.id, x.aktif, 'Desain ' + x.nama + ' aktif') + '<button class="btn sm" data-a="edit" data-j="desain" data-id="' + esc(x.id) + '">Edit</button></li>';
     }).join('') + '</ul>';
   }
   function ringkasTabDesain(data) {
     return '<div class="toolbar"><div><label class="sr" for="ds-q">Cari desain</label><input id="ds-q" type="search" placeholder="Cari desain…" value="' + esc(filterDesain.q) + '"></div>' +
-      '<div><label class="sr" for="ds-k">Kategori</label><select id="ds-k"><option value="">Semua kategori</option>' + data.kategori.map(function (k) { return '<option' + (k === filterDesain.k ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></div>' +
       '<button class="btn primary sm" data-a="tambah" data-j="desain">+ Tambah desain</button></div><div id="ds-list">' + barisDesain(data) + '</div>';
   }
   function ringkasTabMusik(data) {
@@ -466,7 +464,7 @@
       if (v.badge) F.badge = v.badge; else delete F.badge; if (!F.rekomendasi) delete F.rekomendasi;
       return { aksi: 'adminSimpanPaket', data: { id: id, nama: v.nama, harga: v.harga, masaAktifHari: v.masaAktifHari, maksFoto: v.maksFoto, fiturJson: JSON.stringify(F), aktif: !!v.aktif } };
     }
-    if (jenis === 'desain') return { aksi: 'adminSimpanDesain', data: { id: id, nama: v.nama, kategori: v.kategori, paket: v.paket || '', thumbnail: v.thumbUrl ? v.thumbUrl : 'tema:' + (v.tema || 'blossom'), urlDemo: v.urlDemo, aktif: !!v.aktif } };
+    if (jenis === 'desain') return { aksi: 'adminSimpanDesain', data: { id: id, nama: v.nama, paket: v.paket || '', thumbnail: v.thumbUrl ? v.thumbUrl : 'tema:' + (v.tema || 'blossom'), urlDemo: v.urlDemo, aktif: !!v.aktif } };
     return { aksi: 'adminSimpanMusik', data: { id: id, judul: v.judul, fileUrl: v.fileUrl, aktif: !!v.aktif } };
   }
   async function kirimForm(form) {

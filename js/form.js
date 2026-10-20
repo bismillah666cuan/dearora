@@ -608,10 +608,7 @@
   }
   VIEW.desain = function () {
     var d = data(), semuaBisa = d.desain.filter(function (x) { return (x.paket || []).indexOf(ST.paket) >= 0; });
-    var kats = []; semuaBisa.forEach(function (x) { if (x.kategori && kats.indexOf(x.kategori) < 0) kats.push(x.kategori); });
-    if (ui.filterDesain && kats.indexOf(ui.filterDesain) < 0) ui.filterDesain = '';
-    var bisa = ui.filterDesain ? semuaBisa.filter(function (x) { return x.kategori === ui.filterDesain; }) : semuaBisa;
-    var filterUI = kats.length > 3 ? '<div class="chips" role="group" aria-label="Filter kategori desain" style="margin-bottom:1rem"><button type="button" class="chip" data-f="fil-desain" data-v="" aria-pressed="' + (!ui.filterDesain) + '">Semua (' + semuaBisa.length + ')</button>' + kats.map(function (k) { return '<button type="button" class="chip" data-f="fil-desain" data-v="' + esc(k) + '" aria-pressed="' + (ui.filterDesain === k) + '">' + esc(k) + '</button>'; }).join('') + '</div>' : '';
+    var bisa = semuaBisa, filterUI = '';                          // desain hanya dikelompokkan per paket (tanpa kategori ucapan)
     var pilih = bisa.length ? '<div class="opt-grid">' + bisa.map(function (x) {
       var on = ST.desainId === x.id;
       return '<div class="opt-card' + (on ? ' on' : '') + '"><label for="ds-' + esc(x.id) + '">' +
@@ -1068,7 +1065,6 @@
       }
     }
     else if (a === 'draf-buka') { var it = bacaDrafs().filter(function (x) { return x.id === b.dataset.id; })[0]; if (it) { tulisDraf(); bersihBerkas(); order = null; pasangDraf(it); errors = {}; paint(); window.scrollTo(0, 0); muatBerkasDraf(); } }
-    else if (a === 'fil-desain') { ui.filterDesain = b.dataset.v || ''; paint(); }
     else if (a === 'draf-pilih') { ui.pilihDraf = ui.pilihDraf || {}; ui.pilihDraf[b.dataset.id] = b.checked; var tot = document.getElementById('drafTotal'); paint(); var cb = document.getElementById('cek-' + b.dataset.id); if (cb) cb.focus({ preventScroll: true }); }
     else if (a === 'draf-semua') { ui.pilihDraf = ui.pilihDraf || {}; bacaDrafs().forEach(function (it) { if (cekDraf(it).ok) ui.pilihDraf[it.id] = true; }); paint(); }
     else if (a === 'draf-bayar') bayarBanyak();
