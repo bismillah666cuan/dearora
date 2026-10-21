@@ -775,7 +775,11 @@
       '<div class="bar" role="progressbar" aria-valuemin="1" aria-valuemax="' + l.length + '" aria-valuenow="' + (langkah + 1) + '" aria-label="Kemajuan pengisian"><span style="width:' + Math.round(((langkah + 1) / l.length) * 100) + '%"></span></div>' +
       '<ol class="dots" aria-hidden="true">' + l.map(function (id, i) { return '<li class="' + (i < langkah ? 'done' : i === langkah ? 'now' : '') + '">' + esc(judulLangkah(id)) + '</li>'; }).join('') + '</ol></div>';
   }
+  var terakhirPing = 0;
+  /** Membangunkan backend (Apps Script) selagi pembeli mengisi form, supaya saat menekan Bayar tidak menunggu "start dingin". */
+  function hangatkan() { var t = Date.now(); if (t - terakhirPing < 60000 || !API.siap()) return; terakhirPing = t; try { API.get('ping', {}, { coba: 0, timeout: 20000 }).catch(function () { /* abaikan */ }); } catch (e) { /* abaikan */ } }
   function paint() {
+    hangatkan();
     var id = langkahId(), l = daftarLangkah(), akhir = langkah === l.length - 1;
     $root.innerHTML = panelDraf() + stepper() + (ST.paket ? '<p class="simpan-info">' + ic('check') + ' Tersimpan otomatis di perangkat ini' + (idb ? ', termasuk foto' : '') + '. Boleh ditutup dan dilanjutkan kapan saja.</p>' : '') +
       '<form id="fForm" novalidate autocomplete="on"><div class="card form-card">' +
@@ -888,10 +892,17 @@
   function payPanelHTML() {
     var p = ui.pay; if (!p) return '';
     if (p.galat) return '<div class="notice warn" role="alert"><strong>' + esc(p.galat) + '</strong><div style="margin-top:.75rem"><button type="button" class="btn btn-primary btn-sm" data-f="pay">Coba Lagi</button></div></div>';
-    return '<div class="pay-progress"><p class="small"><strong>' + esc(p.teks) + '</strong></p><div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + p.persen + '"><span style="width:' + p.persen + '%"></span></div><p class="small muted">Jangan tutup halaman ini.</p></div>';
+    var tahap = p.persen >= 95 ? 3 : ((p.persen > 5 || /Mengunggah/.test(p.teks)) ? 2 : 1), adaBerkas = files.length > 0;
+    var nama = ['Menyimpan data pesanan', adaBerkas ? 'Mengunggah foto' : 'Memeriksa pesanan', 'Menyiapkan pembayaran'];
+    var langkahHTML = nama.map(function (t, i) { var n = i + 1, kls = n < tahap ? 'selesai' : (n === tahap ? 'aktif' : ''); return '<li class="' + kls + '">' + (n < tahap ? ic('check') + ' ' : '') + esc(t) + '</li>'; }).join('');
+    return '<div class="pay-progress"><p class="small"><strong>' + esc(p.teks) + '</strong></p><ol class="pay-langkah" aria-label="Tahapan">' + langkahHTML + '</ol>' +
+      '<div class="bar' + (p.persen < 100 ? ' menunggu' : '') + '" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + p.persen + '"><span style="width:' + p.persen + '%"></span></div>' +
+      (p.lambat ? '<p class="small muted" role="status">Permintaan pertama ke server kadang butuh 20–30 detik. Pesananmu sedang diproses, mohon tunggu sebentar.</p>' : '') +
+      '<p class="small muted">Jangan tutup halaman ini. Biasanya selesai dalam setengah menit.</p></div>';
   }
   function setPay(teks, persen, galat) {
-    ui.pay = { teks: teks, persen: persen, galat: galat || '' };
+    clearTimeout(ui.tLambat); ui.pay = { teks: teks, persen: persen, galat: galat || '' };
+    if (!galat && persen < 100) ui.tLambat = setTimeout(function () { if (ui.pay && !ui.pay.galat) { ui.pay.lambat = true; var e = document.getElementById('payPanel'); if (e) e.innerHTML = payPanelHTML(); } }, Number((window.DEARORA_CONFIG || {}).LAMBAT_MS) || 9000);
     var el = document.getElementById('payPanel'); if (el) el.innerHTML = payPanelHTML();
   }
   function bacaBase64(blob) {
@@ -978,7 +989,7 @@
       try { sessionStorage.setItem('dearora:payurl:' + order.id, url); } catch (x) { /* abaikan */ }
       location.href = url;
     } catch (err) {
-      ui.sibuk = false;
+      ui.sibuk = false; clearTimeout(ui.tLambat);
       setPay('', 0, err.permanen ? err.message : 'Koneksi bermasalah saat mengirim. Pesananmu aman, coba lagi. (' + (err.message || 'galat') + ')');
       var b2 = $root.querySelector('.form-nav [data-f="pay"]'); if (b2) b2.disabled = false;
     }

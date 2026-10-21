@@ -96,7 +96,10 @@
       '<h1 class="h2" id="stTitle" tabindex="-1">Pembayaran Berhasil</h1>' +
       '<p class="lead">Terima kasih! Pesanan <strong>' + esc(d.orderId) + '</strong> (Paket ' + esc(d.paket) + ') sudah kami terima.</p>' + tracker(d) +
       (d.akunLama
-        ? '<div class="notice" style="width:100%;text-align:left">Pesanan ini sudah ditambahkan ke akunmu. Masuk ke portal dengan kode redeem dan password yang sudah kamu miliki.</div>'
+        ? (d.akunBelumPassword
+          ? '<div class="notice" style="width:100%;text-align:left">Pesanan ini ditambahkan ke akun yang sudah ada untuk <strong>' + esc(d.emailSamar || 'emailmu') + '</strong>. <strong>Kode redeem</strong> akun itu sudah dikirim ke email tersebut (cek juga folder spam). Buka emailnya, lalu masuk dengan kode itu untuk membuat password.</div>'
+          : '<div class="notice" style="width:100%;text-align:left">Pesanan ini sudah ditambahkan ke akunmu (<strong>' + esc(d.emailSamar || 'emailmu') + '</strong>). Masuk ke portal dengan <strong>email</strong> itu dan password-mu. Lupa password? Di halaman masuk pilih <strong>“Lupa password atau kehilangan kode?”</strong>: kode 6 angka dikirim ke emailmu. <strong>Kode redeem</strong> akunmu ada di email tanda terima pembelian pertamamu.</div>') +
+          '<p class="small muted" style="text-align:left;margin:.6rem 0 0">Catatan: <strong>nomor pesanan</strong> (seperti <span class="mono">' + esc(d.orderId || 'DRA-261021-ABCDE') + '</span>) berbeda dengan <strong>kode redeem</strong> (bentuknya <span class="mono">DRA-XXXX-XXXX</span>). Demi keamanan, kode redeem akun yang sudah ada tidak ditampilkan di halaman ini. Tidak bisa membuka email itu lagi? Hubungi kami lewat <a href="#/kontak">halaman Kontak</a> dan sebutkan nomor pesananmu; kami bantu mengatur ulang akses.</p>'
         : '<div class="code-box"><span class="code-label">Kode redeem kamu</span><output class="code" id="kodeRedeem">' + esc(d.kodeRedeem || 'Sedang disiapkan…') + '</output>' +
           '<button type="button" class="btn btn-primary btn-sm" data-s="salin"' + (d.kodeRedeem ? '' : ' disabled') + '>Salin Kode</button></div>' +
           '<p class="small muted">Kode juga dikirim ke <strong>' + esc(d.emailSamar || 'emailmu') + '</strong> bersama tanda terima. Simpan kode ini: dipakai untuk membuat password dan masuk ke portal pembeli.</p>') +

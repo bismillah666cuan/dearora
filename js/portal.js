@@ -125,6 +125,7 @@
             S.langkah = 'masuk'; paint(); return;
           }
           S.kode = v.toUpperCase().replace(/\s+/g, '');
+          if (/^DRA-\d{6}-[A-Z0-9]{5}$/.test(S.kode)) { S.galat = 'Itu nomor pesanan, bukan kode redeem. Masuk dengan email pemesan dan password-mu, atau pakai kode redeem (bentuknya DRA-7K3M-9QXA) dari email tanda terima.'; paint(); return; }
           if (!/^DRA-[2-9A-Z]{4}-[2-9A-Z]{4}$/.test(S.kode)) { S.galat = 'Tulis email atau kode dengan format DRA-7K3M-9QXA.'; paint(); return; }
           S.sibuk = true; paint();
           var r = await A.cek(S.kode); S.sibuk = false;

@@ -219,6 +219,7 @@
     if (hidup) b.push('<button class="btn danger" data-a="nonaktif">Nonaktifkan link</button>');
     if (['Menunggu Pembayaran', 'Dibayar', 'Diproses', 'Perlu Ditinjau'].indexOf(s) >= 0) b.push('<button class="btn danger" data-a="batalkan">Batalkan pesanan</button>');
     if (d.akun || o.NamaPembeli) b.push('<button class="btn" data-a="kirim">Kirim ulang email</button>');
+    if (d.akun) b.push('<button class="btn" data-a="reset-akun">Atur ulang akses akun</button>');
     if (['Dibayar', 'Diproses'].indexOf(s) < 0) b.push('<button class="btn danger" data-a="hapus">' + ic('x') + ' Hapus dari riwayat</button>');
     return '<div class="actions">' + b.join('') + '</div>';
   }
@@ -293,6 +294,13 @@
     } else if (a === 'perpanjang') {
       v = await tanya({ judul: d.pesanan.Status === 'Kedaluwarsa' ? 'Aktifkan lagi' : 'Perpanjang masa aktif', fields: [{ name: 'hari', label: 'Tambah berapa hari?', type: 'number', min: 1, max: 365, value: '30', wajib: true }], ya: 'Simpan' });
       if (!v) return; hasil = await call('adminPerpanjang', { orderId: id, hari: Number(v.hari) });
+    } else if (a === 'reset-akun') {
+      v = await tanya({ judul: 'Atur ulang akses akun?', teks: 'Untuk pembeli yang lupa password dan tidak bisa membuka emailnya. Password dihapus, kode redeem LAMA tidak berlaku, dan semua login berakhir. Pastikan dulu pembeli benar pemilik akun (mis. lewat WhatsApp yang tercatat di pesanan). Kode baru kemudian dikirim ke pembeli oleh Ibu sendiri.', ya: 'Atur ulang' });
+      if (!v) return; hasil = await call('adminResetAkun', { orderId: id });
+      if (!hasil || !hasil.success) { toast((hasil && hasil.message) || 'Gagal'); return; }
+      var kodeBaru = hasil.data.kode; hasil = await call('adminOrderDetail', { orderId: id });                 // segarkan tampilan (kode baru tampil di baris "Kode redeem")
+      if (hasil && hasil.success) { detailSaatIni = hasil.data; document.getElementById('detailIsi').innerHTML = isiDetail(hasil.data); }
+      toast('Kode masuk baru: ' + kodeBaru + ' · kirim ke pembeli setelah memastikan identitasnya'); return;
     } else if (a === 'kirim') {
       v = await tanya({ judul: 'Kirim ulang email', fields: [{ name: 'jenis', label: 'Jenis email', type: 'select', opsi: [['tanda-terima', 'Tanda terima (+ kode redeem)'], ['ucapan-jadi', 'Ucapan sudah jadi (link)']] }], ya: 'Kirim' });
       if (!v) return; hasil = await call('adminKirimUlang', { orderId: id, jenis: v.jenis });
@@ -561,7 +569,7 @@
       catch (e) { /* sesi berakhir ditangani call */ }
       b.disabled = false; return;
     }
-    if (detailSaatIni && document.getElementById('detailIsi') && ['special', 'aktifkan-oto', 'setujui', 'tolak', 'batalkan', 'nonaktif', 'perpanjang', 'kirim', 'catatan', 'chat-kirim', 'hapus'].indexOf(a) >= 0) {
+    if (detailSaatIni && document.getElementById('detailIsi') && ['special', 'aktifkan-oto', 'setujui', 'tolak', 'batalkan', 'nonaktif', 'perpanjang', 'kirim', 'catatan', 'chat-kirim', 'hapus', 'reset-akun'].indexOf(a) >= 0) {
       b.disabled = true; try { await aksiPesanan(a); } catch (e) { if (e.message !== 'sesi') toast('Koneksi bermasalah'); } b.disabled = false;
     }
   });
