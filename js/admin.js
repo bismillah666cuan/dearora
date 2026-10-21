@@ -90,7 +90,7 @@
   }
 
   /* ---------------- Kerangka ---------------- */
-  var NAV = [['', 'Ringkasan', 'home'], ['pesanan', 'Pesanan', 'list'], ['laporan', 'Laporan', 'chart'], ['pengaturan', 'Pengaturan', 'gear']];
+  var NAV = [['', 'Ringkasan', 'home'], ['pesanan', 'Pesanan', 'list'], ['testimoni', 'Testimoni', 'star'], ['laporan', 'Laporan', 'chart'], ['pengaturan', 'Pengaturan', 'gear']];
   function navHtml(kelas) { return NAV.map(function (n) { return '<a href="#/' + n[0] + '" data-nav="' + n[0] + '">' + ic(n[2]) + '<span>' + n[1] + '</span></a>'; }).join(''); }
   function bangunShell() {
     var tema = document.documentElement.getAttribute('data-theme');
@@ -125,6 +125,44 @@
       '<line class="grid" x1="0" x2="' + W + '" y1="' + (H - pb) + '" y2="' + (H - pb) + '"/><text x="' + pl + '" y="10">' + (key === 'pendapatan' ? rp(max) : max) + '</text>' + bars + lab + '</svg>';
   }
 
+  /* ---------------- Testimoni ---------------- */
+  var filterTesti = { status: 'menunggu', cari: '' }, dataTesti = null;
+  function bintangAdm(n) { var s = '', i; for (i = 1; i <= 5; i++) s += '<span style="color:' + (i <= n ? '#F5A524' : '#D8CBD0') + '">★</span>'; return '<span role="img" aria-label="' + n + ' dari 5 bintang" style="letter-spacing:.05em">' + s + '</span>'; }
+  function kartuTesti(x) {
+    var bd = { menunggu: '<span class="badge warn">Menunggu</span>', tampil: '<span class="badge ok">Tampil di website</span>', sembunyi: '<span class="badge">Disembunyikan</span>' }[x.status] || '';
+    return '<div class="card testi-adm" data-id="' + esc(x.id) + '" style="margin-bottom:.75rem"><div style="display:flex;gap:.5rem;justify-content:space-between;align-items:flex-start;flex-wrap:wrap"><div>' + bintangAdm(x.rating) + ' ' + bd + '</div><span class="small muted">' + esc(tglJam(x.tglKirim)) + '</span></div>' +
+      '<blockquote style="margin:.6rem 0;white-space:pre-wrap;overflow-wrap:anywhere;border-left:3px solid var(--line,#E8DCE0);padding-left:.75rem">' + esc(x.isi) + '</blockquote>' +
+      '<p class="small" style="margin:.25rem 0">Ditampilkan sebagai <strong>' + esc(x.nama) + '</strong>' + (x.keterangan ? ' · ' + esc(x.keterangan) : '') + ' · ' + esc(x.paket) + '</p>' +
+      '<p class="small muted" style="margin:.1rem 0 .6rem">Pembeli: ' + esc(x.pembeli) + ' · ' + esc(x.email) + ' · <a href="#/detail?o=' + encodeURIComponent(x.orderId) + '">' + esc(x.orderId) + '</a></p>' +
+      '<div class="actions">' + (x.status !== 'tampil' ? '<button type="button" class="btn primary sm" data-t="tampil">' + ic('check') + ' Tampilkan di website</button>' : '<button type="button" class="btn sm" data-t="sembunyi">Sembunyikan</button>') +
+      (x.status === 'menunggu' ? '<button type="button" class="btn sm" data-t="sembunyi">Tidak ditampilkan</button>' : '') + '<button type="button" class="btn danger sm" data-t="hapus">Hapus</button></div></div>';
+  }
+  function isiListTesti() {
+    var d = dataTesti, h = d.hitung, tabs = [['menunggu', 'Menunggu'], ['tampil', 'Tampil'], ['sembunyi', 'Disembunyikan'], ['semua', 'Semua']];
+    return '<div class="tabs" role="tablist" aria-label="Filter testimoni" style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem">' + tabs.map(function (t) { return '<button type="button" class="btn sm' + (filterTesti.status === t[0] ? ' primary' : '') + '" role="tab" aria-selected="' + (filterTesti.status === t[0]) + '" data-tab="' + t[0] + '">' + t[1] + ' (' + (t[0] === 'semua' ? h.semua : h[t[0]]) + ')</button>'; }).join('') + '</div>' +
+      '<div class="field"><label class="sr" for="tcari">Cari testimoni</label><input id="tcari" type="search" placeholder="Cari nama, isi, atau nomor pesanan" value="' + esc(filterTesti.cari) + '"></div>' +
+      '<div id="tlist">' + (d.daftar.length ? d.daftar.map(kartuTesti).join('') : '<div class="card"><p class="muted">Tidak ada testimoni di kategori ini.</p></div>') + '</div>';
+  }
+  async function muatTesti(my) {
+    var r = await call('adminTestimoniDaftar', { status: filterTesti.status, cari: filterTesti.cari }); if (my !== undefined && my !== run) return;
+    if (!r.success) { document.getElementById('main').innerHTML = galatBox(r.message); return; }
+    dataTesti = r.data; var box = document.getElementById('tbox'); if (box) { box.innerHTML = isiListTesti(); var c = document.getElementById('tcari'); if (c && document.activeElement && document.activeElement.id === 'tcari') c.focus(); }
+  }
+  async function viewTestimoni(my, q) {
+    var main = document.getElementById('main'); main.innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Testimoni</h1></div>' + skel();
+    var r = await call('adminTestimoniDaftar', { status: filterTesti.status, cari: filterTesti.cari }); if (my !== run) return;
+    if (!r.success) { main.innerHTML = galatBox(r.message); return; }
+    dataTesti = r.data;
+    main.innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Testimoni</h1></div><p class="small muted" style="margin-bottom:.75rem">Pembeli menulis testimoni dari portal mereka. Ibu memilih mana yang <strong>ditampilkan</strong> di halaman publik Dearora. Isi testimoni tidak bisa diubah oleh admin; hanya ditampilkan, disembunyikan, atau dihapus.</p><div id="tbox">' + isiListTesti() + '</div>';
+  }
+  async function aksiTesti(e) {
+    var tab = e.target.closest('[data-tab]'); if (tab) { filterTesti.status = tab.dataset.tab; await muatTesti(); return; }
+    var b = e.target.closest('[data-t]'); if (!b) return; var kartu = b.closest('[data-id]'); if (!kartu) return; var id = kartu.dataset.id, aksi = b.dataset.t;
+    if (aksi === 'hapus') { var v = await tanya({ judul: 'Hapus testimoni?', teks: 'Testimoni dihapus permanen dan hilang dari website bila sedang tampil.', ya: 'Hapus' }); if (!v) return; }
+    b.disabled = true; var r = await call('adminTestimoniAtur', { id: id, aksi: aksi, statusTampilan: filterTesti.status }); b.disabled = false;
+    if (!r.success) { toast(r.message || 'Gagal'); return; }
+    toast({ tampil: 'Ditampilkan di website', sembunyi: 'Disembunyikan dari website', hapus: 'Testimoni dihapus' }[aksi]); await muatTesti();
+  }
   /* ---------------- Ringkasan ---------------- */
   async function viewDashboard(my) {
     var main = document.getElementById('main'); main.innerHTML = '<div class="page-h"><h1 tabindex="-1" id="h1">Ringkasan</h1></div>' + skel();
@@ -137,6 +175,7 @@
       daftar('Dibayar tetapi link belum aktif', t.tertahan || [], link) +
       daftar('Special sedang dikerjakan', t.special, link) +
       daftar('Revisi diminta', t.revisi, function (x) { return '<a href="#/detail?o=' + encodeURIComponent(x.orderId) + '"><span><strong>' + esc(x.orderId) + '</strong> · ' + esc(x.catatan.slice(0, 60)) + '</span><span class="badge warn">Revisi</span></a>'; }) +
+      (t.testimoniMenunggu ? '<h3>Testimoni menunggu</h3><a href="#/testimoni"><span><strong>' + t.testimoniMenunggu + '</strong> testimoni baru perlu ditinjau</span><span class="badge warn">Tinjau</span></a>' : '') +
       daftar('Pembayaran perlu ditinjau', t.tinjau, link) +
       daftar('Segera berakhir (≤ 3 hari)', t.segeraBerakhir, function (o) { return '<a href="#/detail?o=' + encodeURIComponent(o.orderId) + '"><span><strong>' + esc(o.orderId) + '</strong> · ' + esc(o.penerima) + '</span><span class="small muted">' + esc(tgl(o.tglKedaluwarsa)) + '</span></a>'; }) +
       (t.emailGagal ? '<h3>Perhatian</h3><div class="row"><span>' + t.emailGagal + ' email gagal terkirim (7 hari terakhir). Cek sheet EmailLog.</span><span class="badge bad">Email</span></div>' : '');
@@ -522,6 +561,7 @@
       if (h.rute === '') await viewDashboard(my);
       else if (h.rute === 'pesanan') viewPesanan(my, h.q);
       else if (h.rute === 'detail') await viewDetail(my, h.q);
+      else if (h.rute === 'testimoni') await viewTestimoni(my, h.q);
       else if (h.rute === 'laporan') await viewLaporan(my);
       else if (h.rute === 'pengaturan') await viewPengaturan(my, h.q);
       else main.innerHTML = '<div class="card empty">Halaman tidak ditemukan. <a href="#/">Kembali</a></div>';
@@ -534,6 +574,7 @@
     if (c.checked) terpilih[c.dataset.pilih] = true; else delete terpilih[c.dataset.pilih]; perbaruiBar();
   });
   document.addEventListener('click', async function (ev) {
+    if (document.getElementById('tbox') && ev.target.closest('[data-tab], [data-t]')) { try { await aksiTesti(ev); } catch (e) { if (e.message !== 'sesi') toast('Koneksi bermasalah'); } return; }
     var b = ev.target.closest('[data-a]'); if (!b || b.dataset.a === 'toggle') return;
     var a = b.dataset.a;
     if (a === 'tema') { setTema(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); return; }
@@ -574,6 +615,7 @@
     }
   });
   document.addEventListener('input', function (ev) {
+    if (ev.target.id === 'tcari') { filterTesti.cari = ev.target.value.trim(); clearTimeout(aksiTesti._t); aksiTesti._t = setTimeout(function () { muatTesti(); }, 300); return; }
     if (ev.target.id === 'ds-q') { filterDesain.q = ev.target.value.trim(); var l = document.getElementById('ds-list'); if (l && pengaturan) l.innerHTML = barisDesain(pengaturan); return; }
     if (!['fq'].includes(ev.target.id)) return;
     clearTimeout(tm); tm = setTimeout(function () { cari.q = ev.target.value.trim(); cari.hal = 1; simpanCariKeUrl(); muatDaftar(run); }, 350);

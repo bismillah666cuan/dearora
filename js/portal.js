@@ -184,6 +184,7 @@
     if (o.status !== 'Aktif' && o.status !== 'Selesai' && o.status !== 'Diproses' && o.status !== 'Kedaluwarsa') return '';
     var lihat = o.dilihat ? '<span class="tag sage">' + ic('check') + ' Sudah dilihat penerima · ' + esc(tglJam(o.dilihat)) + '</span>' : '<span class="tag">Belum dilihat penerima</span>';
     var bls = o.jumlahBalasan ? ' <span class="tag rose">' + ic('heart') + ' ' + o.jumlahBalasan + ' balasan</span>' : '';
+    if (o.bisaTesti && !o.statusTesti) bls += ' <a class="tag lav" href="#/pesanan?o=' + encodeURIComponent(o.orderId) + '">★ Beri testimoni</a>';
     if (o.paketId === 'invitation' && o.jumlahRsvp) bls += ' <span class="tag sage">' + ic('heart') + ' ' + o.jumlahRsvp + ' tamu merespons</span>';
     return '<p class="small" style="margin:.5rem 0">' + lihat + bls + '</p>';
   }
@@ -211,7 +212,7 @@
       $('pSapa').textContent = nama ? 'Halo, ' + nama + '. Pantau progres dan bagikan link ucapanmu di sini.' : '';
       var p = r.data.pesanan;
       root.innerHTML = '<div class="portal-bar"><a class="btn btn-primary btn-sm" href="#/buat">' + ic('heart') + ' Buat Ucapan Baru</a><button type="button" class="btn btn-secondary btn-sm" data-p="keluar">Keluar</button></div>' +
-        (p.length ? '<div class="order-list">' + p.map(kartuPesanan).join('') + '</div>' : '<div class="state-box"><p>Belum ada pesanan di akun ini.</p><a class="btn btn-primary btn-sm" href="#/buat">Buat Ucapan</a></div>');
+        (p.length ? ajakTesti(p) + '<div class="order-list">' + p.map(kartuPesanan).join('') + '</div>' : '<div class="state-box"><p>Belum ada pesanan di akun ini.</p><a class="btn btn-primary btn-sm" href="#/buat">Buat Ucapan</a></div>');
     } catch (e) { if (my === run) root.innerHTML = U.errorBox('Pesanan belum bisa dimuat. Periksa koneksi lalu coba lagi.'); }
   }
 
@@ -222,6 +223,33 @@
       '<section class="section" style="padding-top:2rem"><div class="container"><div class="portal" id="detailRoot"><div class="skeleton sk-card" aria-hidden="true"></div></div></div></section>';
   }
 
+  /* ---------------- Testimoni ---------------- */
+  var testiEdit = false;
+  function ajakTesti(p) {
+    var c = p.filter(function (o) { return o.bisaTesti && !o.statusTesti; })[0]; if (!c) return '';
+    return '<div class="notice testi-ajak" style="margin-bottom:1rem"><span><strong>Bagaimana pengalamanmu dengan Dearora?</strong> Ceritakan singkat; testimonimu membantu pembeli lain.</span> <a class="btn btn-secondary btn-sm" href="#/pesanan?o=' + encodeURIComponent(c.orderId) + '">★ Tulis testimoni</a></div>';
+  }
+  function bintangTeks(n) { var s = '', i; for (i = 1; i <= 5; i++) s += '<span class="bt' + (i <= n ? ' on' : '') + '" aria-hidden="true">★</span>'; return '<span class="bintang" role="img" aria-label="' + n + ' dari 5 bintang">' + s + '</span>'; }
+  function boxTesti(o) {
+    var t = o.testi; if (!t || !t.bisa) return '';
+    var st = { menunggu: ['Menunggu ditinjau', 'sage'], tampil: ['Ditampilkan di website Dearora', 'sage'], sembunyi: ['Belum ditampilkan di website', ''] };
+    if (t.ada && !testiEdit) {
+      var s = st[t.status] || ['', ''];
+      return '<div class="card order-card" id="boxTesti"><h2 class="h3">Testimonimu</h2><p style="margin:.4rem 0">' + bintangTeks(t.rating) + ' <span class="tag ' + s[1] + '">' + esc(s[0]) + '</span></p><blockquote class="testi-isi">' + esc(t.isi) + '</blockquote>' +
+        '<p class="small muted">Ditulis sebagai <strong>' + esc(t.nama) + '</strong>' + (t.keterangan ? ' · ' + esc(t.keterangan) : '') + '. Terima kasih sudah berbagi!' + (t.status === 'tampil' ? ' Bila kamu mengubahnya, testimoni ditinjau lagi sebelum tampil.' : '') + '</p>' +
+        '<div class="order-act"><button type="button" class="btn btn-secondary btn-sm" data-p="testi-ubah">Ubah</button><button type="button" class="btn btn-quiet btn-sm" data-p="testi-hapus">Hapus</button></div></div>';
+    }
+    var v = t.ada ? t : { rating: 0, isi: '', nama: t.saranNama || '', keterangan: '' }, rd = '', i;
+    for (i = 5; i >= 1; i--) rd += '<input type="radio" name="tRating" id="tR' + i + '" value="' + i + '"' + (v.rating === i ? ' checked' : '') + '><label for="tR' + i + '" title="' + i + ' bintang"><span aria-hidden="true">★</span><span class="sr">' + i + ' bintang</span></label>';
+    return '<div class="card order-card" id="boxTesti"><h2 class="h3">' + (t.ada ? 'Ubah testimoni' : 'Beri testimoni') + '</h2>' +
+      '<p class="small muted">Ceritakan pengalamanmu. Testimoni ditinjau dulu; bila disetujui, tampil di website Dearora dengan nama yang kamu tulis. Email dan WhatsApp-mu tidak pernah ditampilkan.</p>' +
+      '<fieldset class="field" style="border:0;padding:0;margin:.75rem 0"><legend>Penilaian</legend><div class="rating-input" role="radiogroup" aria-label="Penilaian">' + rd + '</div><p class="err" id="eRating" role="alert" hidden></p></fieldset>' +
+      '<div class="field"><label for="tIsi">Ceritamu</label><textarea id="tIsi" class="input textarea" rows="4" maxlength="400" placeholder="Mis. Ucapannya cantik, penerimanya sampai terharu...">' + esc(v.isi) + '</textarea><p class="hint"><span id="tHit">' + String(v.isi).length + '</span>/400 karakter (minimal 20)</p><p class="err" id="eIsi" role="alert" hidden></p></div>' +
+      '<div class="row-2"><div class="field"><label for="tNama">Nama yang ditampilkan</label><input id="tNama" class="input" maxlength="40" value="' + esc(v.nama) + '" autocomplete="off"><p class="err" id="eNama" role="alert" hidden></p></div><div class="field"><label for="tKet">Keterangan (opsional)</label><input id="tKet" class="input" maxlength="40" value="' + esc(v.keterangan) + '" placeholder="Mis. Karawang" autocomplete="off"></div></div>' +
+      '<label class="chk"><input type="checkbox" id="tIzin"> Saya mengizinkan testimoni ini ditinjau dan, bila disetujui, ditampilkan di website Dearora dengan nama di atas.</label><p class="err" id="eIzin" role="alert" hidden></p>' +
+      '<div class="order-act" style="margin-top:.75rem"><button type="button" class="btn btn-primary btn-sm" data-p="testi-kirim">Kirim testimoni</button>' + (t.ada ? '<button type="button" class="btn btn-quiet btn-sm" data-p="testi-batal">Batal</button>' : '') + '</div></div>';
+  }
+  function segarkanTesti() { var e = $('boxTesti'); if (e && ordAktif) e.outerHTML = boxTesti(ordAktif); }
   function boxBalasan(o) {
     if (!(o.balasan && o.balasan.length)) return o.status === 'Aktif' ? '<div class="card order-card"><h2 class="h3">Balasan penerima</h2><p class="small muted">Belum ada balasan. Setelah penerima sampai di slide terakhir, ia bisa menulis balasan yang muncul di sini.</p></div>' : '';
     return '<div class="card order-card"><h2 class="h3">Balasan penerima (' + o.balasan.length + ')</h2><ul class="rev-list">' + o.balasan.map(function (b) {
@@ -279,7 +307,7 @@
         '<p class="small" style="margin-top:.75rem">Chat sudah ditutup karena pesanan selesai dan jatah revisi habis.</p>') + '</div>';
   }
   function isiDetail(o) {
-    ordAktif = o; if (o.paketId === 'invitation') setTimeout(function () { muatRsvp(o); }, 0);
+    ordAktif = o; testiEdit = false; if (o.paketId === 'invitation') setTimeout(function () { muatRsvp(o); }, 0);
     var rev = (o.revisi || []).map(function (x) {
       return '<li><span class="tag lav">' + esc(x.status) + '</span> <span class="small muted">' + esc(tglJam(x.tglMinta)) + '</span><p style="margin-top:.25rem">' + esc(x.catatan) + '</p></li>';
     }).join('');
@@ -304,13 +332,14 @@
       '<div class="sum-row"><dt>Pembayaran</dt><dd>Rp ' + esc(U.rupiah(o.nominal)) + ' · ' + esc(o.statusBayar) + (o.tglBayar ? ' · ' + esc(tglJam(o.tglBayar)) : '') + '</dd></div>' +
       '<div class="sum-row"><dt>Dipesan</dt><dd>' + esc(tglJam(o.tglOrder)) + '</dd></div></dl>' +
       '<div class="order-act">' + ((o.status !== 'Menunggu Pembayaran' && o.status !== 'Dibatalkan' && o.status !== 'Perlu Ditinjau') ? '<button type="button" class="btn btn-quiet btn-sm" data-p="pdf" data-o="' + esc(o.orderId) + '">Unduh PDF Bukti</button>' : '') +
-      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxRsvp(o) + boxChat(o) + boxBalasan(o) + boxRevisi;
+      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxRsvp(o) + boxChat(o) + boxBalasan(o) + boxTesti(o) + boxRevisi;
   }
 
   async function afterDetail(main, c) {
     if (!A.ada()) { location.replace('#/masuk'); return; }
     var my = ++run, root = $('detailRoot'), id = (c.query && c.query.o) || '';
     root.addEventListener('click', klikAksi);
+    root.addEventListener('input', function (ev) { if (ev.target.id === 'tIsi') { var th = $('tHit'); if (th) th.textContent = String(ev.target.value.length); } });
     root.addEventListener('input', function (ev) { if (ev.target.id === 'revCatatan') { var n = ev.target.value.length, k = root.querySelector('[data-counter]'); k.textContent = n + '/1000'; k.classList.toggle('over', n > 1000); } });
     try {
       var r = await A.panggil('orderDetail', { orderId: id });
@@ -341,6 +370,25 @@
     }
     if (a === 'rsvp-hapus') {
       b.disabled = true; try { var rh = await A.panggil('rsvpHapus', { orderId: ordAktif && ordAktif.orderId, id: b.dataset.id }); if (rh.success) { rsvpData = rh.data; $('rsvpIsi').innerHTML = tampilRsvp(rh.data, ordAktif); } else b.disabled = false; } catch (e) { b.disabled = false; } return;
+    }
+    if (a === 'testi-ubah') { testiEdit = true; segarkanTesti(); var ti = $('tIsi'); if (ti) ti.focus(); return; }
+    if (a === 'testi-batal') { testiEdit = false; segarkanTesti(); return; }
+    if (a === 'testi-hapus') {
+      if (!window.confirm('Hapus testimonimu? Bila sudah tampil di website, ia ikut dihapus.')) return;
+      b.disabled = true; try { var rh2 = await A.panggil('testimoniHapus', { orderId: ordAktif.orderId }); if (rh2.success) { ordAktif.testi = rh2.data; testiEdit = false; segarkanTesti(); toast('Testimoni dihapus'); } else toast(rh2.message || 'Gagal menghapus'); } catch (e) { toast('Koneksi bermasalah, coba lagi'); }
+      b.disabled = false; return;
+    }
+    if (a === 'testi-kirim') {
+      ['eRating', 'eIsi', 'eNama', 'eIzin'].forEach(function (id) { var e = $(id); if (e) { e.hidden = true; e.textContent = ''; } });
+      var rr = document.querySelector('input[name="tRating"]:checked');
+      b.disabled = true; var asli2 = b.textContent; b.textContent = 'Mengirim…';
+      try {
+        var rt = await A.panggil('testimoniKirim', { orderId: ordAktif.orderId, rating: rr ? Number(rr.value) : 0, isi: $('tIsi').value, nama: $('tNama').value, keterangan: $('tKet').value, izin: $('tIzin').checked });
+        if (rt.success) { ordAktif.testi = rt.data; testiEdit = false; segarkanTesti(); toast('Terima kasih! Testimonimu menunggu ditinjau.'); return; }
+        var er = rt.errors || {}; ['rating', 'isi', 'nama', 'izin'].forEach(function (k) { var e = $('e' + k.charAt(0).toUpperCase() + k.slice(1)); if (e && er[k]) { e.textContent = er[k]; e.hidden = false; } });
+        if (!Object.keys(er).length) toast(rt.message || 'Gagal mengirim');
+      } catch (e) { toast('Koneksi bermasalah, coba lagi'); }
+      b.disabled = false; b.textContent = asli2; return;
     }
     if (a === 'rsvp-csv') { csvRsvp(ordAktif); return; }
     if (a === 'rsvp-link') {

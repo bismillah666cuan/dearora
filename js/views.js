@@ -214,7 +214,7 @@
   /* ========================= HALAMAN ========================= */
 
   function home(ctx) {
-    return hero() + keunggulan() + previewDesain(ctx) + paketHome(ctx) + caraKerjaHome() + faqHome(ctx) + ctaBand();
+    return hero() + keunggulan() + previewDesain(ctx) + paketHome(ctx) + caraKerjaHome() + (window.Testi ? window.Testi.bagianHome() : '') + faqHome(ctx) + ctaBand();
   }
 
   function contohDesain(ctx) {
@@ -357,7 +357,8 @@
 
   window.Views = {
     rute: {
-      '': { judul: 'Kartu Ucapan Digital Berbentuk Website', view: home, nav: 'home' },
+      '': { judul: 'Kartu Ucapan Digital Berbentuk Website', view: home, nav: 'home', after: function () { if (window.Testi) window.Testi.afterHome(); } },
+      'testimoni': { judul: 'Testimoni', view: function () { return window.Testi.halaman(); }, nav: '', after: function () { window.Testi.afterHalaman(); } },
       'contoh-desain': { judul: 'Contoh Desain', view: contohDesain, nav: 'contoh-desain' },
       'paket': { judul: 'Paket & Harga', view: paketHalaman, nav: 'paket' },
       'cara-kerja': { judul: 'Cara Kerja', view: caraKerjaHalaman, nav: 'cara-kerja' },

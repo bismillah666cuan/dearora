@@ -808,3 +808,14 @@ dialog.modal.demo-desk .demo-frame { position: absolute; top: 1rem; left: 50%; w
 .bar.menunggu > span { background-image: repeating-linear-gradient(45deg, rgba(255, 255, 255, .3) 0 10px, transparent 10px 20px), linear-gradient(90deg, var(--cta), var(--primary)); background-size: 28px 28px, 100% 100%; animation: payGerak 1s linear infinite; }
 @keyframes payGerak { to { background-position: 28px 0, 0 0; } } @keyframes payDenyut { to { transform: scale(1.5); opacity: .6; } }
 @media (prefers-reduced-motion: reduce) { .bar.menunggu > span, .pay-langkah li.aktif::before { animation: none; } }
+
+/* ---- Testimoni ---- */
+.bintang { display: inline-flex; gap: .1rem; font-size: 1.1rem; line-height: 1; } .bintang .bt { color: #E4D3D8; } .bintang .bt.on { color: #F5A524; }
+.testi-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); } .testi-kartu { display: grid; gap: .7rem; margin: 0; align-content: start; padding: 1.25rem 1.35rem; border-radius: var(--r-lg, 20px); }
+.testi-isi { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65; color: var(--ink); } blockquote.testi-isi { padding: 0 0 0 .8rem; border-left: 3px solid var(--rose, #F78DA7); }
+.testi-kartu figcaption { display: grid; gap: .1rem; font-size: .9375rem; } .testi-kartu figcaption .small { font-size: .8125rem; }
+.testi-ajak { display: flex; gap: .75rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.rating-input { display: inline-flex; flex-direction: row-reverse; gap: .15rem; } .rating-input input { position: absolute; opacity: 0; pointer-events: none; } .rating-input label { font-size: 2rem; line-height: 1; cursor: pointer; color: #E4D3D8; padding: .1rem .15rem; transition: color .15s ease, transform .15s ease; }
+.rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: #F5A524; } .rating-input label:hover { transform: scale(1.12); } .rating-input input:focus-visible + label { outline: 3px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .rating-input label { transition: none; } }
