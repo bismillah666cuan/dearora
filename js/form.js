@@ -14,12 +14,12 @@
   var KEY_ORDER = 'dearora:order:v1';
   var LIM = {
     pesan: { basic: 300, premium: 600, special: 1200 }, personal: 600, ide: 1000, ideSpecial: 2500, rahasia: 1000, catatan: 500,
-    fotoKB: 1400, bagian: 1572864, videoMB: 25
+    fotoKB: 1400, bagian: 1572864, videoMB: 25, videoMaks: 3, audioMB: 10, pdfKB: 1500, refMaks: 5, naskahMaks: 12, halamanMaks: 30, briefTema: 120, briefRef: 600, briefInter: 800, naskahIsi: 600
   };
   var ID_LANGKAH = { namaPembeli: 'pemesan', whatsapp: 'pemesan', email: 'pemesan', penerima: 'untuk', tipeDari: 'untuk', nilaiDari: 'untuk',
     pesan: 'pesan', pesanPersonal: 'pesan', desain: 'desain', musikId: 'ekstra', jenisSurprise: 'ekstra', pesanRahasia: 'ekstra',
-    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket', kejutanJenis: 'kejutan', kejutanUcapan: 'kejutan', kejutanDetail: 'kejutan', dataDesain: 'isi', ideSendiri: 'ide', urlDiminta: 'ide' };
-  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Surat', kejutan: 'Kejutan Akhir', foto: 'Foto', desain: 'Desain', isi: 'Isi Desain', ide: 'Ide Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan' };
+    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket', kejutanJenis: 'kejutan', kejutanUcapan: 'kejutan', kejutanDetail: 'kejutan', dataDesain: 'isi', ideSendiri: 'brief', urlDiminta: 'url', tema: 'brief', warna: 'brief', referensi: 'brief', interaksi: 'brief', naskah: 'naskah', musik: 'musik', ketentuan: 'ketentuan' };
+  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Surat', kejutan: 'Kejutan Akhir', foto: 'Foto', desain: 'Desain', isi: 'Isi Desain', ide: 'Ide Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan', ketentuan: 'Ketentuan Paket Special', brief: 'Brief Desain', naskah: 'Isi Ucapan', url: 'Alamat Ucapan', musik: 'Musik' };
 
   var ST = null;            // isian
   var langkah = 0;          // indeks langkah aktif
@@ -58,6 +58,7 @@
   function baru() {
     return isiDariIngatan({ kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
       mode: 'pilih', desainId: '', ideSendiri: '', musikId: '', jenisSurprise: '', pesanRahasia: '', passwordRahasia: '', pembuka: 'judul',
+      ketentuanOk: false, brief: { tema: '', warna: '', referensi: '', interaksi: '' }, naskah: [{ halaman: 1, isi: '' }], musikMode: 'tanpa', musikTautan: '',
       catatan: '', setuju: false, _langkah: 0, _id: '', _berkas: [] });
   }
   /* ---------------- Draf: bisa banyak (riwayat ucapan yang sedang disusun) ---------------- */
@@ -87,7 +88,7 @@
     if (!ST || !(ST.paket || ST.penerima)) return;
     try {
       if (!ST._id) ST._id = 'd' + Date.now().toString(36) + rand(3);
-      var s = Object.assign({}, ST, { _langkah: langkah, _lid: langkahId(), _berkas: files.map(function (f) { return { id: f.id, jenis: f.jenis, nama: f.nama, ukuran: f.ukuran }; }), kejutan: Object.assign({}, ST.kejutan, { kode: '' }) }); delete s.passwordRahasia; delete s.setuju;
+      var s = Object.assign({}, ST, { _langkah: langkah, _lid: langkahId(), _berkas: files.map(function (f) { return { id: f.id, jenis: f.jenis, nama: f.nama, ukuran: f.ukuran, mime: f.mime || '' }; }), kejutan: Object.assign({}, ST.kejutan, { kode: '' }) }); delete s.passwordRahasia; delete s.setuju;
       var items = bacaDrafs().filter(function (x) { return x.id !== ST._id; }); items.unshift({ id: ST._id, tgl: Date.now(), s: s }); tulisDrafs(items);
     } catch (e) { /* abaikan */ }
   }
@@ -115,7 +116,7 @@
   function muatBerkasDraf(tanpaPaint) {
     var did = ST && ST._id, meta = ((ST && ST._berkas) || []).slice(); if (!did || !meta.length) return Promise.resolve();
     return Promise.all(meta.map(function (m) {
-      return idbTx('readonly', function (st) { return st.get(did + ':' + m.id); }).then(function (blob) { return blob && blob.size ? { id: m.id, jenis: m.jenis, blob: blob, nama: m.nama, ukuran: m.ukuran || blob.size, url: m.jenis === 'foto' ? URL.createObjectURL(blob) : '' } : null; });
+      return idbTx('readonly', function (st) { return st.get(did + ':' + m.id); }).then(function (blob) { return blob && blob.size ? { id: m.id, jenis: m.jenis, blob: blob, nama: m.nama, ukuran: m.ukuran || blob.size, mime: m.mime || '', url: (m.jenis === 'foto' || (m.jenis === 'referensi' && /^image\//.test(m.mime || ''))) ? URL.createObjectURL(blob) : '' } : null; });
     })).then(function (arr) { if (!ST || ST._id !== did) return; files = arr.filter(Boolean); if (!tanpaPaint) { if (order) order = null; if ($root) paint(); } });
   }
   function hapusDraf(id) {
@@ -229,7 +230,7 @@
   // Urutan: pilih paket → pilih DESAIN dulu (agar pembeli langsung terbayang) → isi ucapan → data pemesan di akhir.
   function daftarLangkah() {
     if (ST.paket === 'premium') return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'isi', 'catatan', 'pemesan', 'ringkasan'];
-    if (ST.paket === 'special') return ['paket', 'untuk', 'foto', 'ide', 'catatan', 'pemesan', 'ringkasan'];
+    if (ST.paket === 'special') return ['paket', 'ketentuan', 'brief', 'untuk', 'naskah', 'foto', 'url', 'musik', 'catatan', 'pemesan', 'ringkasan'];
     if (ST.paket === 'invitation') return ['paket', 'desain', 'untuk', 'foto', 'isi', 'catatan', 'pemesan', 'ringkasan'];
     return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'catatan', 'pemesan', 'ringkasan'];
   }
@@ -241,7 +242,7 @@
     return ['paket', 'pemesan', 'untuk', 'pesan', 'kejutan', 'foto', 'desain', 'catatan', 'ringkasan'];
   }
   function langkahDariDraf(s) {
-    var l = daftarLangkah(), id = s._lid || urutanLama(s.paket)[Number(s._langkah) || 0], i = l.indexOf(id);
+    var l = daftarLangkah(), id = s._lid || urutanLama(s.paket)[Number(s._langkah) || 0]; if (id === 'ide') id = 'brief'; var i = l.indexOf(id);
     return i >= 0 ? i : Math.min(Number(s._langkah) || 0, l.length - 1);
   }
   // Data pemesan diisi di akhir; supaya pesanan berikutnya (mis. keranjang) tidak mengetik ulang, diingat di perangkat ini.
@@ -563,27 +564,96 @@
       '<p class="notice">Foto (maksimal ' + ((paketAktif() || {}).maksFoto || 20) + ') dan 1 video sudah kamu unggah di langkah sebelumnya. Sebutkan urutan atau peruntukan foto di kolom ide di atas. Paket Special mendapat <strong>1× revisi gratis</strong>.</p>';
   };
 
+
+  /* ---------------- Paket Special: ketentuan, brief, isi ucapan, alamat, musik ---------------- */
+  function inpP(id, nilai, path, maks, ph) { return '<input class="input" id="' + id + '" data-p="' + path + '" type="text" maxlength="' + maks + '" value="' + esc(nilai) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + aria(id) + '>'; }
+  function taP(id, nilai, path, maks, baris, ph) {
+    var n = String(nilai || '').length;
+    return '<textarea class="input textarea" id="' + id + '" data-p="' + path + '" rows="' + (baris || 4) + '" maxlength="' + (maks + 50) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + aria(id) + '>' + esc(nilai) + '</textarea>' +
+      '<span class="counter' + (n > maks ? ' over' : '') + '" data-counter="' + id + '" data-max="' + maks + '">' + n + '/' + maks + '</span>';
+  }
+  VIEW.ketentuan = function () {
+    var pk = paketAktif() || {}, maksFoto = pk.maksFoto || 20;
+    var baris = [['Tema dan warna', 'Bebas request'], ['Layout', 'Custom, tetapi berbasis website ucapan satu halaman atau beberapa section'], ['Jumlah halaman', 'Maksimal ' + LIM.halamanMaks + ' halaman dalam satu alur ucapan (slide)'], ['Interaksi', 'Bebas request'],
+      ['Foto dan video', 'Maksimal ' + maksFoto + ' foto dan 1–' + LIM.videoMaks + ' video pendek'], ['Musik', 'Sesuai request selama tidak melanggar hak cipta, atau tautan URL kustom'], ['Revisi', '1 kali, hanya revisi minor (mis. teks, urutan, atau warna; bukan mengganti konsep)'], ['Backend khusus', 'Tidak ada']];
+    var luar = ['Website dengan akun dan autentikasi pengguna', 'Dashboard admin dan pengelolaan data', 'Database dengan proses bisnis khusus', 'Sistem pembayaran atau pemesanan', 'Game kompleks atau aplikasi dengan backend khusus'];
+    return '<p class="lead small" style="margin-bottom:1rem">Paket Special dikerjakan langsung oleh kami sesuai briefmu. Agar hasilnya tepat dan selesai sesuai waktu, baca dulu apa saja yang termasuk dan tidak termasuk dalam paket ini.</p>' +
+      '<h2 class="h3" style="margin-bottom:.5rem">Yang termasuk dalam paket Special</h2><dl class="summary ketentuan">' + baris.map(function (b) { return '<div class="sum-row"><dt>' + esc(b[0]) + '</dt><dd>' + esc(b[1]) + '</dd></div>'; }).join('') + '</dl>' +
+      '<div class="notice warn" style="margin:1rem 0"><strong>Di luar cakupan paket Special</strong>, seperti:<ul class="stack small" style="list-style:disc;padding-left:1.1rem;margin-top:.4rem">' + luar.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul><p class="small" style="margin-top:.5rem">Kebutuhan seperti ini tidak dapat dikerjakan lewat paket Special. Permintaan di luar ketentuan dapat kami tolak atau sesuaikan agar tetap berupa website ucapan.</p></div>' +
+      '<div class="field' + (errors.ketentuanOk ? ' has-error' : '') + '"><label class="check" for="ketentuanOk"><input type="checkbox" id="ketentuanOk" data-k="ketentuanOk"' + (ST.ketentuanOk ? ' checked' : '') + '><span>Saya sudah membaca dan memahami ketentuan paket Special di atas.</span></label>' +
+      (errors.ketentuanOk ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.ketentuanOk) + '</p>' : '') + '</div>';
+  };
+  function daftarReferensi() { return files.filter(function (x) { return x.jenis === 'referensi'; }); }
+  VIEW.brief = function () {
+    var refs = daftarReferensi(), li = refs.map(function (r) { return '<li class="file-item"><div class="file-th">' + (r.url ? '<img src="' + esc(r.url) + '" alt="">' : '<span class="vid">' + ic('image') + '<small>PDF</small></span>') + '</div><div class="file-meta"><span class="file-name">' + esc(r.nama) + '</span><span class="small muted">' + (r.ukuran / 1024 / 1024).toFixed(2) + ' MB</span></div><div class="file-act"><button type="button" class="icon-btn sm" data-f="rm" data-id="' + r.id + '" aria-label="Hapus ' + esc(r.nama) + '">' + ic('x') + '</button></div></li>'; }).join('');
+    return '<p class="lead small" style="margin-bottom:1rem">Ceritakan konsep yang kamu inginkan. Makin jelas briefmu, makin tepat hasilnya. Setelah memesan, kamu juga bisa berdiskusi lewat chat dengan admin.</p>' +
+      fld('tema', 'Tema', inpP('tema', ST.brief.tema, 'brief.tema', LIM.briefTema, 'Mis. taman malam yang hangat, film pendek, retro 90-an'), 'Suasana atau gaya keseluruhan ucapanmu.') +
+      fld('warna', 'Warna', inpP('warna', ST.brief.warna, 'brief.warna', LIM.briefTema, 'Mis. krem, emas, dan hijau sage'), 'Warna utama yang kamu inginkan.') +
+      fld('referensi', 'Contoh referensi', taP('referensi', ST.brief.referensi, 'brief.referensi', LIM.briefRef, 3, 'Nama gaya, tautan contoh, atau penjelasan singkat'), 'Opsional. Tautan Pinterest, Canva, Instagram, atau website yang kamu sukai.', true) +
+      fld('interaksi', 'Interaksi yang diinginkan', taP('interaksi', ST.brief.interaksi, 'brief.interaksi', LIM.briefInter, 6, 'Mis. pengunjung membuka pintu taman, lalu menyalakan lampion satu per satu sebelum surat tampil'), 'Apa yang dilakukan penerima di ucapanmu: ketuk, geser, buka, mainkan. Minimal 20 karakter.') +
+      '<div class="dropzone" style="margin-top:.5rem"><p class="dz-title">' + ic('image') + ' Gambar desain atau referensi <span class="opt">(opsional)</span></p><p class="small muted">Unggah gambar (JPG, PNG, WebP) atau PDF, maksimal ' + LIM.refMaks + ' berkas. PDF maksimal 1,4 MB; untuk berkas lebih besar, tempel tautannya di kolom referensi.</p>' +
+      '<input class="sr-only" type="file" id="refInput" multiple accept="image/jpeg,image/png,image/webp,application/pdf"><label for="refInput" class="btn btn-secondary btn-sm' + (ui.kompres ? ' disabled' : '') + '">' + (ui.kompres ? 'Memproses…' : 'Pilih Berkas') + '</label>' +
+      '<p class="small" style="margin-top:.75rem" role="status">' + refs.length + ' dari ' + LIM.refMaks + ' berkas' + (ui.pesanRef ? ' · ' + esc(ui.pesanRef) : '') + '</p></div>' + (li ? '<ul class="file-list">' + li + '</ul>' : '');
+  };
+  VIEW.naskah = function () {
+    var n = ST.naskah.length, h = '<p class="lead small" style="margin-bottom:1rem">Tulis kata-kata yang ingin tampil di ucapanmu, lalu tentukan <strong>di halaman berapa</strong> tiap bagian ditempatkan. Alur ucapan maksimal ' + LIM.halamanMaks + ' halaman, dan urutannya mengikuti nomor halaman.</p><ol class="naskah-list">';
+    ST.naskah.forEach(function (x, i) {
+      var idH = 'nk-h-' + i, idI = 'nk-i-' + i;
+      h += '<li class="naskah-item card"><div class="naskah-kepala"><label for="' + idH + '">Tampil di halaman</label><input class="input naskah-hal" id="' + idH + '" type="number" min="1" max="' + LIM.halamanMaks + '" inputmode="numeric" data-p="naskah.' + i + '.halaman" data-num="1" value="' + esc(x.halaman) + '">' +
+        (n > 1 ? '<button type="button" class="link-btn" data-f="nk-" data-i="' + i + '">Hapus bagian ini</button>' : '') + '</div>' +
+        '<label for="' + idI + '" class="sr">Isi ucapan bagian ke-' + (i + 1) + '</label>' + taP(idI, x.isi, 'naskah.' + i + '.isi', LIM.naskahIsi, 3, 'Isi ucapan untuk halaman ini') + '</li>';
+    });
+    return h + '</ol>' + (errors.naskah ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.naskah) + '</p>' : '') +
+      (n < LIM.naskahMaks ? '<button type="button" class="btn btn-secondary btn-sm" data-f="nk+">+ Tambah bagian ucapan</button>' : '<p class="small muted">Maksimal ' + LIM.naskahMaks + ' bagian ucapan.</p>');
+  };
+  VIEW.url = function () {
+    var dom = domainSpecial(), n = normSlug(ST.urlDiminta), ok = !n || slugSah(n);
+    return '<p class="lead small" style="margin-bottom:1rem">Pilih nama untuk alamat ucapanmu. Ini bersifat opsional.</p>' +
+      fld('urlDiminta', 'Nama alamat ucapan', '<div class="url-pre"><input class="input" id="urlDiminta" data-k="urlDiminta" type="text" maxlength="50" autocomplete="off" spellcheck="false" placeholder="mis. laiba" value="' + esc(ST.urlDiminta) + '"' + aria('urlDiminta') + '><span>.' + esc(dom) + '</span></div>' +
+        '<p class="small ' + (ok ? 'muted' : '') + '" id="urlPreview" style="margin-top:.4rem">' + (n ? (ok ? 'Alamat yang kamu minta: <strong>' + esc(n) + '.' + esc(dom) + '</strong>' : 'Nama belum bisa dipakai: 3–40 huruf/angka dan bukan kata yang dicadangkan.') : 'Kosongkan jika tidak ingin memilih nama.') + '</p>',
+        'Isi bagian depannya saja; akhiran .' + dom + ' sudah tetap. Jika nama sudah dipakai pembeli lain, kami menambahkan angka atau pembeda (mis. laiba-2). Nama yang mudah ditebak membuat isi ucapan lebih mudah dibuka orang lain.', true);
+  };
+  VIEW.musik = function () {
+    var d = data() || {}, lagu = (d.musik || []).slice(0, 6), au = files.filter(function (x) { return x.jenis === 'audio'; })[0];
+    var h = '<p class="lead small" style="margin-bottom:1rem">Musik bersifat opsional. Pilih lagu pilihan Dearora, atau gunakan lagumu sendiri.</p>' +
+      '<fieldset class="field"><legend>Pilihan musik</legend><div class="opt-list">' +
+      radio('musikMode', 'tanpa', 'Tanpa musik', 'Ucapan tampil tanpa lagu latar.', ST.musikMode === 'tanpa') +
+      radio('musikMode', 'dearora', 'Gunakan lagu pilihan Dearora', lagu.length ? 'Pilih salah satu lagu pilihan kami (sudah aman dari masalah hak cipta).' : 'Belum ada lagu pilihan yang tersedia saat ini.', ST.musikMode === 'dearora') +
+      radio('musikMode', 'sendiri', 'Gunakan lagu sendiri', 'Unggah berkas lagu atau tempel tautan lagu.', ST.musikMode === 'sendiri') + '</div></fieldset>';
+    if (ST.musikMode === 'dearora') {
+      h += lagu.length ? '<fieldset class="field"><legend>Lagu pilihan Dearora</legend><div class="opt-list">' + lagu.map(function (m) { return '<label class="opt-row" for="musikId-' + esc(m.id) + '"><input type="radio" id="musikId-' + esc(m.id) + '" name="musikId" data-k="musikId" value="' + esc(m.id) + '"' + (ST.musikId === m.id ? ' checked' : '') + '><span><strong>' + esc(m.judul) + '</strong>' + (m.fileUrl ? '<audio controls preload="none" src="' + esc(m.fileUrl) + '" style="width:100%;margin-top:.4rem"></audio>' : '') + '</span></label>'; }).join('') + '</div></fieldset>' : '<p class="notice">Belum ada lagu pilihan Dearora. Silakan pilih "Tanpa musik" atau "Gunakan lagu sendiri".</p>';
+    } else if (ST.musikMode === 'sendiri') {
+      h += '<div class="dropzone"><p class="dz-title">' + ic('image') + ' Unggah berkas lagu</p><p class="small muted">MP3 atau M4A, maksimal ' + LIM.audioMB + ' MB. Satu lagu per ucapan.</p>' +
+        '<input class="sr-only" type="file" id="audioInput" accept="audio/mpeg,audio/mp4,audio/x-m4a,.mp3,.m4a"><label for="audioInput" class="btn btn-secondary btn-sm">' + (au ? 'Ganti Berkas' : 'Pilih Berkas') + '</label>' +
+        '<p class="small" style="margin-top:.75rem" role="status">' + (au ? esc(au.nama) + ' · ' + (au.ukuran / 1024 / 1024).toFixed(2) + ' MB <button type="button" class="link-btn" data-f="rm" data-id="' + au.id + '">Hapus</button>' : 'Belum ada berkas') + (ui.pesanAudio ? ' · ' + esc(ui.pesanAudio) : '') + '</p></div>' +
+        fld('musikTautan', 'Atau tempel tautan lagu', inp('musikTautan', 'url', 'placeholder="https://..." autocomplete="off"'), 'Mis. tautan YouTube, Spotify, atau Google Drive (diawali https://). Opsional bila berkas sudah diunggah.', true) +
+        '<p class="notice">Pastikan kamu berhak memakai lagu ini. Lagu yang melanggar hak cipta dapat kami tolak atau ganti.</p>';
+    }
+    return h + (errors.musik ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.musik) + '</p>' : '');
+  };
+
   VIEW.foto = function () {
     var pk = paketAktif() || { maksFoto: 0 };
     var nf = files.filter(function (f) { return f.jenis === 'foto'; }).length;
     var video = ST.paket === 'special';
-    var daftar = files.map(function (f, i) {
+    var media = files.filter(function (x) { return x.jenis === 'foto' || x.jenis === 'video'; }), nVid0 = media.length - nf;
+    var daftar = media.map(function (f, i) {
       var th = f.jenis === 'foto' ? '<img src="' + esc(f.url) + '" alt="Pratinjau foto ' + (i + 1) + '">' : '<span class="vid">' + ic('play') + '<small>Video</small></span>';
       return '<li class="file-item"><div class="file-th">' + th + '<span class="file-no">' + (i + 1) + '</span></div>' +
         '<div class="file-meta"><span class="file-name">' + esc(f.nama) + '</span><span class="small muted">' + (f.ukuran / 1024 / 1024).toFixed(2) + ' MB</span></div>' +
         '<div class="file-act">' +
         '<button type="button" class="icon-btn sm" data-f="up" data-id="' + f.id + '" aria-label="Naikkan urutan ' + esc(f.nama) + '"' + (i === 0 ? ' disabled' : '') + '>' + '<svg class="icon" style="transform:rotate(180deg)" aria-hidden="true"><use href="#i-chevron"/></svg></button>' +
-        '<button type="button" class="icon-btn sm" data-f="down" data-id="' + f.id + '" aria-label="Turunkan urutan ' + esc(f.nama) + '"' + (i === files.length - 1 ? ' disabled' : '') + '>' + ic('chevron') + '</button>' +
+        '<button type="button" class="icon-btn sm" data-f="down" data-id="' + f.id + '" aria-label="Turunkan urutan ' + esc(f.nama) + '"' + (i === media.length - 1 ? ' disabled' : '') + '>' + ic('chevron') + '</button>' +
         '<button type="button" class="icon-btn sm" data-f="rm" data-id="' + f.id + '" aria-label="Hapus ' + esc(f.nama) + '">' + ic('x') + '</button></div></li>';
     }).join('');
     return '<div class="dropzone"><p class="dz-title">' + ic('image') + ' Unggah foto terbaikmu</p>' +
       '<p class="small muted">JPG, PNG, atau WebP. Foto otomatis diperkecil agar cepat terunggah. ' + (ST.paket === 'invitation' ? 'Foto bersifat opsional: tanpa foto, undangan memakai hiasan bunga. Maksimal ' : 'Wajib minimal 1 foto, maksimal ') + pk.maksFoto + '.' +
-      (video ? ' Paket Special boleh menambah 1 video MP4 (maks. ' + LIM.videoMB + ' MB).' : '') + '</p>' +
+      (video ? ' Paket Special boleh menambah 1–' + LIM.videoMaks + ' video MP4 pendek (maks. ' + LIM.videoMB + ' MB per video).' : '') + '</p>' +
       '<input class="sr-only" type="file" id="fileInput" multiple accept="image/jpeg,image/png,image/webp' + (video ? ',video/mp4' : '') + '">' +
       '<label for="fileInput" class="btn btn-secondary btn-sm' + (ui.kompres ? ' disabled' : '') + '">' + (ui.kompres ? 'Memproses…' : 'Pilih Berkas') + '</label>' +
-      '<p class="small" style="margin-top:.75rem" role="status">' + nf + ' dari ' + pk.maksFoto + ' foto' + (ui.pesanFile ? ' · ' + esc(ui.pesanFile) : '') + '</p></div>' +
+      '<p class="small" style="margin-top:.75rem" role="status">' + nf + ' dari ' + pk.maksFoto + ' foto' + (video ? ' · ' + nVid0 + ' dari ' + LIM.videoMaks + ' video' : '') + (ui.pesanFile ? ' · ' + esc(ui.pesanFile) : '') + '</p></div>' +
       (errors.foto ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.foto) + '</p>' : '') +
-      (files.length ? '<p class="small muted" style="margin:1rem 0 .5rem">Urutan di bawah adalah urutan foto di kartumu. Gunakan tombol panah untuk mengatur.</p><ul class="file-list">' + daftar + '</ul>' : '');
+      (media.length ? '<p class="small muted" style="margin:1rem 0 .5rem">Urutan di bawah adalah urutan foto di kartumu. Gunakan tombol panah untuk mengatur.</p><ul class="file-list">' + daftar + '</ul>' : '');
   };
 
   function desainTerpilih() { var d = data(); return d && ST.desainId ? d.desain.filter(function (x) { return x.id === ST.desainId; })[0] : null; }
@@ -672,10 +742,13 @@
         return ringkasBaris('Pemesan', esc(n) + (pf ? ' <span class="tag sage">Akun terhubung</span>' : '') + '<br><span class="muted small">' + esc(w) + ' · ' + esc(e) + '</span>', 'pemesan'); })() +
       ringkasBaris('Untuk / Dari', esc(ST.penerima) + ' / ' + dari, 'untuk') +
       (templatPaket() ? ringkasBaris('Surat', '<span class="clip">' + esc(ST.pesan) + '</span>', 'pesan') : '') +
-      (ST.paket === 'special' ? ringkasBaris('Ide desain', '<span class="clip">' + esc(ST.ideSendiri) + '</span>' + (ST.urlDiminta ? '<br><span class="muted small">Alamat: ' + esc(normSlug(ST.urlDiminta)) + '.' + esc(domainSpecial()) + '</span>' : ''), 'ide') : '') +
+      (ST.paket === 'special' ? ringkasBaris('Brief', '<strong>' + esc(ST.brief.tema) + '</strong><br><span class="muted small">Warna: ' + esc(ST.brief.warna) + '</span><br><span class="clip muted small">' + esc(ST.brief.interaksi) + '</span>' + (daftarReferensi().length ? '<br><span class="muted small">' + daftarReferensi().length + ' berkas referensi</span>' : ''), 'brief') +
+        ringkasBaris('Isi ucapan', ST.naskah.length + ' bagian · halaman ' + ST.naskah.map(function (x) { return x.halaman; }).sort(function (a, b) { return a - b; }).join(', '), 'naskah') +
+        ringkasBaris('Alamat', ST.urlDiminta ? esc(normSlug(ST.urlDiminta)) + '.' + esc(domainSpecial()) : '<span class="muted">Ditentukan kami</span>', 'url') +
+        ringkasBaris('Musik', ST.musikMode === 'tanpa' ? 'Tanpa musik' : (ST.musikMode === 'dearora' ? esc(((d.musik || []).filter(function (m) { return m.id === ST.musikId; })[0] || {}).judul || 'Lagu pilihan Dearora') : 'Lagu sendiri' + (files.some(function (x) { return x.jenis === 'audio'; }) ? ' (berkas)' : '') + (ST.musikTautan ? ' (tautan)' : '')), 'musik') : '') +
       ((ST.paket === 'premium' || ST.paket === 'invitation') ? ringkasBaris('Isi desain', 'Sudah diisi (' + ((skSkema() || { skema: { nama: '' } }).skema.nama) + ')', 'isi') : '') +
       (templatPaket() ? ringkasBaris('Kejutan akhir', esc((JENIS_KEJUTAN.filter(function (j) { return j.id === ST.kejutan.jenis; })[0] || {}).nama || '') + '<br><span class="clip muted small">' + esc(ST.kejutan.ucapan) + '</span>', 'kejutan') : '') +
-      ringkasBaris('Foto', files.filter(function (f) { return f.jenis === 'foto'; }).length + ' foto' + (files.some(function (f) { return f.jenis === 'video'; }) ? ' + 1 video' : ''), 'foto') +
+      ringkasBaris('Foto', files.filter(function (f) { return f.jenis === 'foto'; }).length + ' foto' + (files.some(function (f) { return f.jenis === 'video'; }) ? ' + ' + files.filter(function (f) { return f.jenis === 'video'; }).length + ' video' : ''), 'foto') +
       (ST.paket !== 'special' ? ringkasBaris('Desain', esc(ds), 'desain') : '') +
       (musikPaket() && musikAda() ? ringkasBaris('Musik latar', esc((d.musik.filter(function (m) { return m.id === ST.musikId; })[0] || {}).judul || 'Tanpa musik'), ST.paket === 'premium' ? 'isi' : 'desain') : '') +
       '</dl>' +
@@ -741,10 +814,30 @@
       if (ST.tipeDari === 'inisial' && t('nilaiDari').length > 6) e.nilaiDari = 'Inisial maksimal 6 karakter.';
     }
     if (id === 'isi') { var sk = skSiap(); if (!sk) e.dataDesain = 'Pilih desain terlebih dahulu.'; else { var es = skValidasi(sk); if (Object.keys(es).length) { e.sk = es; e.dataDesain = es[Object.keys(es)[0]]; } } }
-    if (id === 'ide') {
-      if (t('ideSendiri').length < 30) e.ideSendiri = 'Ceritakan idemu dengan lebih lengkap (minimal 30 karakter).'; else if (t('ideSendiri').length > LIM.ideSpecial) e.ideSendiri = 'Maksimal ' + LIM.ideSpecial + ' karakter.';
-      if (t('pesan').length > LIM.pesan.special) e.pesan = 'Maksimal ' + LIM.pesan.special + ' karakter.';
-      var ns = normSlug(ST.urlDiminta); if (ST.urlDiminta && !slugSah(ns)) e.urlDiminta = 'Nama alamat 3–40 huruf/angka dan bukan kata yang dicadangkan.';
+    if (id === 'ketentuan' && !ST.ketentuanOk) e.ketentuanOk = 'Centang bahwa kamu sudah membaca dan memahami ketentuan paket Special.';
+    if (id === 'brief') {
+      var bt = String(ST.brief.tema || '').trim(), bw = String(ST.brief.warna || '').trim(), bi = String(ST.brief.interaksi || '').trim();
+      if (bt.length < 3) e.tema = 'Tulis tema yang diinginkan (minimal 3 karakter).'; else if (bt.length > LIM.briefTema) e.tema = 'Maksimal ' + LIM.briefTema + ' karakter.';
+      if (bw.length < 3) e.warna = 'Tulis warna yang diinginkan (minimal 3 karakter).'; else if (bw.length > LIM.briefTema) e.warna = 'Maksimal ' + LIM.briefTema + ' karakter.';
+      if (String(ST.brief.referensi || '').trim().length > LIM.briefRef) e.referensi = 'Maksimal ' + LIM.briefRef + ' karakter.';
+      if (bi.length < 20) e.interaksi = 'Ceritakan interaksi yang diinginkan dengan lebih lengkap (minimal 20 karakter).'; else if (bi.length > LIM.briefInter) e.interaksi = 'Maksimal ' + LIM.briefInter + ' karakter.';
+    }
+    if (id === 'naskah') {
+      for (var ni = 0; ni < ST.naskah.length; ni++) {
+        var nh = Number(ST.naskah[ni].halaman), nis = String(ST.naskah[ni].isi || '').trim();
+        if (!(nh >= 1 && nh <= LIM.halamanMaks && Math.floor(nh) === nh)) { e.naskah = 'Nomor halaman 1–' + LIM.halamanMaks + ' (bagian ke-' + (ni + 1) + ').'; break; }
+        if (nis.length < 5) { e.naskah = 'Isi ucapan minimal 5 karakter (bagian ke-' + (ni + 1) + ').'; break; }
+        if (nis.length > LIM.naskahIsi) { e.naskah = 'Isi ucapan maksimal ' + LIM.naskahIsi + ' karakter (bagian ke-' + (ni + 1) + ').'; break; }
+      }
+    }
+    if (id === 'url') { var ns = normSlug(ST.urlDiminta); if (ST.urlDiminta && !slugSah(ns)) e.urlDiminta = 'Nama alamat 3–40 huruf/angka dan bukan kata yang dicadangkan.'; }
+    if (id === 'musik') {
+      if (ST.musikMode === 'dearora' && !ST.musikId) e.musik = 'Pilih salah satu lagu pilihan Dearora.';
+      if (ST.musikMode === 'sendiri') {
+        var mt = String(ST.musikTautan || '').trim(), adaAud = files.some(function (x) { return x.jenis === 'audio'; });
+        if (mt && !/^https:\/\/\S{4,300}$/.test(mt)) e.musik = 'Tautan lagu harus diawali https://';
+        else if (!mt && !adaAud) e.musik = 'Unggah berkas lagu atau tempel tautan lagu.';
+      }
     }
     if (id === 'pesan') {
       var m = LIM.pesan[ST.paket] || 300;
@@ -861,7 +954,7 @@
       var nVid = files.filter(function (x) { return x.jenis === 'video'; }).length + baruFile.filter(function (x) { return x.jenis === 'video'; }).length;
       if (f.type === 'video/mp4') {
         if (ST.paket !== 'special') { pesan.push('Video hanya untuk paket Special'); continue; }
-        if (nVid >= 1) { pesan.push('Maksimal 1 video'); continue; }
+        if (nVid >= LIM.videoMaks) { pesan.push('Maksimal ' + LIM.videoMaks + ' video'); continue; }
         if (f.size > LIM.videoMB * 1024 * 1024) { pesan.push(nama + ' melebihi ' + LIM.videoMB + ' MB'); continue; }
         baruFile.push({ id: rand(10), jenis: 'video', blob: f, nama: nama, ukuran: f.size, url: '' });
       } else if (/^image\/(jpeg|png|webp)$/.test(f.type)) {
@@ -876,8 +969,33 @@
     paint();
     var fi = document.getElementById('fileInput'); if (fi) fi.focus({ preventScroll: true });
   }
+  async function tambahReferensi(daftar) {
+    var pesan = [], baru = [];
+    ui.kompres = true; ui.pesanRef = ''; paint();
+    for (var i = 0; i < daftar.length; i++) {
+      var f = daftar[i], nama = (f.name || 'berkas').slice(-60), n = daftarReferensi().length + baru.length;
+      if (n >= LIM.refMaks) { pesan.push('Maksimal ' + LIM.refMaks + ' berkas'); break; }
+      if (/^image\/(jpeg|png|webp)$/.test(f.type)) {
+        try { var b = await kompres(f); baru.push({ id: rand(10), jenis: 'referensi', mime: 'image/jpeg', blob: b, nama: nama.replace(/\.[^.]+$/, '') + '.jpg', ukuran: b.size, url: URL.createObjectURL(b) }); }
+        catch (e) { pesan.push(nama + ': ' + e.message); }
+      } else if (f.type === 'application/pdf') {
+        if (f.size > LIM.pdfKB * 1024) { pesan.push(nama + ': PDF maksimal 1,4 MB (tempel tautan di kolom referensi)'); continue; }
+        baru.push({ id: rand(10), jenis: 'referensi', mime: 'application/pdf', blob: f, nama: nama, ukuran: f.size, url: '' });
+      } else pesan.push(nama + ': format tidak didukung (JPG, PNG, WebP, atau PDF)');
+    }
+    files = files.concat(baru); pastikanId(); baru.forEach(function (bf) { idbSimpan(bf); }); simpanDraf(); ui.kompres = false; ui.pesanRef = pesan.slice(0, 2).join('; '); if (order) order = null; paint();
+  }
+  function tambahAudio(daftar) {
+    var f = daftar[0], nama = (f.name || 'lagu').slice(-60), tipe = /\.m4a$/i.test(nama) || /^audio\/(mp4|x-m4a|aac)$/.test(f.type) ? 'audio/mp4' : (/\.mp3$/i.test(nama) || f.type === 'audio/mpeg' ? 'audio/mpeg' : '');
+    ui.pesanAudio = '';
+    if (!tipe) ui.pesanAudio = 'Format harus MP3 atau M4A';
+    else if (f.size > LIM.audioMB * 1024 * 1024) ui.pesanAudio = nama + ' melebihi ' + LIM.audioMB + ' MB';
+    else { files.filter(function (x) { return x.jenis === 'audio'; }).forEach(function (x) { hapusTanpaPaint(x.id); }); var bf = { id: rand(10), jenis: 'audio', mime: tipe, blob: f, nama: nama, ukuran: f.size, url: '' }; files.push(bf); pastikanId(); idbSimpan(bf); simpanDraf(); errors = {}; if (order) order = null; }
+    paint();
+  }
   function geser(id, arah) {
     var i = files.findIndex(function (f) { return f.id === id; }), j = i + arah;
+    while (j >= 0 && j < files.length && files[j].jenis !== 'foto' && files[j].jenis !== 'video') j += arah;      // lewati lampiran lain (referensi, lagu)
     if (i < 0 || j < 0 || j >= files.length) return;
     var t = files[i]; files[i] = files[j]; files[j] = t; if (order) order = null; paint(); simpanDraf();
     var b = $root.querySelector('[data-f="' + (arah < 0 ? 'up' : 'down') + '"][data-id="' + id + '"]'); if (b && !b.disabled) b.focus();
@@ -922,6 +1040,12 @@
     if (ST.paket === 'basic') p.opsiDesain = ST.desainId ? ST.opsiDesain : {};
     if (ST.paket === 'premium' || ST.paket === 'invitation') { var sk = skSiap(); if (sk) p.dataDesain = skPayload(sk); }
     if (ST.paket === 'special' && ST.urlDiminta) p.urlDiminta = normSlug(ST.urlDiminta);
+    if (ST.paket === 'special') {
+      p.ideSendiri = ''; p.pesan = ''; p.ketentuan = ST.ketentuanOk === true;
+      p.brief = { tema: String(ST.brief.tema).trim(), warna: String(ST.brief.warna).trim(), referensi: String(ST.brief.referensi).trim(), interaksi: String(ST.brief.interaksi).trim() };
+      p.naskah = ST.naskah.map(function (x) { return { halaman: Number(x.halaman), isi: String(x.isi).trim() }; });
+      p.musik = { mode: ST.musikMode, musikId: ST.musikMode === 'dearora' ? (ST.musikId || '') : '', tautan: ST.musikMode === 'sendiri' ? String(ST.musikTautan || '').trim() : '', berkas: ST.musikMode === 'sendiri' && files.some(function (x) { return x.jenis === 'audio'; }) };
+    }
     var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null;
     if (pf) { p.sesi = window.Auth.token(); p.namaPembeli = pf.nama; p.whatsapp = pf.whatsapp; p.email = pf.email; }
     return p;
@@ -934,14 +1058,14 @@
       for (var coba = 0; ; coba++) {
         try {
           var r = await API.post('uploadMedia', {
-            orderId: order.id, token: order.token, fileKey: f.id, jenis: f.jenis, mime: f.jenis === 'foto' ? 'image/jpeg' : 'video/mp4',
+            orderId: order.id, token: order.token, fileKey: f.id, jenis: f.jenis, mime: f.mime || (f.jenis === 'foto' ? 'image/jpeg' : 'video/mp4'),
             nama: f.nama, urutan: urutan, bagian: i, jumlahBagian: n, ukuranTotal: total, data: b64
           }, { timeout: 90000 });
           if (!r || !r.success) throw galatPermanen((r && r.message) || 'Unggahan ditolak server.');
           break;
         } catch (e) { if (e.permanen || coba >= 2) throw e; await jeda(900 * (coba + 1)); }
       }
-      setPay('Mengunggah ' + (f.jenis === 'foto' ? 'foto' : 'video') + ' ke-' + (urutan + 1) + ' dari ' + files.length + '…', Math.round(awalPersen + lebarPersen * ((i + 1) / n)));
+      setPay('Mengunggah ' + ({ foto: 'foto', video: 'video', audio: 'lagu', referensi: 'gambar referensi' }[f.jenis] || 'berkas') + ' ke-' + (urutan + 1) + ' dari ' + files.length + '…', Math.round(awalPersen + lebarPersen * ((i + 1) / n)));
     }
   }
 
@@ -1013,6 +1137,8 @@
   function onChange(ev) {
     var el = ev.target;
     if (el.id === 'fileInput') { var l = Array.prototype.slice.call(el.files || []); el.value = ''; if (l.length) tambahBerkas(l); return; }
+    if (el.id === 'refInput') { var lr = Array.prototype.slice.call(el.files || []); el.value = ''; if (lr.length) tambahReferensi(lr); return; }
+    if (el.id === 'audioInput') { var la = Array.prototype.slice.call(el.files || []); el.value = ''; if (la.length) tambahAudio(la); return; }
     if (el.dataset && el.dataset.op) { ST.opsiDesain[el.dataset.op] = el.value; simpanDraf(); return; }
     if (el.dataset && el.dataset.opk) {
       var nm = el.dataset.opk, maks = Number(el.dataset.maks) || 4, arr = Array.isArray(ST.opsiDesain[nm]) ? ST.opsiDesain[nm].slice() : Array.prototype.slice.call($root.querySelectorAll('[data-opk="' + nm + '"]:checked')).map(function (x) { return x.value; });
@@ -1041,7 +1167,7 @@
       if (ST.desainId) { var dd = data().desain.filter(function (x) { return x.id === ST.desainId; })[0]; if (!dd || dd.paket.indexOf(ST.paket) < 0) ST.desainId = ''; }
       var nf = files.filter(function (f) { return f.jenis === 'foto'; });
       if (pk && nf.length > pk.maksFoto) { nf.slice(pk.maksFoto).forEach(function (f) { hapusTanpaPaint(f.id); }); ui.pesanFile = 'Kelebihan foto dihapus (maks. ' + pk.maksFoto + ')'; }
-      if (ST.paket !== 'special') files.filter(function (f) { return f.jenis === 'video'; }).forEach(function (f) { hapusTanpaPaint(f.id); });
+      if (ST.paket !== 'special') files.filter(function (f) { return f.jenis === 'video' || f.jenis === 'referensi' || f.jenis === 'audio'; }).forEach(function (f) { hapusTanpaPaint(f.id); });
       if (order) order = null;
       ST.desainId = (ST.desainId && data().desain.some(function (x) { return x.id === ST.desainId && x.paket.indexOf(ST.paket) >= 0; })) ? ST.desainId : ''; ST.dataDesain = {}; ST._skKunci = ''; ST.opsiDesain = {}; if (!musikPaket()) ST.musikId = '';
     }
@@ -1060,6 +1186,8 @@
     else if (a === 'up') geser(b.dataset.id, -1);
     else if (a === 'down') geser(b.dataset.id, 1);
     else if (a === 'rm') hapus(b.dataset.id);
+    else if (a === 'nk+') { if (ST.naskah.length < LIM.naskahMaks) { var akhir = ST.naskah[ST.naskah.length - 1]; ST.naskah.push({ halaman: Math.min(LIM.halamanMaks, (Number(akhir && akhir.halaman) || 0) + 1), isi: '' }); paint(); simpanDraf(); var ti = document.getElementById('nk-i-' + (ST.naskah.length - 1)); if (ti) ti.focus(); } }
+    else if (a === 'nk-') { ST.naskah.splice(Number(b.dataset.i), 1); if (!ST.naskah.length) ST.naskah.push({ halaman: 1, isi: '' }); paint(); simpanDraf(); }
     else if (a === 'pay') bayar();
     else if (a === 'soal+') { if (ST.kejutan.soal.length < 3) { ST.kejutan.soal.push(soalBaru()); paint(); simpanDraf(); } }
     else if (a === 'soal-') { if (ST.kejutan.soal.length > 1) { ST.kejutan.soal.pop(); paint(); simpanDraf(); } }

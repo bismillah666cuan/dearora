@@ -819,3 +819,9 @@ dialog.modal.demo-desk .demo-frame { position: absolute; top: 1rem; left: 50%; w
 .rating-input input:checked ~ label, .rating-input label:hover, .rating-input label:hover ~ label { color: #F5A524; } .rating-input label:hover { transform: scale(1.12); } .rating-input input:focus-visible + label { outline: 3px solid var(--primary); outline-offset: 2px; border-radius: 8px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .rating-input label { transition: none; } }
+
+/* ---- Paket Special: isi ucapan per halaman ---- */
+.naskah-list { list-style: none; margin: 0 0 1rem; padding: 0; display: grid; gap: .75rem; } .naskah-item { padding: .9rem 1rem; display: grid; gap: .5rem; } .naskah-kepala { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; } .naskah-kepala label { font-weight: 700; } .naskah-hal { width: 5.5rem; }
+.ketentuan dd { font-weight: 600; }
+
+.brief-naskah { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; } .brief-naskah li p { margin: .2rem 0 0; }

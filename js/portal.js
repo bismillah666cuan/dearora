@@ -298,6 +298,23 @@
     var baris = [['Nama', 'Status', 'Jumlah', 'Ucapan', 'Waktu'].join(',')].concat((rsvpData ? rsvpData.daftar : []).map(function (x) { return [q(x.nama), q({ hadir: 'Hadir', tidak: 'Tidak hadir', ragu: 'Belum pasti' }[x.status]), x.jumlah, q(x.ucapan), q(x.tgl)].join(','); }));
     var b = new Blob(['\ufeff' + baris.join('\r\n')], { type: 'text/csv;charset=utf-8' }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = 'jawaban-tamu-' + o.orderId + '.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(u); }, 3000);
   }
+  /* ---------------- Paket Special: brief, revisi terarah ---------------- */
+  var NAMA_JENIS = { foto: 'Foto', video: 'Video', audio: 'Lagu', referensi: 'Referensi desain' };
+  function boxBrief(o) {
+    if (o.paketId !== 'special' || !o.brief) return '';
+    var b = o.brief, h = '<div class="card order-card" id="boxBrief"><h2 class="h3">Brief kamu</h2>';
+    if (b.baru && b.brief) {
+      var m = b.musik || { mode: 'tanpa' }, musik = m.mode === 'dearora' ? 'Lagu pilihan Dearora' + (m.judul ? ': ' + esc(m.judul) : '') : (m.mode === 'sendiri' ? 'Lagu sendiri' + (m.tautan ? ' (tautan)' : '') + (m.berkas ? ' (berkas)' : '') : 'Tanpa musik');
+      h += '<dl class="summary">' + [['Tema', esc(b.brief.tema)], ['Warna', esc(b.brief.warna)], ['Contoh referensi', b.brief.referensi ? '<span style="white-space:pre-wrap">' + esc(b.brief.referensi) + '</span>' : '<span class="muted">-</span>'], ['Interaksi', '<span style="white-space:pre-wrap">' + esc(b.brief.interaksi) + '</span>'],
+        ['Musik', musik + (m.tautan ? '<br><span class="small muted" style="overflow-wrap:anywhere">' + esc(m.tautan) + '</span>' : '')], ['Alamat diminta', b.urlDiminta ? esc(b.urlDiminta) : '<span class="muted">Ditentukan kami</span>']].map(function (x) { return '<div class="sum-row"><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('') + '</dl>';
+      h += '<h3 class="small" style="margin:.9rem 0 .3rem;font-weight:800">Isi ucapan per halaman</h3><ol class="brief-naskah">' + b.naskah.map(function (x) { return '<li><span class="tag lav">Halaman ' + esc(x.halaman) + '</span><p style="white-space:pre-wrap">' + esc(x.isi) + '</p></li>'; }).join('') + '</ol>';
+    } else if (b.ide) h += '<p style="white-space:pre-wrap">' + esc(b.ide) + '</p>';
+    if (b.lampiran && b.lampiran.length) {
+      var per = {}; b.lampiran.forEach(function (x) { per[x.jenis] = (per[x.jenis] || 0) + 1; });
+      h += '<h3 class="small" style="margin:.9rem 0 .3rem;font-weight:800">Lampiran</h3><p class="small">' + Object.keys(per).map(function (j) { return '<span class="tag">' + esc(NAMA_JENIS[j] || j) + ': ' + per[j] + '</span>'; }).join(' ') + '</p>';
+    }
+    return h + '<p class="small muted" style="margin-top:.75rem">Ingin menambah atau menjelaskan sesuatu? Sampaikan lewat chat di bawah selagi ucapanmu dikerjakan. Permintaan di luar ketentuan paket Special (mis. akun pengguna, dashboard, database khusus, sistem pembayaran, atau game kompleks) dapat kami tolak.</p></div>';
+  }
   function boxChat(o) {
     if (o.paketId !== 'special') return '';
     var l = (o.chat || []).map(function (c) { return '<li class="chat-' + (c.peran === 'admin' ? 'adm' : 'pem') + '"><b>' + (c.peran === 'admin' ? 'Tim admin' : 'Kamu') + '</b> <span class="small muted">' + esc(tglJam(c.tgl)) + '</span><p>' + esc(c.pesan) + '</p></li>'; }).join('');
@@ -314,8 +331,9 @@
     var boxRevisi = '';
     if (o.paketId === 'special') {
       boxRevisi = '<div class="card order-card"><h2 class="h3">Revisi</h2>' +
-        '<p class="small muted">Paket Special mendapat 1× revisi gratis untuk perubahan teks, foto, atau urutan (bukan mengganti konsep total). Sisa kuota: <strong>' + o.kuotaRevisi + '×</strong>.</p>' +
-        (o.dapatRevisi ? '<div class="field" style="margin-top:1rem"><label for="revCatatan">Apa yang ingin diubah?</label><textarea class="input textarea" id="revCatatan" rows="4" maxlength="1050"></textarea><span class="counter" data-counter="revCatatan">0/1000</span><p class="err" id="revErr" role="alert" hidden></p></div>' +
+        '<p class="small muted">Paket Special mendapat <strong>1× revisi minor</strong>. Sisa kuota: <strong>' + o.kuotaRevisi + '×</strong>.</p>' +
+        '<div class="notice" style="margin:.5rem 0"><p class="small"><strong>Termasuk revisi minor:</strong> mengganti atau memperbaiki teks, urutan foto atau halaman, warna atau font, foto, dan musik.</p><p class="small" style="margin-top:.3rem"><strong>Tidak termasuk:</strong> mengganti tema atau konsep, menambah halaman atau fitur baru, dan hal di luar ketentuan paket Special.</p></div>' +
+        (o.dapatRevisi ? '<div class="field" style="margin-top:1rem"><label for="revJenis">Bagian yang ingin diubah</label><select class="input" id="revJenis"><option>Teks</option><option>Foto atau video</option><option>Urutan</option><option>Warna atau font</option><option>Musik</option><option>Lainnya (minor)</option></select></div><div class="field"><label for="revCatatan">Apa yang ingin diubah?</label><textarea class="input textarea" id="revCatatan" rows="4" maxlength="1050"></textarea><span class="counter" data-counter="revCatatan">0/1000</span><p class="err" id="revErr" role="alert" hidden></p></div>' +
           '<button type="button" class="btn btn-primary btn-sm" data-p="revisi" data-o="' + esc(o.orderId) + '">Ajukan Revisi</button>' : '<p class="small" style="margin-top:.75rem">' + (o.kuotaRevisi === 0 && o.revisi.length ? 'Kuota revisi sudah terpakai.' : 'Revisi dapat diajukan setelah ucapan selesai dibuat.') + '</p>') +
         (rev ? '<ul class="rev-list">' + rev + '</ul>' : '') + '</div>';
     }
@@ -332,7 +350,7 @@
       '<div class="sum-row"><dt>Pembayaran</dt><dd>Rp ' + esc(U.rupiah(o.nominal)) + ' · ' + esc(o.statusBayar) + (o.tglBayar ? ' · ' + esc(tglJam(o.tglBayar)) : '') + '</dd></div>' +
       '<div class="sum-row"><dt>Dipesan</dt><dd>' + esc(tglJam(o.tglOrder)) + '</dd></div></dl>' +
       '<div class="order-act">' + ((o.status !== 'Menunggu Pembayaran' && o.status !== 'Dibatalkan' && o.status !== 'Perlu Ditinjau') ? '<button type="button" class="btn btn-quiet btn-sm" data-p="pdf" data-o="' + esc(o.orderId) + '">Unduh PDF Bukti</button>' : '') +
-      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxRsvp(o) + boxChat(o) + boxBalasan(o) + boxTesti(o) + boxRevisi;
+      '<a class="btn btn-secondary btn-sm" href="#/portal">Kembali</a></div></article>' + boxRsvp(o) + boxBrief(o) + boxChat(o) + boxBalasan(o) + boxTesti(o) + boxRevisi;
   }
 
   async function afterDetail(main, c) {
@@ -414,12 +432,12 @@
       return;
     }
     if (a === 'revisi') {
-      var ta = $('revCatatan'), err = $('revErr'), cat = (ta.value || '').trim();
+      var ta = $('revCatatan'), err = $('revErr'), jns = $('revJenis') ? $('revJenis').value : '', cat = (ta.value || '').trim();
       if (cat.length < 10 || cat.length > 1000) { err.hidden = false; err.textContent = 'Jelaskan perubahan 10–1000 karakter.'; ta.focus(); return; }
       if (!window.confirm('Kuota revisi gratis hanya 1×. Ajukan sekarang?')) return;
       b.disabled = true; b.textContent = 'Mengirim…'; err.hidden = true;
       try {
-        var rv = await A.panggil('requestRevision', { orderId: b.dataset.o, catatan: cat });
+        var rv = await A.panggil('requestRevision', { orderId: b.dataset.o, catatan: (jns ? '[' + jns + '] ' : '') + cat });
         if (!rv.success) { err.hidden = false; err.textContent = rv.message || 'Gagal mengajukan revisi.'; b.disabled = false; b.textContent = 'Ajukan Revisi'; return; }
         $('detailRoot').innerHTML = isiDetail(rv.data); toast('Revisi diajukan');
       } catch (e) { err.hidden = false; err.textContent = 'Koneksi bermasalah. Coba lagi.'; b.disabled = false; b.textContent = 'Ajukan Revisi'; }

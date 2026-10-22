@@ -242,11 +242,38 @@
   function kv(label, nilai) { return '<div><dt>' + esc(label) + '</dt><dd>' + (nilai === '' || nilai == null ? '<span class="muted">-</span>' : nilai) + '</dd></div>'; }
   function waLink(wa) { var n = String(wa).replace(/^0/, '62').replace(/\D/g, ''); return n.length > 6 ? '<a href="https://wa.me/' + esc(n) + '" target="_blank" rel="noopener noreferrer">' + esc(wa) + '</a>' : esc(wa); }
 
+  /* ---------------- Paket Special: brief untuk pengerjaan ---------------- */
+  var NJ = { foto: 'Foto', video: 'Video', audio: 'Lagu', referensi: 'Referensi desain' };
+  function teksBrief(d) {
+    var dd = d.dataDesain, o = d.pesanan, L = [];
+    L.push('BRIEF SPECIAL · ' + o.OrderID, 'Untuk: ' + o.NamaPenerima + ' · Dari: ' + (o.TipeDari === 'anonim' ? 'Anonim' : o.NilaiDari));
+    if (dd && dd.v === 2) {
+      L.push('Tema: ' + dd.brief.tema, 'Warna: ' + dd.brief.warna, 'Referensi: ' + (dd.brief.referensi || '-'), 'Interaksi: ' + dd.brief.interaksi, '', 'ISI UCAPAN PER HALAMAN:');
+      dd.naskah.forEach(function (x) { L.push('Hal. ' + x.halaman + ': ' + x.isi); });
+      var m = dd.musik || {}; L.push('', 'Musik: ' + (m.mode === 'dearora' ? 'Lagu pilihan Dearora (' + m.musikId + ')' : m.mode === 'sendiri' ? 'Lagu sendiri' + (m.tautan ? ' · ' + m.tautan : '') + (m.berkas ? ' · berkas terlampir' : '') : 'Tanpa musik'));
+    } else L.push('Ide: ' + (o.IdeSendiri || '-'));
+    if (o.UrlDiminta) L.push('Alamat diminta: ' + d.alamatRencana);
+    return L.join('\n');
+  }
+  function panelBrief(d) {
+    if (d.pesanan.PaketID !== 'special') return '';
+    var dd = d.dataDesain, o = d.pesanan, baru = dd && dd.v === 2, h = '<div class="card" style="margin-top:1rem" id="panelBrief"><div style="display:flex;justify-content:space-between;gap:.5rem;align-items:center;flex-wrap:wrap"><h2>Brief pengerjaan</h2><button type="button" class="btn sm" data-a="salin-brief">Salin brief</button></div>';
+    if (baru) {
+      var m = dd.musik || {}, musik = m.mode === 'dearora' ? 'Lagu pilihan Dearora (' + esc(m.musikId) + ')' : m.mode === 'sendiri' ? 'Lagu sendiri' + (m.tautan ? ' · <a href="' + esc(m.tautan) + '" target="_blank" rel="noopener noreferrer">tautan lagu</a>' : '') + (m.berkas ? ' · berkas terlampir' : '') : 'Tanpa musik';
+      h += '<dl class="kv">' + [['Tema', esc(dd.brief.tema)], ['Warna', esc(dd.brief.warna)], ['Referensi', esc(dd.brief.referensi || '-')], ['Interaksi', esc(dd.brief.interaksi)], ['Musik', musik], ['Alamat diminta', esc(d.alamatRencana || '(tidak ada, tentukan sendiri)')], ['Ketentuan', 'Pembeli menyetujui ketentuan paket Special · ' + esc(tglJam(dd.ketentuanTgl))]].map(function (x) { return '<div><dt>' + x[0] + '</dt><dd style="white-space:pre-wrap">' + x[1] + '</dd></div>'; }).join('') + '</dl>';
+      h += '<h3 style="margin:.9rem 0 .3rem">Isi ucapan per halaman</h3><ol class="brief-naskah">' + dd.naskah.map(function (x) { return '<li><span class="badge">Halaman ' + esc(x.halaman) + '</span><p style="white-space:pre-wrap;margin:.2rem 0 .6rem">' + esc(x.isi) + '</p></li>'; }).join('') + '</ol>';
+    } else h += '<p class="muted small">Pesanan dengan format lama (ide bebas).</p><p style="white-space:pre-wrap">' + esc(o.IdeSendiri || '-') + '</p>' + (o.Pesan ? '<h3 style="margin:.9rem 0 .3rem">Naskah</h3><p style="white-space:pre-wrap">' + esc(o.Pesan) + '</p>' : '');
+    var lamp = (d.media || []).filter(function (x) { return x.status === 'ada'; });
+    h += '<h3 style="margin:.9rem 0 .3rem">Lampiran (' + lamp.length + ')</h3>' + (lamp.length ? '<ul class="lampiran">' + lamp.map(function (x) { return '<li><span class="badge">' + esc(NJ[x.jenis] || x.jenis) + '</span> ' + (x.driveId ? '<a href="https://drive.google.com/file/d/' + encodeURIComponent(x.driveId) + '/view" target="_blank" rel="noopener noreferrer">' + esc(x.nama) + '</a>' : esc(x.nama)) + ' <span class="muted small">' + (x.ukuran ? (x.ukuran / 1024 / 1024).toFixed(2) + ' MB' : '') + '</span></li>'; }).join('') + '</ul>' : '<p class="muted small">Tidak ada lampiran.</p>') +
+      (d.folderId ? '<p class="small" style="margin-top:.5rem"><a href="https://drive.google.com/drive/folders/' + encodeURIComponent(d.folderId) + '" target="_blank" rel="noopener noreferrer">Buka folder Drive pesanan</a></p>' : '');
+    return h + '</div>';
+  }
+  var TEMPLAT_CHAT = [['Brief diterima', 'Halo, briefmu sudah kami terima dan sedang kami kerjakan. Estimasi 1–2 hari kerja. Kami kabari lewat chat ini bila ada yang perlu dikonfirmasi.'], ['Perlu klarifikasi', 'Halo, ada yang ingin kami pastikan dulu supaya hasilnya tepat: '], ['Ucapan siap', 'Kabar baik, ucapanmu sudah selesai dan aktif. Silakan dicek lewat link di portal. Jika ada perubahan minor, kamu masih punya 1× revisi.'], ['Revisi diterima', 'Revisimu sudah kami terima dan sedang dikerjakan. Kami kabari setelah selesai.'], ['Di luar cakupan', 'Mohon maaf, permintaan tersebut di luar cakupan paket Special (website ucapan tanpa akun, dashboard, database khusus, sistem pembayaran, atau game kompleks). Kami usulkan versi sederhana yang tetap berupa website ucapan.']];
   function panelChat(d) {
     if (d.pesanan.PaketID !== 'special') return '';
     var daftar = (d.chat || []).map(function (c) { return '<li class="chat-' + (c.peran === 'admin' ? 'adm' : 'pem') + '"><b>' + (c.peran === 'admin' ? 'Admin' : 'Pembeli') + '</b> <span class="muted small">' + esc(tglJam(c.tgl)) + '</span><p>' + esc(c.pesan) + '</p></li>'; }).join('');
     return '<div class="card" style="margin-top:1rem" id="panelChat"><h2>Chat dengan pembeli</h2>' + (daftar ? '<ul class="chat-list">' + daftar + '</ul>' : '<p class="muted">Belum ada percakapan. Pembeli bisa menulis dari portal, dan Ibu bisa memulai di sini untuk mengarahkan desainnya.</p>') +
-      (d.chatAktif ? '<div class="field" style="margin-top:.75rem"><label class="sr" for="chatIsi">Pesan</label><textarea id="chatIsi" rows="3" maxlength="1000" placeholder="Tulis pesan untuk pembeli (mis. konfirmasi warna, urutan foto)…"></textarea></div><button class="btn primary sm" data-a="chat-kirim">Kirim pesan</button> <span class="small muted">Pembeli menerima email pemberitahuan.</span>' :
+      (d.chatAktif ? '<div class="templat-chat" style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.75rem" role="group" aria-label="Balasan cepat">' + TEMPLAT_CHAT.map(function (x, i) { return '<button type="button" class="btn sm" data-tpl="' + i + '">' + esc(x[0]) + '</button>'; }).join('') + '</div><div class="field" style="margin-top:.5rem"><label class="sr" for="chatIsi">Pesan</label><textarea id="chatIsi" rows="3" maxlength="1000" placeholder="Tulis pesan untuk pembeli (mis. konfirmasi warna, urutan foto)…"></textarea></div><button class="btn primary sm" data-a="chat-kirim">Kirim pesan</button> <span class="small muted">Pembeli menerima email pemberitahuan.</span>' :
         '<p class="small muted" style="margin-top:.75rem">Chat ditutup: pesanan sudah selesai dan jatah revisi habis. Riwayat tetap bisa dibaca.</p>') + '</div>';
   }
   function aksiDetail(d) {
@@ -289,7 +316,7 @@
     return '<div class="page-h"><div><h1 tabindex="-1" id="h1">' + esc(o.OrderID) + '</h1><p class="muted small">Paket ' + esc(d.paket) + ' · dipesan ' + esc(tglJam(o.TglOrder)) + '</p></div>' + badge(o.Status) + '</div>' +
       (o.Status === 'Dibayar' && o.PaketID !== 'special' ? '<p class="banner" role="alert">' + ic('alert') + '<span>Pembayaran sudah masuk tetapi link ucapan belum aktif. Tekan <strong>Aktifkan sekarang</strong>; jika gagal, alasannya akan ditampilkan.</span></p>' : '') +
       (o.Status === 'Perlu Ditinjau' ? '<p class="banner bad" role="alert">' + ic('alert') + '<span>Pembayaran perlu ditinjau (nominal tidak cocok atau dibayar setelah dibatalkan). Cek catatan pembayaran di bawah.</span></p>' : '') +
-      '<div class="card"><h2>Tindakan</h2>' + aksiDetail(d) + '</div>' + panelChat(d) +
+      '<div class="card"><h2>Tindakan</h2>' + aksiDetail(d) + '</div>' + panelBrief(d) + panelChat(d) +
       '<div class="grid two" style="margin-top:1rem"><div class="card"><h2>Pembeli</h2><dl class="kv">' + kv('Nama', esc(o.NamaPembeli)) + kv('WhatsApp', waLink(o.WhatsApp)) + kv('Email', '<a href="mailto:' + esc(o.Email) + '">' + esc(o.Email) + '</a>') +
       kv('Kode redeem', d.akun ? '<span class="mono">' + esc(d.akun.kodeRedeem) + '</span> ' + (d.akun.punyaPassword ? '<span class="badge ok">Password dibuat</span>' : '<span class="badge warn">Belum dipakai</span>') + ' <span class="badge">' + esc(d.akun.status) + '</span>' : '') + kv('Akun lama', o.AkunTertaut === 'ya' ? 'Ya (ditautkan)' : 'Tidak') + '</dl></div>' +
       '<div class="card"><h2>Ucapan</h2><dl class="kv">' + kv('Tautan', o.LinkHasil ? '<a href="' + esc(o.LinkHasil) + '" target="_blank" rel="noopener noreferrer">' + esc(o.LinkHasil) + '</a>' : '') + kv('Aktif', o.TglAktif ? esc(tglJam(o.TglAktif)) : '') + kv('Berakhir', o.TglKedaluwarsa ? esc(tglJam(o.TglKedaluwarsa)) : '') + kv('Berkas dihapus', dihapus ? esc(tglJam(o.TglDihapus)) : '') + '</dl></div></div>' +
@@ -575,9 +602,11 @@
     if (c.checked) terpilih[c.dataset.pilih] = true; else delete terpilih[c.dataset.pilih]; perbaruiBar();
   });
   document.addEventListener('click', async function (ev) {
+    var tpl = ev.target.closest('[data-tpl]'); if (tpl) { var ci = document.getElementById('chatIsi'); if (ci) { ci.value = TEMPLAT_CHAT[Number(tpl.dataset.tpl)][1]; ci.focus(); ci.setSelectionRange(ci.value.length, ci.value.length); } return; }
     if (document.getElementById('tbox') && ev.target.closest('[data-tab], [data-t]')) { try { await aksiTesti(ev); } catch (e) { if (e.message !== 'sesi') toast('Koneksi bermasalah'); } return; }
     var b = ev.target.closest('[data-a]'); if (!b || b.dataset.a === 'toggle') return;
     var a = b.dataset.a;
+    if (a === 'salin-brief') { var tb = teksBrief(detailSaatIni); (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(tb) : Promise.reject()).then(function () { toast('Brief disalin'); }, function () { var ta0 = document.createElement('textarea'); ta0.value = tb; document.body.appendChild(ta0); ta0.select(); try { document.execCommand('copy'); toast('Brief disalin'); } catch (e) { toast('Gagal menyalin'); } ta0.remove(); }); return; }
     if (a === 'tema') { setTema(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); return; }
     if (a === 'keluar') { try { await API.post('adminLogout', {}, { token: token, timeout: 8000 }); } catch (e) { /* tetap keluar */ } simpanToken(''); shellAda = false; location.hash = '#/'; tampilLogin(); return; }
     if (a === 'muat-ulang') { render(); return; }

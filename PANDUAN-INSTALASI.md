@@ -426,3 +426,20 @@ Setiap tamu kini dapat disapa **sesuai nama dan sebutannya** di semua desain und
 **3. `isiUlangKatalogDesain` kini aman.** Sebelumnya fungsi ini **menimpa nama, paket, dan status aktif semua desain bawaan** dengan nilai bawaan setiap dijalankan, sehingga perubahan Ibu di Admin bisa hilang. Sekarang ia hanya **menambahkan desain bawaan yang belum ada** dan tidak mengubah yang sudah ada. Untuk sengaja mengembalikan semuanya ke bawaan, tersedia **`setelUlangKatalogDesain`** (menimpa seluruh perubahan).
 **4. Menu "Testimoni" di navigasi publik.** Tautan **Testimoni** kini ada di header (antara Cara Kerja dan FAQ), laci menu seluler, dan footer, selain bagian "Kata Mereka" di beranda.
 **Pemasangan:** ganti isi `Kode` di Apps Script (bukan file baru), deploy **versi baru**, jalankan `periksaTemaDesain` lalu `pulihkanTemaDesain`; timpa frontend, isi ulang `GAS_URL`, `git push`.
+
+
+## Paket Special: alur pemesanan baru, brief, dan pengalaman pembeli/admin
+**Urutan langkah form Special:** Paket → **Ketentuan Paket Special** → **Brief Desain** → Untuk Siapa → **Isi Ucapan** → Foto → **Alamat Ucapan** → **Musik** → Catatan → Data Pemesan → Ringkasan → Bayar.
+- **Ketentuan** langsung tampil setelah memilih Special: tema dan warna bebas request; layout custom berbasis website ucapan satu halaman atau beberapa section; maksimal 30 halaman dalam satu alur ucapan; interaksi bebas request; maksimal 20 foto dan 1–3 video pendek; musik sesuai request tanpa melanggar hak cipta atau tautan sendiri; revisi 1× (minor); tanpa backend khusus. **Di luar cakupan:** website dengan akun dan autentikasi pengguna, dashboard admin dan pengelolaan data, database dengan proses bisnis khusus, sistem pembayaran atau pemesanan, game kompleks atau aplikasi dengan backend khusus. Pembeli wajib mencentang bahwa ia memahami (juga diperiksa server dan dicatat waktunya).
+- **Brief:** tema, warna, contoh referensi (opsional), interaksi (min. 20 karakter), dan unggah **gambar atau PDF referensi** (opsional, maks. 5 berkas; PDF maks. 1,4 MB, lebih besar pakai tautan).
+- **Isi Ucapan:** hingga 12 bagian; tiap bagian ditempatkan di **halaman 1–30**; diurutkan otomatis menurut nomor halaman.
+- **Musik (opsional):** tanpa musik, **lagu pilihan Dearora**, atau **lagu sendiri** (unggah MP3/M4A maks. 10 MB, atau tautan https). Bila memilih berkas, berkas harus sudah terunggah sebelum bayar.
+- **Foto & video:** foto sesuai **Maks. foto** di Pengaturan paket; video hingga **3** (maks. 25 MB per video). Minimal 1 foto tetap wajib.
+**Yang perlu Ibu atur di Admin:**
+1. **Admin → Pengaturan → Paket → Special → Maks. foto = 20** (di sheet masih 30 bila belum diubah). Kode mengikuti angka di sheet.
+2. **Admin → Pengaturan → Musik:** tambahkan **2 lagu pilihan Dearora** (berlisensi, berkas mp3 di `assets/musik/` lewat GitHub) dan aktifkan. Selama belum ada lagu aktif, pilihan itu menampilkan "belum tersedia".
+**Pembeli (Portal → detail pesanan Special):** kotak **Brief kamu** (tema, warna, referensi, interaksi, musik, alamat diminta, isi ucapan per halaman, ringkasan lampiran), chat dengan admin, dan **Revisi 1× minor** yang memandu jenis perubahan (Teks, Foto atau video, Urutan, Warna atau font, Musik, Lainnya) dengan keterangan yang termasuk dan tidak termasuk revisi minor.
+**Admin (detail pesanan Special):** panel **Brief pengerjaan** (naskah per halaman, musik, alamat, persetujuan ketentuan, lampiran dengan tautan Drive per berkas, tautan folder), tombol **Salin brief**, dan **5 balasan cepat** di chat (brief diterima, perlu klarifikasi, ucapan siap, revisi diterima, di luar cakupan).
+**Kompatibilitas:** pesanan Special lama (format "ide bebas") tetap tampil dan bisa dikerjakan; hanya pesanan baru yang memakai brief terstruktur.
+**Pemasangan:** ganti isi `Kode`, `Pesanan`, `Pembayaran`, `Portal` di Apps Script (bukan file baru; `Admin` dan `Email` ikut diganti bila belum), deploy **versi baru**; timpa frontend, isi ulang `GAS_URL`, `git push`.
+**Catatan:** unggahan lagu dan referensi baru diuji dengan Google tiruan; coba satu pesanan Special sungguhan (sandbox) sebelum dibuka ke publik.
