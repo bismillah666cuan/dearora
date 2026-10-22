@@ -52,7 +52,7 @@
           });
           ubahStatus();
   }
-  /** Tamu dari tautan personal: ?u=Nama&s=sebutan&x=sufiks → "Saudari Siska", "Ibu Ani beserta Keluarga". Hanya nilai dari daftar yang dikenal; tanpa HTML. */
+  /** Tamu dari tautan personal: ?u=Nama&s=sebutan&x=sufiks → "Saudari Laiba", "Ibu Ani beserta Keluarga". Hanya nilai dari daftar yang dikenal; tanpa HTML. */
   var SEBUTAN = { bapak: 'Bapak', ibu: 'Ibu', saudara: 'Saudara', saudari: 'Saudari', kak: 'Kak', bapakibu: 'Bapak/Ibu', saudarai: 'Saudara/i' }, SUFIKS = { keluarga: 'beserta Keluarga', pasangan: '& Pasangan' };
   function tamuInfo() {
     var q = null; try { q = new URLSearchParams(location.search); } catch (e) { /* abaikan */ }

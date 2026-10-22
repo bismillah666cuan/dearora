@@ -255,7 +255,7 @@
     kutipan: 'Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup agar kamu merasa tenteram kepadanya.', dresscode: 'Nuansa pastel', fotoSampul: '',
     penutup: 'Merupakan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Terima kasih atas doa dan restunya.',
     mempelai: { wanita: 'Rani Putri Lestari', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Dimas Aditya Pratama', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
-    acara: [{ nama: 'Akad Nikah', tanggal: '2027-03-15', jam: '09.00 WIB', tempat: 'Masjid Al-Ikhlas', alamat: 'Jl. Melati No. 12, Karawang', peta: '' }, { nama: 'Resepsi', tanggal: '2027-03-15', jam: '11.00–14.00 WIB', tempat: 'Gedung Serbaguna Asri', alamat: 'Jl. Pemuda No. 3, Karawang', peta: '' }],
+    acara: [{ nama: 'Akad Nikah', tanggal: '2027-03-15', jam: '09.00 WIB', tempat: 'Masjid Al-Ikhlas', alamat: 'Jl. Melati No. 12, Bandung', peta: '' }, { nama: 'Resepsi', tanggal: '2027-03-15', jam: '11.00–14.00 WIB', tempat: 'Gedung Serbaguna Asri', alamat: 'Jl. Pemuda No. 3, Bandung', peta: '' }],
     kisah: [{ waktu: '2019', judul: 'Pertama Bertemu', cerita: 'Di sebuah acara kampus, kami saling melempar senyum untuk pertama kalinya.', foto: '' }, { waktu: '2022', judul: 'Menjadi Kita', cerita: 'Setelah bertahun-tahun berteman, kami memutuskan berjalan bersama.', foto: '' }, { waktu: '2026', judul: 'Lamaran', cerita: 'Dengan restu keluarga, kami melangkah ke jenjang yang lebih serius.', foto: '' }],
     galeri: [], rekening: [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Rani Putri' }], rsvp: { maksTamu: 4, catatan: 'Mohon konfirmasi kehadiran sebelum 1 Maret 2027.' } };
   SKEMA.uceria.contoh = { judul: 'Ulang Tahun ke-7 Nara', sapaan: 'Yuk, rayakan hari spesial Nara bersama! Ada kue, permainan, dan banyak tawa menunggu.',
@@ -274,7 +274,7 @@
     kutipan: 'Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. (QS. Ar-Rum: 21)', dresscode: 'Nuansa hijau dan krem', fotoSampul: '',
     penutup: 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir. Jazakumullahu khairan atas doa dan restunya.',
     mempelai: { wanita: 'Aisyah Putri Rahmawati', wanitaOrtu: 'Putri dari Bapak H. Hendra & Ibu Hj. Sari', wanitaFoto: '', pria: 'Muhammad Faris Aditya', priaOrtu: 'Putra dari Bapak H. Budi & Ibu Hj. Ani', priaFoto: '' },
-    acara: ACARA2(['Akad Nikah', '08.00 WIB', 'Masjid Al-Ikhlas', 'Jl. Melati No. 12, Karawang'], ['Resepsi', '11.00–14.00 WIB', 'Gedung Serbaguna Asri', 'Jl. Pemuda No. 3, Karawang']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+    acara: ACARA2(['Akad Nikah', '08.00 WIB', 'Masjid Al-Ikhlas', 'Jl. Melati No. 12, Bandung'], ['Resepsi', '11.00–14.00 WIB', 'Gedung Serbaguna Asri', 'Jl. Pemuda No. 3, Bandung']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
   temaNikah('urustik', 'Undangan Rustic Boho', { judul: 'Maya & Raka', sapaan: 'Kami menikah, dan ingin merayakannya bersama orang-orang tercinta di kebun yang teduh. Datang ya, dan ceritakan kisahmu bersama kami!',
     kutipan: 'Cinta tidak mengenal lelah; ia tumbuh pelan seperti pohon, dan teduh bagi siapa saja yang berteduh di bawahnya.', dresscode: 'Earth tone: krem, sage, terakota', fotoSampul: '',
     penutup: 'Terima kasih sudah menjadi bagian dari cerita kami. Sampai jumpa di kebun!',
@@ -284,7 +284,7 @@
     kutipan: 'Di antara jutaan bintang, aku menemukanmu.', dresscode: 'Dress code: biru tua atau hitam', fotoSampul: '',
     penutup: 'Kehadiran dan doa Anda adalah bintang yang menerangi malam kami. Terima kasih.',
     mempelai: { wanita: 'Nadia Salsabila', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Reza Mahendra', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
-    acara: ACARA2(['Akad Nikah', '16.00 WIB', 'Rumah Mempelai Wanita', 'Jl. Melati No. 12, Karawang'], ['Resepsi Malam', '19.00 WIB', 'Rooftop Langit Biru', 'Jl. Pemuda No. 3, Karawang']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+    acara: ACARA2(['Akad Nikah', '16.00 WIB', 'Rumah Mempelai Wanita', 'Jl. Melati No. 12, Bandung'], ['Resepsi Malam', '19.00 WIB', 'Rooftop Langit Biru', 'Jl. Pemuda No. 3, Bandung']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
   temaNikah('ujawa', 'Undangan Adat Jawa', { judul: 'Sekar & Bagas', sapaan: 'Atas berkat rahmat Tuhan Yang Maha Esa, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada pernikahan kami dengan adat Jawa.',
     kutipan: 'Doa restu Bapak/Ibu/Saudara/i adalah bekal kami membangun rumah tangga yang tenteram dan sejahtera.', dresscode: 'Busana batik atau kebaya', fotoSampul: '',
     penutup: 'Atas kehadiran dan doa restu Bapak/Ibu/Saudara/i, kami ucapkan terima kasih.',
@@ -320,7 +320,7 @@
   var REK2 = [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Tuan Rumah' }], RSVP2 = { maksTamu: 5, catatan: 'Mohon konfirmasi kehadiran dan jumlah tamu agar kami dapat menyiapkan hidangan.' };
   temaAcara('usultan', 'Undangan Sultan Cilik', { judul: 'Khitanan Muhammad Fauzan', sapaan: 'Dengan memohon rahmat Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri syukuran khitanan putra kami tercinta dan memberikan doa terbaik untuknya.',
     kutipan: 'Ya Allah, jadikanlah anak kami anak yang saleh, sehat, dan bermanfaat bagi agama dan bangsa. Aamiin.', dresscode: 'Busana muslim atau batik', fotoSampul: '', penutup: 'Kehadiran dan doa Bapak/Ibu/Saudara/i sangat berarti bagi kami. Jazakumullahu khairan.',
-    tokoh: { nama: 'Muhammad Fauzan Al-Fatih', ortu: 'Putra dari Bapak Hendra & Ibu Sari', foto: '' }, acara: ACR('Syukuran Khitanan', '10.00 WIB', 'Rumah Keluarga Hendra', 'Jl. Melati No. 12, Karawang'),
+    tokoh: { nama: 'Muhammad Fauzan Al-Fatih', ortu: 'Putra dari Bapak Hendra & Ibu Sari', foto: '' }, acara: ACR('Syukuran Khitanan', '10.00 WIB', 'Rumah Keluarga Hendra', 'Jl. Melati No. 12, Bandung'),
     denah: 'Parkir tersedia di lapangan sebelah rumah. Masuk gang dekat warung Bu Siti, rumah kedua dengan pagar hijau.', siaran: '', susunan: SUSUN([['09.30 WIB', 'Registrasi tamu'], ['10.00 WIB', 'Pembukaan dan doa'], ['10.30 WIB', 'Tausiyah singkat'], ['11.00 WIB', 'Makan bersama']]), galeri: [], rekening: REK2, rsvp: RSVP2 });
   temaAcara('ulentera', 'Undangan Islami Ceria', { judul: 'Khitanan Abdullah', sapaan: 'Assalamu’alaikum. Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada acara khitanan putra kami dan memberikan doa terbaik.',
     kutipan: 'Semoga Allah menjadikan anak kami anak yang saleh, sehat, dan menjadi kebanggaan keluarga. Aamiin.', dresscode: 'Nuansa hijau dan kuning', fotoSampul: '', penutup: 'Terima kasih atas kehadiran dan doa Bapak/Ibu/Saudara/i. Wassalamu’alaikum Warahmatullahi Wabarakatuh.',
