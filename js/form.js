@@ -18,8 +18,8 @@
   };
   var ID_LANGKAH = { namaPembeli: 'pemesan', whatsapp: 'pemesan', email: 'pemesan', penerima: 'untuk', tipeDari: 'untuk', nilaiDari: 'untuk',
     pesan: 'pesan', pesanPersonal: 'pesan', desain: 'desain', musikId: 'ekstra', jenisSurprise: 'ekstra', pesanRahasia: 'ekstra',
-    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket', kejutanJenis: 'kejutan', kejutanUcapan: 'kejutan', kejutanDetail: 'kejutan', dataDesain: 'isi', ideSendiri: 'brief', urlDiminta: 'url', tema: 'brief', warna: 'brief', referensi: 'brief', interaksi: 'brief', naskah: 'naskah', musik: 'musik', ketentuan: 'ketentuan' };
-  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Surat', kejutan: 'Kejutan Akhir', foto: 'Foto', desain: 'Desain', isi: 'Isi Desain', ide: 'Ide Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan', ketentuan: 'Ketentuan Paket Special', brief: 'Brief Desain', naskah: 'Isi Ucapan', url: 'Alamat Ucapan', musik: 'Musik' };
+    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket', kejutanJenis: 'kejutan', kejutanUcapan: 'kejutan', kejutanDetail: 'kejutan', dataDesain: 'isi', tamu: 'tamu', tamuTeks: 'tamu', ideSendiri: 'brief', urlDiminta: 'url', tema: 'brief', warna: 'brief', referensi: 'brief', interaksi: 'brief', naskah: 'naskah', musik: 'musik', ketentuan: 'ketentuan' };
+  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Surat', kejutan: 'Kejutan Akhir', foto: 'Foto', desain: 'Desain', isi: 'Isi Desain', ide: 'Ide Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan', ketentuan: 'Ketentuan Paket Special', tamu: 'Daftar Tamu', brief: 'Brief Desain', naskah: 'Isi Ucapan', url: 'Alamat Ucapan', musik: 'Musik' };
 
   var ST = null;            // isian
   var langkah = 0;          // indeks langkah aktif
@@ -58,7 +58,7 @@
   function baru() {
     return isiDariIngatan({ kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
       mode: 'pilih', desainId: '', ideSendiri: '', musikId: '', jenisSurprise: '', pesanRahasia: '', passwordRahasia: '', pembuka: 'judul',
-      ketentuanOk: false, brief: { tema: '', warna: '', referensi: '', interaksi: '' }, naskah: [{ halaman: 1, isi: '' }], musikMode: 'tanpa', musikTautan: '',
+      tamuTeks: '', tamuSeb: 'saudarai', ketentuanOk: false, brief: { tema: '', warna: '', referensi: '', interaksi: '' }, naskah: [{ halaman: 1, isi: '' }], musikMode: 'tanpa', musikTautan: '',
       catatan: '', setuju: false, _langkah: 0, _id: '', _berkas: [] });
   }
   /* ---------------- Draf: bisa banyak (riwayat ucapan yang sedang disusun) ---------------- */
@@ -231,7 +231,7 @@
   function daftarLangkah() {
     if (ST.paket === 'premium') return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'isi', 'catatan', 'pemesan', 'ringkasan'];
     if (ST.paket === 'special') return ['paket', 'ketentuan', 'brief', 'untuk', 'naskah', 'foto', 'url', 'musik', 'catatan', 'pemesan', 'ringkasan'];
-    if (ST.paket === 'invitation') return ['paket', 'desain', 'untuk', 'foto', 'isi', 'catatan', 'pemesan', 'ringkasan'];
+    if (ST.paket === 'invitation') return ['paket', 'desain', 'untuk', 'foto', 'isi', 'tamu', 'catatan', 'pemesan', 'ringkasan'];
     return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'catatan', 'pemesan', 'ringkasan'];
   }
   /** Urutan lama (sebelum data pemesan dipindah ke akhir): dipakai hanya untuk memulihkan draf lama ke langkah yang tepat. */
@@ -440,7 +440,7 @@
   var SKALAR = ['teks', 'area', 'foto', 'pilih', 'angka', 'cek'];
   function skHTML(bagian, jalur) {
     var utama = [], opsi = [];
-    bagian.forEach(function (f) { ((f.tipe === 'teks' || f.tipe === 'area' || f.tipe === 'cek') && !f.wajib ? opsi : utama).push(f); });
+    bagian.forEach(function (f) { ((f.tipe === 'teks' || f.tipe === 'area' || f.tipe === 'cek') && !f.wajib && !f.tampil ? opsi : utama).push(f); });          // f.tampil: isian opsional yang penting (mis. peta) tetap terlihat
     if (!utama.length) { utama = opsi; opsi = []; }                 // bila semua kolom opsional, tampilkan langsung (jangan disembunyikan)
     var h = utama.map(function (f) { return skField(f, jalur ? jalur + '.' + f.k : f.k); }).join('');
     if (opsi.length) {
@@ -632,6 +632,21 @@
     return h + (errors.musik ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.musik) + '</p>' : '');
   };
 
+
+  /* ---------------- Undangan: daftar tamu ("Kepada Yth" per tamu) ---------------- */
+  var OPSI_SEB = [['saudarai', 'Saudara/i'], ['bapakibu', 'Bapak/Ibu'], ['bapak', 'Bapak'], ['ibu', 'Ibu'], ['saudara', 'Saudara'], ['saudari', 'Saudari'], ['kak', 'Kak'], ['', 'Tanpa sebutan (nama saja)']];
+  function pratinjauTamu() {
+    var T = window.Tamu, d = T.daftar(ST.tamuTeks, ST.tamuSeb);
+    return d.length ? '<p class="small muted">' + d.length + ' tamu. Contoh sapaan yang tampil:</p><ul class="stack small">' + d.slice(0, 5).map(function (u) { return '<li>Kepada Yth. <strong>' + esc(T.sapa({ nama: u.n, s: u.s, x: u.x })) + '</strong></li>'; }).join('') + (d.length > 5 ? '<li class="muted">… dan ' + (d.length - 5) + ' tamu lainnya</li>' : '') + '</ul>' : '<p class="small muted">Belum ada tamu. Bila dikosongkan, undanganmu memakai satu tautan umum dengan sapaan "Kepada Yth. Bapak/Ibu/Saudara/i".</p>';
+  }
+  VIEW.tamu = function () {
+    return '<p class="lead small" style="margin-bottom:1rem">Agar setiap tamu disapa namanya, mis. <strong>"Kepada Yth. Saudari Laiba"</strong>, tulis nama tamu di sini. Setelah pembayaran, <strong>tautan untuk tiap tamu dibuat otomatis</strong> di Portal, siap disalin atau dikirim lewat WhatsApp. Langkah ini opsional dan bisa diisi atau diubah nanti di Portal.</p>' +
+      fld('tamuSeb', 'Sebutan untuk nama tanpa sebutan', '<select class="input" id="tamuSeb" data-k="tamuSeb">' + OPSI_SEB.map(function (o) { return '<option value="' + o[0] + '"' + (ST.tamuSeb === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>', 'Dipakai untuk baris yang tidak menyebut sebutan.', true) +
+      fld('tamuTeks', 'Daftar tamu (satu nama per baris)', ta('tamuTeks', 12000, 8), 'Tulis sebutan di depan nama bila perlu: Saudari Laiba, Bapak Budi, Ibu Ani dan keluarga, Kak Dewi, Sdr. Raka & pasangan. Maksimal 300 tamu.', true) +
+      '<div id="tamuPreview" aria-live="polite">' + pratinjauTamu() + '</div>' +
+      '<p class="notice">Daftar tamu disimpan di pesananmu hanya untuk membuat tautan personal. Tidak ditampilkan di halaman undangan, hanya kamu yang bisa melihatnya, dan ikut terhapus bersama pesanan.</p>';
+  };
+
   VIEW.foto = function () {
     var pk = paketAktif() || { maksFoto: 0 };
     var nf = files.filter(function (f) { return f.jenis === 'foto'; }).length;
@@ -746,6 +761,7 @@
         ringkasBaris('Isi ucapan', ST.naskah.length + ' bagian · halaman ' + ST.naskah.map(function (x) { return x.halaman; }).sort(function (a, b) { return a - b; }).join(', '), 'naskah') +
         ringkasBaris('Alamat', ST.urlDiminta ? esc(normSlug(ST.urlDiminta)) + '.' + esc(domainSpecial()) : '<span class="muted">Ditentukan kami</span>', 'url') +
         ringkasBaris('Musik', ST.musikMode === 'tanpa' ? 'Tanpa musik' : (ST.musikMode === 'dearora' ? esc(((d.musik || []).filter(function (m) { return m.id === ST.musikId; })[0] || {}).judul || 'Lagu pilihan Dearora') : 'Lagu sendiri' + (files.some(function (x) { return x.jenis === 'audio'; }) ? ' (berkas)' : '') + (ST.musikTautan ? ' (tautan)' : '')), 'musik') : '') +
+      (ST.paket === 'invitation' ? ringkasBaris('Daftar tamu', (function () { var n = window.Tamu ? window.Tamu.daftar(ST.tamuTeks, ST.tamuSeb).length : 0; return n ? n + ' tamu <span class="muted small">(tautan personal dibuat otomatis di Portal)</span>' : '<span class="muted">Satu tautan umum ("Kepada Yth. Bapak/Ibu/Saudara/i")</span>'; })(), 'tamu') : '') +
       ((ST.paket === 'premium' || ST.paket === 'invitation') ? ringkasBaris('Isi desain', 'Sudah diisi (' + ((skSkema() || { skema: { nama: '' } }).skema.nama) + ')', 'isi') : '') +
       (templatPaket() ? ringkasBaris('Kejutan akhir', esc((JENIS_KEJUTAN.filter(function (j) { return j.id === ST.kejutan.jenis; })[0] || {}).nama || '') + '<br><span class="clip muted small">' + esc(ST.kejutan.ucapan) + '</span>', 'kejutan') : '') +
       ringkasBaris('Foto', files.filter(function (f) { return f.jenis === 'foto'; }).length + ' foto' + (files.some(function (f) { return f.jenis === 'video'; }) ? ' + ' + files.filter(function (f) { return f.jenis === 'video'; }).length + ' video' : ''), 'foto') +
@@ -814,6 +830,7 @@
       if (ST.tipeDari === 'inisial' && t('nilaiDari').length > 6) e.nilaiDari = 'Inisial maksimal 6 karakter.';
     }
     if (id === 'isi') { var sk = skSiap(); if (!sk) e.dataDesain = 'Pilih desain terlebih dahulu.'; else { var es = skValidasi(sk); if (Object.keys(es).length) { e.sk = es; e.dataDesain = es[Object.keys(es)[0]]; } } }
+    if (id === 'tamu' && window.Tamu && String(ST.tamuTeks || '').split(/\r?\n/).filter(function (x) { return x.trim(); }).length > 300) e.tamuTeks = 'Maksimal 300 tamu per undangan.';
     if (id === 'ketentuan' && !ST.ketentuanOk) e.ketentuanOk = 'Centang bahwa kamu sudah membaca dan memahami ketentuan paket Special.';
     if (id === 'brief') {
       var bt = String(ST.brief.tema || '').trim(), bw = String(ST.brief.warna || '').trim(), bi = String(ST.brief.interaksi || '').trim();
@@ -1039,6 +1056,7 @@
     if (templatPaket()) p.kejutan = kejutanPayload();
     if (ST.paket === 'basic') p.opsiDesain = ST.desainId ? ST.opsiDesain : {};
     if (ST.paket === 'premium' || ST.paket === 'invitation') { var sk = skSiap(); if (sk) p.dataDesain = skPayload(sk); }
+    if (ST.paket === 'invitation' && window.Tamu) p.tamu = window.Tamu.daftar(ST.tamuTeks, ST.tamuSeb);
     if (ST.paket === 'special' && ST.urlDiminta) p.urlDiminta = normSlug(ST.urlDiminta);
     if (ST.paket === 'special') {
       p.ideSendiri = ''; p.pesan = ''; p.ketentuan = ST.ketentuanOk === true;
@@ -1128,6 +1146,7 @@
     var cid = el.id || k;
     var c = $root.querySelector('[data-counter="' + cid + '"]');
     if (c) { var n = el.value.length, m = Number(c.dataset.max); c.textContent = n + '/' + m; c.classList.toggle('over', n > m); }
+    if ((el.id === 'tamuTeks' || el.id === 'tamuSeb') && window.Tamu) { var pt = document.getElementById('tamuPreview'); if (pt) pt.innerHTML = pratinjauTamu(); }
     if (errors[cid]) { delete errors[cid]; el.removeAttribute('aria-invalid'); var er = document.getElementById(cid + '-e'); if (er) er.remove(); }
     if (el.id === 'urlDiminta') { var pv = document.getElementById('urlPreview'), nn = normSlug(el.value), host2 = location.host || 'dearora.id'; if (pv) pv.innerHTML = nn ? (slugSah(nn) ? 'Alamat yang kamu minta: <strong>' + esc(nn) + '.' + esc(domainSpecial()) + '</strong>' : 'Nama belum bisa dipakai: 3–40 huruf/angka dan bukan kata yang dicadangkan.') : 'Kosongkan jika tidak ingin memilih nama.'; }
     if (p && errors.kejutanDetail) { delete errors.kejutanDetail; var kd = $root.querySelector('.kej-detail > .err'); if (kd) kd.remove(); }

@@ -103,6 +103,7 @@
         : '<div class="code-box"><span class="code-label">Kode redeem kamu</span><output class="code" id="kodeRedeem">' + esc(d.kodeRedeem || 'Sedang disiapkan…') + '</output>' +
           '<button type="button" class="btn btn-primary btn-sm" data-s="salin"' + (d.kodeRedeem ? '' : ' disabled') + '>Salin Kode</button></div>' +
           '<p class="small muted">Kode juga dikirim ke <strong>' + esc(d.emailSamar || 'emailmu') + '</strong> bersama tanda terima. Simpan kode ini: dipakai untuk membuat password dan masuk ke portal pembeli.</p>') +
+      (d.linkHasil && /invitation/i.test(d.paket) ? '<div class="notice" style="width:100%;text-align:left"><strong>Tautan untuk tiap tamu:</strong> di <a href="#/portal">Portal</a> → detail pesanan, tautan personal (“Kepada Yth. …”) untuk setiap tamu sudah bisa dibuat dan dikirim lewat WhatsApp.</div>' : '') +
       (d.linkHasil
         ? '<div class="link-card" style="width:100%;text-align:left"><label class="small muted" for="lnkUcapan">Link ucapanmu sudah aktif</label><div class="link-row"><input class="input" id="lnkUcapan" readonly value="' + esc(d.linkHasil) + '"><button type="button" class="btn btn-primary btn-sm" data-s="salin-link">Salin</button><a class="btn btn-secondary btn-sm" href="' + esc(d.linkHasil) + '" target="_blank" rel="noopener">Buka</a></div>' +
           (d.kedaluwarsa ? '<p class="small muted" style="margin-top:.5rem">Aktif sampai ' + esc(new Intl.DateTimeFormat('id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(d.kedaluwarsa))) + '.</p>' : '') + '</div>'

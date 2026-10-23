@@ -250,23 +250,29 @@
       '<div class="order-act" style="margin-top:.75rem"><button type="button" class="btn btn-primary btn-sm" data-p="testi-kirim">Kirim testimoni</button>' + (t.ada ? '<button type="button" class="btn btn-quiet btn-sm" data-p="testi-batal">Batal</button>' : '') + '</div></div>';
   }
   function segarkanTesti() { var e = $('boxTesti'); if (e && ordAktif) e.outerHTML = boxTesti(ordAktif); }
+  /** Membuat tautan tiap tamu dari kotak daftar (atau dari daftar tersimpan) dan, bila diminta, menyimpannya ke pesanan. */
+  async function buatTautanTamu(simpan) {
+    var url = (ordAktif && ordAktif.linkHasil) || ''; if (!url) { if (simpan) toast('Link undangan belum tersedia.'); return; }
+    var ta0 = $('rsvpNama'); if (!ta0) return;
+    var baris = (ta0.value || '').split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 300);
+    if (!baris.length) { if (simpan) toast('Tulis minimal satu nama tamu.'); return; }
+    var bawaan = $('rsvpSeb').value, pesan = $('rsvpPesan').value || 'Kepada Yth. {sapa}, silakan buka undangan: {link}', T = window.Tamu;
+    var daftarU = baris.map(function (t) { return T.urai(t, bawaan); });
+    tautanTamu = daftarU.map(function (u) { var sapa = T.sapa(u), link = T.tautan(url, u); return { sapa: sapa, link: link, wa: 'https://wa.me/?text=' + encodeURIComponent(pesan.replace(/\{sapa\}/g, sapa).replace(/\{link\}/g, link)) }; });
+    $('rsvpHasilList').innerHTML = '<p class="small muted" style="margin-top:.75rem">' + tautanTamu.length + ' tautan siap. Pastikan sapaannya sudah benar sebelum dikirim.</p><ul class="rsvp-tamu">' + tautanTamu.map(function (x, n) { return '<li><div><strong>Kepada Yth. ' + esc(x.sapa) + '</strong><span class="small muted mono">' + esc(x.link) + '</span></div><div class="rsvp-tamu-aksi"><button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-salin-satu" data-n="' + n + '">Salin</button><a class="btn btn-primary btn-sm" href="' + esc(x.wa) + '" target="_blank" rel="noopener noreferrer">WhatsApp</a></div></li>'; }).join('') + '</ul><button type="button" class="btn btn-quiet btn-sm" data-p="rsvp-salin-semua">Salin semua (sapaan dan tautan)</button>';
+    if (simpan) {
+      try { var r = await A.panggil('tamuSimpan', { orderId: ordAktif.orderId, tamu: daftarU.map(function (u) { return { n: u.nama, s: u.s, x: u.x }; }) }); if (r.success) { ordAktif.tamu = r.data.tamu; toast('Daftar tamu disimpan'); } else toast(r.message || 'Daftar tamu belum tersimpan'); }
+      catch (e) { toast('Tautan siap, tetapi daftar belum tersimpan (koneksi bermasalah)'); }
+    }
+  }
   function boxBalasan(o) {
     if (!(o.balasan && o.balasan.length)) return o.status === 'Aktif' ? '<div class="card order-card"><h2 class="h3">Balasan penerima</h2><p class="small muted">Belum ada balasan. Setelah penerima sampai di slide terakhir, ia bisa menulis balasan yang muncul di sini.</p></div>' : '';
     return '<div class="card order-card"><h2 class="h3">Balasan penerima (' + o.balasan.length + ')</h2><ul class="rev-list">' + o.balasan.map(function (b) {
       return '<li><span class="tag rose">' + esc(b.nama || 'Penerima') + '</span> <span class="small muted">' + esc(tglJam(b.tgl)) + '</span><p style="margin-top:.25rem;white-space:pre-wrap">' + esc(b.pesan) + '</p></li>'; }).join('') + '</ul></div>';
   }
   var tautanTamu = [];
-  var SEB_KUNCI = { bapak: 'bapak', bpk: 'bapak', pak: 'bapak', ibu: 'ibu', bu: 'ibu', saudara: 'saudara', sdr: 'saudara', saudari: 'saudari', sdri: 'saudari', kakak: 'kak', kak: 'kak' };
-  var SEB_TEKS = { bapak: 'Bapak', ibu: 'Ibu', saudara: 'Saudara', saudari: 'Saudari', kak: 'Kak', bapakibu: 'Bapak/Ibu', saudarai: 'Saudara/i' }, SUF_TEKS = { keluarga: 'beserta Keluarga', pasangan: '& Pasangan' };
-  /** "Saudari Laiba" → {nama:'Laiba', s:'saudari'}; "Ibu Ani dan keluarga" → {nama:'Ani', s:'ibu', x:'keluarga'}; tanpa sebutan memakai sebutan bawaan. */
-  function uraiTamu(baris, bawaan) {
-    var t = String(baris || '').trim(), x = '', s = '', mx = /\s*(?:&|dan|\+)?\s*\(?\b(keluarga|pasangan)\)?\s*$/i.exec(t);
-    if (mx && t.length > mx[0].length) { x = mx[1].toLowerCase(); t = t.slice(0, mx.index).trim(); }
-    var ms = /^(bapak|bpk|pak|ibu|bu|saudara|sdr|saudari|sdri|kakak|kak)\.?\s+(.+)$/i.exec(t);
-    if (ms) { s = SEB_KUNCI[ms[1].toLowerCase()]; t = ms[2].trim(); } else s = bawaan || '';
-    return { nama: t.replace(/\s+/g, ' ').slice(0, 60), s: s, x: x };
-  }
-  function sapaTamu(u) { return [SEB_TEKS[u.s] || '', u.nama, SUF_TEKS[u.x] || ''].filter(Boolean).join(' '); }
+  function uraiTamu(b, s) { return window.Tamu.urai(b, s); }
+  function sapaTamu(u) { return window.Tamu.sapa(u); }
   function salinTeks(teks, tombol) {
     var ok = function () { var t0 = tombol.textContent; tombol.textContent = 'Tersalin ✓'; setTimeout(function () { tombol.textContent = t0; }, 1500); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(teks).then(ok, ok); else { var a = document.createElement('textarea'); a.value = teks; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); } catch (e) { /* abaikan */ } a.remove(); ok(); }
@@ -281,16 +287,16 @@
     var ring = '<div class="rsvp-ring"><div><b>' + rg.hadir + '</b><span>Hadir (' + rg.orang + ' orang)</span></div><div><b>' + rg.ragu + '</b><span>Belum pasti</span></div><div><b>' + rg.tidak + '</b><span>Tidak hadir</span></div><div><b>' + rg.total + '/' + r.maks + '</b><span>Jawaban masuk</span></div></div>';
     var daftar = r.daftar.length ? '<ul class="rsvp-list">' + r.daftar.map(function (x) { return '<li><div><strong>' + esc(x.nama) + '</strong> <span class="tag ' + st[x.status][1] + '">' + st[x.status][0] + '</span>' + (x.status === 'hadir' ? ' <span class="small muted">' + x.jumlah + ' orang</span>' : '') + (x.ucapan ? '<p class="small">“' + esc(x.ucapan) + '”</p>' : '') + '<span class="small muted">' + esc(tglJam(x.tgl)) + (x.diubah ? ' · diubah' : '') + '</span></div><button type="button" class="btn btn-quiet btn-sm" data-p="rsvp-hapus" data-id="' + esc(x.id) + '" aria-label="Hapus jawaban ' + esc(x.nama) + '">' + ic('x') + '</button></li>'; }).join('') + '</ul>' : '<p class="small muted">Belum ada jawaban. Bagikan link undangan ke para tamu.</p>';
     var alat = '<div class="rsvp-alat"><button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-csv"' + (r.daftar.length ? '' : ' disabled') + '>Unduh daftar (CSV)</button></div>' +
-      '<details class="rsvp-tautan" id="rsvpTautan"><summary>Buat tautan personal untuk tiap tamu</summary><p class="small muted">Tempel nama tamu, <strong>satu per baris</strong>. Tulis sebutannya di depan nama bila perlu, misalnya <em>Saudari Laiba</em>, <em>Bapak Budi</em>, <em>Ibu Ani</em>, <em>Kak Dewi</em>. Tambahkan <em>keluarga</em> atau <em>pasangan</em> di belakang untuk "beserta Keluarga" atau "& Pasangan". Tamu akan disapa <strong>"Kepada Yth. Saudari Laiba"</strong> di undangannya, dan namanya otomatis terisi di formulir. Daftar ini <strong>tidak disimpan</strong> di server.</p>' +
+      '<details class="rsvp-tautan" id="rsvpTautan"' + ((o.tamu && o.tamu.length) ? ' open' : '') + '><summary>Tautan personal untuk tiap tamu' + ((o.tamu && o.tamu.length) ? ' (' + o.tamu.length + ' tamu)' : '') + '</summary><p class="small muted">Tempel nama tamu, <strong>satu per baris</strong>. Tulis sebutannya di depan nama bila perlu, misalnya <em>Saudari Laiba</em>, <em>Bapak Budi</em>, <em>Ibu Ani</em>, <em>Kak Dewi</em>. Tambahkan <em>keluarga</em> atau <em>pasangan</em> di belakang untuk "beserta Keluarga" atau "& Pasangan". Tamu akan disapa <strong>"Kepada Yth. Saudari Laiba"</strong> di undangannya, dan namanya otomatis terisi di formulir. Daftar ini <strong>disimpan di pesananmu</strong> agar tautan bisa dibuat ulang dari perangkat mana pun; hanya kamu yang bisa melihatnya dan ikut terhapus bersama pesanan.</p>' +
         '<div class="field"><label for="rsvpSeb">Sebutan untuk nama tanpa sebutan</label><select class="input" id="rsvpSeb"><option value="">Tanpa sebutan (nama saja)</option><option value="saudarai">Saudara/i</option><option value="bapakibu">Bapak/Ibu</option><option value="bapak">Bapak</option><option value="ibu">Ibu</option><option value="saudara">Saudara</option><option value="saudari">Saudari</option><option value="kak">Kak</option></select></div>' +
-        '<textarea id="rsvpNama" class="input textarea" rows="5" placeholder="Saudari Laiba&#10;Bapak Budi Santoso&#10;Ibu Ani dan keluarga&#10;Kak Dewi"></textarea>' +
+        '<textarea id="rsvpNama" class="input textarea" rows="5" placeholder="Saudari Laiba&#10;Bapak Budi Santoso&#10;Ibu Ani dan keluarga&#10;Kak Dewi">' + esc(window.Tamu ? window.Tamu.teks(o.tamu || []) : '') + '</textarea>' +
         '<div class="field"><label for="rsvpPesan">Pesan pengantar (untuk WhatsApp)</label><textarea id="rsvpPesan" class="input textarea" rows="5">Kepada Yth. {sapa},\n\nDengan hormat, kami mengundang Anda untuk hadir pada acara kami. Silakan buka undangan digital berikut:\n{link}\n\nMohon konfirmasi kehadiran melalui undangan tersebut. Terima kasih.</textarea><p class="hint">{sapa} dan {link} akan diganti otomatis untuk tiap tamu.</p></div>' +
         '<button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-link" data-url="' + esc(link) + '">Buat tautan</button><div id="rsvpHasilList" aria-live="polite"></div></details>';    return ring + alat + '<h3 class="h3" style="margin-top:1rem">Daftar jawaban</h3>' + daftar;
   }
   var rsvpData = null, ordAktif = null;
   async function muatRsvp(o) {
     var el = $('rsvpIsi'); if (!el) return;
-    try { var r = await A.panggil('rsvpDaftar', { orderId: o.orderId }); if (!r.success) { el.innerHTML = '<p class="err">' + esc(r.message || 'Gagal memuat.') + '</p>'; return; } rsvpData = r.data; el.innerHTML = tampilRsvp(r.data, o); }
+    try { var r = await A.panggil('rsvpDaftar', { orderId: o.orderId }); if (!r.success) { el.innerHTML = '<p class="err">' + esc(r.message || 'Gagal memuat.') + '</p>'; return; } rsvpData = r.data; el.innerHTML = tampilRsvp(r.data, o); if (o.tamu && o.tamu.length) buatTautanTamu(false); }
     catch (e) { el.innerHTML = '<p class="err">Koneksi bermasalah. Muat ulang halaman.</p>'; }
   }
   function csvRsvp(o) {
@@ -409,15 +415,7 @@
       b.disabled = false; b.textContent = asli2; return;
     }
     if (a === 'rsvp-csv') { csvRsvp(ordAktif); return; }
-    if (a === 'rsvp-link') {
-      var url = b.dataset.url; if (!url) { toast('Link undangan belum tersedia.'); return; }
-      var baris = ($('rsvpNama').value || '').split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean).slice(0, 300);
-      if (!baris.length) { toast('Tulis minimal satu nama tamu.'); return; }
-      var bawaan = $('rsvpSeb').value, pesan = $('rsvpPesan').value || 'Kepada Yth. {sapa}, silakan buka undangan: {link}';
-      tautanTamu = baris.map(function (t) { var u = uraiTamu(t, bawaan), link = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'u=' + encodeURIComponent(u.nama) + (u.s ? '&s=' + u.s : '') + (u.x ? '&x=' + u.x : ''), sapa = sapaTamu(u); return { sapa: sapa, link: link, wa: 'https://wa.me/?text=' + encodeURIComponent(pesan.replace(/\{sapa\}/g, sapa).replace(/\{link\}/g, link)) }; });
-      $('rsvpHasilList').innerHTML = '<p class="small muted" style="margin-top:.75rem">' + tautanTamu.length + ' tautan siap. Pastikan sapaannya sudah benar sebelum dikirim.</p><ul class="rsvp-tamu">' + tautanTamu.map(function (x, n) { return '<li><div><strong>Kepada Yth. ' + esc(x.sapa) + '</strong><span class="small muted mono">' + esc(x.link) + '</span></div><div class="rsvp-tamu-aksi"><button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-salin-satu" data-n="' + n + '">Salin</button><a class="btn btn-primary btn-sm" href="' + esc(x.wa) + '" target="_blank" rel="noopener noreferrer">WhatsApp</a></div></li>'; }).join('') + '</ul><button type="button" class="btn btn-quiet btn-sm" data-p="rsvp-salin-semua">Salin semua (sapaan dan tautan)</button>';
-      return;
-    }
+    if (a === 'rsvp-link') { b.disabled = true; try { await buatTautanTamu(true); } finally { b.disabled = false; } return; }
     if (a === 'rsvp-salin-satu') { salinTeks(tautanTamu[Number(b.dataset.n)].link, b); return; }
     if (a === 'rsvp-salin-semua') { salinTeks(tautanTamu.map(function (x) { return x.sapa + '\t' + x.link; }).join('\n'), b); return; }
     if (a === 'chat-kirim') {

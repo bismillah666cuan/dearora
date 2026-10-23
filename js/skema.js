@@ -221,7 +221,7 @@
       { k: 'acara', tipe: 'daftar', label: 'Acara', hint: '1 sampai 3 acara (mis. akad dan resepsi). Acara pertama dipakai untuk hitung mundur.', min: 1, maks: 3, namaItem: 'Acara', item: [
         T('nama', 'Nama acara', 40, { wajib: true, hint: 'Mis. Akad Nikah' }), T('tanggal', 'Tanggal', 10, { wajib: true, pola: '^\\d{4}-\\d{2}-\\d{2}$', hint: 'Format tahun-bulan-tanggal, mis. 2027-03-15.' }),
         T('jam', 'Jam', 24, { wajib: true, hint: 'Mis. 10.00 WIB atau 10.00–12.00 WIB' }), T('tempat', 'Nama tempat', 60, { wajib: true }), A('alamat', 'Alamat', 160, { wajib: true }),
-        T('peta', 'Tautan Google Maps (opsional)', 300, { pola: '^https://[^\\s]{4,290}$', hint: 'Salin tautan dari Google Maps, diawali https://' })] },
+        T('peta', 'Tautan peta Google Maps', 300, { tampil: true, pola: '^https://[^\\s]{4,290}$', hint: 'Cara mendapatkannya: buka Google Maps, cari tempat acara, tekan Bagikan, lalu salin tautannya (diawali https://). Bila dikosongkan, tombol "Cari di peta" di undangan mencari otomatis dari nama tempat dan alamat.' })] },
       T('dresscode', 'Dress code (opsional)', 80, { hint: 'Mis. Nuansa pastel' }),
       { k: 'galeri', tipe: 'daftarfoto', label: 'Galeri foto (opsional, hingga 15)', maks: 15 },
       { k: 'rekening', tipe: 'daftar', label: 'Amplop digital (opsional)', hint: 'Hingga 3 rekening atau e-wallet. Hanya ditampilkan dengan tombol salin; Dearora tidak memproses pembayaran.', min: 0, maks: 3, namaItem: 'Rekening', item: [T('bank', 'Bank atau e-wallet', 30, { wajib: true }), T('nomor', 'Nomor', 40, { wajib: true }), T('atasNama', 'Atas nama', 50, { wajib: true })] },
