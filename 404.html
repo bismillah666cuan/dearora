@@ -15,11 +15,11 @@
 </head>
 <body style="visibility:hidden">
   <script>
-    // Jaring pengaman: alamat ucapan /u/{kode} dialihkan ke halaman kartu (/u/?k={kode}).
+    // Jaring pengaman: alamat ucapan /u/{kode} dialihkan ke halaman kartu (/u/?k={kode}), dengan parameter tamu ?u=&s=&x= tetap dibawa.
     // Berlaku walaupun aturan "rewrites" di vercel.json belum aktif. Alamat lain tetap menampilkan halaman 404 ini.
     (function () {
       var m = /^\/u\/([A-Za-z0-9]{10,40})\/?$/.exec(location.pathname);
-      if (m) { location.replace('/u/?k=' + m[1]); return; }
+      if (m) { location.replace('/u/?k=' + m[1] + (location.search.length > 1 ? '&' + location.search.slice(1) : '') + location.hash); return; }          // bawa serta ?u=Nama&s=sebutan&x=sufiks (sapaan tamu) dan #hash
       document.body.style.visibility = 'visible';
     })();
   </script>
