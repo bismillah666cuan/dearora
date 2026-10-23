@@ -93,7 +93,8 @@
         tombolKiri = '<button type="button" class="btn btn-secondary" data-m="ganti">Kembali</button>'; tombolUtama = 'Kirim kode';
       } else if (S.langkah === 'lupa2') {
         isi = '<p class="muted" style="margin-bottom:1rem">' + esc(S.info || 'Kode dikirim ke emailmu.') + '</p><p class="small muted" style="margin-bottom:1rem">Dikirim ke <strong>' + esc(S.email) + '</strong>. Kode berlaku 30 menit.</p>' +
-          '<div class="field' + (S.galat ? ' has-error' : '') + '"><label for="mOtp">Kode 6 angka</label><input class="input" id="mOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" value="' + esc(S.otp || '') + '">' + galatHTML() + '</div>' +
+          '<div class="notice" style="margin-bottom:1rem"><strong>Belum menemukan emailnya?</strong> Cek juga folder <strong>Spam</strong> atau <strong>Promosi</strong>. Bila ada di sana, klik <em>Bukan spam</em> supaya email berikutnya masuk ke kotak masuk. Email datang dari “Dearora” dengan subjek “Kode atur ulang password”.</div>' +
+          '<div class="field' + (S.galat ? ' has-error' : '') + '"><label for="mOtp">Kode 6 angka</label><input class="input" id="mOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 angka dari email" value="' + esc(S.otp || '') + '">' + galatHTML() + '</div>' +
           '<div class="field"><label for="mPw">Password baru</label><input class="input" id="mPw" type="password" autocomplete="new-password" maxlength="72"><p class="hint">Minimal 8 karakter. Simpan baik-baik, tidak bisa dilihat lagi.</p></div>' +
           '<div class="field"><label for="mPw2">Ulangi password</label><input class="input" id="mPw2" type="password" autocomplete="new-password" maxlength="72"></div>' +
           '<p class="small"><button type="button" class="link-btn" data-m="kirim-ulang">Kirim ulang kode</button></p>';
