@@ -106,11 +106,11 @@
     var isi;
     if (img) isi = '<img class="thumb-img" loading="lazy" decoding="async" src="' + esc(img) + '" alt="Pratinjau desain ' + esc(d.nama) + '">';
     else isi = window.Gaya ? window.Gaya.adegan(key) : '';
-    if (!polos && !img && window.Ponsel && window.Ponsel.aktif() && window.Gaya) {          // polos = thumbnail kecil lama (dipakai di form pilih desain)
+    if (polos !== true && !img && window.Ponsel && window.Ponsel.aktif() && window.Gaya) {          // polos = thumbnail kecil lama (dipakai di form pilih desain)
       var gg = window.Gaya.ambil(key) || {}, w = gg.warna || ['#FFF1F4', '#D84A6E'], tema = key;
       var src = gg.special && gg.demoUrl ? gg.demoUrl : '/u/?demo=1&tema=' + encodeURIComponent(tema) + '&kat=&j=kado';
       return '<div class="design-thumb scene-wrap ponsel-wrap theme theme-' + key + '"><span class="badge-anim">' + ic('sparkles') + ' Interaktif</span>' +
-        window.Ponsel.html({ src: esc(src), nama: esc(d.nama), aksen: esc(w[1]), latar: esc(w[0]), adegan: isi, kunci: /^[a-z0-9]+$/.test(key) ? key : '' }) + '<span class="tombol-main">' + ic('play') + ' Coba demo</span></div>';
+        window.Ponsel.html({ src: esc(src), nama: esc(d.nama), aksen: esc(w[1]), latar: esc(w[0]), adegan: isi, kunci: /^[a-z0-9]+$/.test(key) ? key : '', statis: polos === 'statis' }) + '<span class="tombol-main">' + ic('play') + ' Coba demo</span></div>';
     }
     return '<div class="design-thumb scene-wrap theme theme-' + key + '"><span class="badge-anim">' + ic('sparkles') + ' Interaktif</span>' + isi + '<span class="tombol-main">' + ic('play') + ' Coba demo</span></div>';
   }

@@ -698,7 +698,7 @@
       var on = ST.desainId === x.id;
       return '<div class="opt-card' + (on ? ' on' : '') + '"><label for="ds-' + esc(x.id) + '">' +
         '<input type="radio" id="ds-' + esc(x.id) + '" name="desainId" data-k="desainId" value="' + esc(x.id) + '"' + (on ? ' checked' : '') + '>' +
-        U.thumbHTML(x, d.paket, true) + '<span class="oc-name">' + esc(x.nama) + '</span></label>' +
+        U.thumbHTML(x, d.paket, 'statis') + '<span class="oc-name">' + esc(x.nama) + '</span></label>' +
         '<button type="button" class="btn btn-quiet btn-sm btn-block" data-action="demo" data-id="' + esc(x.id) + '">' + ic('play') + ' Lihat Demo</button></div>';
     }).join('') + '</div>' : '<p class="state-box">Belum ada desain untuk paket ini.</p>';
     return '<p class="lead small" style="margin-bottom:1rem">' + (ST.paket === 'premium' ? 'Pilih satu desain eksklusif. Di langkah berikutnya kamu mengisi bahan-bahannya sendiri, dan link langsung jadi setelah pembayaran.' : 'Pilih satu desain. Coba demonya dulu sebelum memilih.') + '</p>' +
