@@ -282,17 +282,47 @@
     if (o.paketId !== 'invitation') return '';
     return '<div class="card order-card" id="boxRsvp"><h2 class="h3">Jawaban tamu (RSVP)</h2><div id="rsvpIsi"><p class="small muted">Memuat jawaban…</p></div></div>';
   }
+  /* RSVP-DAFTAR:MULAI — daftar jawaban tamu: ringkas, bisa disaring dan dicari, ditampilkan 10 demi 10 */
+  var RSVP_HALAMAN = 10, rsvpUI = { status: 'semua', cari: '', tampil: 10 };
+  var RSVP_ST = { hadir: ['Hadir', 'sage'], tidak: ['Tidak hadir', ''], ragu: ['Belum pasti', 'rose'] };
+  function htmlRingRsvp(r) { var rg = r.ringkas; return '<div class="rsvp-ring"><div><b>' + rg.hadir + '</b><span>Hadir (' + rg.orang + ' orang)</span></div><div><b>' + rg.ragu + '</b><span>Belum pasti</span></div><div><b>' + rg.tidak + '</b><span>Tidak hadir</span></div><div><b>' + rg.total + '/' + r.maks + '</b><span>Jawaban masuk</span></div></div>'; }
+  /** Menyaring menurut status dan kata kunci (nama atau ucapan), terbaru di atas. */
+  function saringRsvp(daftar, status, cari) {
+    var q = String(cari || '').trim().toLowerCase();
+    return (daftar || []).filter(function (x) { return (status === 'semua' || x.status === status) && (!q || (String(x.nama) + ' ' + String(x.ucapan || '')).toLowerCase().indexOf(q) >= 0); })
+      .sort(function (a, b) { return String(b.tgl).localeCompare(String(a.tgl)); });
+  }
+  function barisRsvp(x) {
+    var st = RSVP_ST[x.status] || ['', ''], uc = String(x.ucapan || ''), panjang = uc.length > 90;
+    var ucapan = !uc ? '' : (panjang ? '<details class="rsvp-uc"><summary>“' + esc(uc.slice(0, 90)) + '…”</summary><p class="small">“' + esc(uc) + '”</p></details>' : '<p class="small">“' + esc(uc) + '”</p>');
+    return '<li><div><strong>' + esc(x.nama) + '</strong> <span class="tag ' + st[1] + '">' + st[0] + '</span>' + (x.status === 'hadir' ? ' <span class="small muted">' + x.jumlah + ' orang</span>' : '') + ucapan + '<span class="small muted rsvp-waktu">' + esc(tglJam(x.tgl)) + (x.diubah ? ' · diubah' : '') + '</span></div><button type="button" class="btn btn-quiet btn-sm" data-p="rsvp-hapus" data-id="' + esc(x.id) + '" aria-label="Hapus jawaban ' + esc(x.nama) + '">' + ic('x') + '</button></li>';
+  }
+  function isiDaftarRsvp(semua) {
+    var f = saringRsvp(semua, rsvpUI.status, rsvpUI.cari), n = Math.min(f.length, rsvpUI.tampil);
+    if (!f.length) return '<p class="small muted">Tidak ada jawaban yang cocok.</p>';
+    return '<p class="small muted" role="status">Menampilkan ' + n + ' dari ' + f.length + ' jawaban</p><ul class="rsvp-list">' + f.slice(0, n).map(barisRsvp).join('') + '</ul>' +
+      (f.length > n ? '<button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-lagi">Tampilkan ' + Math.min(RSVP_HALAMAN, f.length - n) + ' lagi</button>' : '');
+  }
+  function htmlDaftarRsvp(r) {
+    var semua = r.daftar || []; if (!semua.length) return '<p class="small muted">Belum ada jawaban. Bagikan link undangan ke para tamu.</p>';
+    var hit = { semua: semua.length, hadir: 0, ragu: 0, tidak: 0 }; semua.forEach(function (x) { if (hit[x.status] !== undefined) hit[x.status]++; });
+    var chips = [['semua', 'Semua'], ['hadir', 'Hadir'], ['ragu', 'Belum pasti'], ['tidak', 'Tidak hadir']].map(function (c) { return '<button type="button" class="rsvp-chip' + (rsvpUI.status === c[0] ? ' on' : '') + '" data-p="rsvp-filter" data-v="' + c[0] + '" aria-pressed="' + (rsvpUI.status === c[0]) + '">' + c[1] + ' (' + hit[c[0]] + ')</button>'; }).join('');
+    var cari = semua.length > 8 ? '<div class="field"><label class="sr" for="rsvpCari">Cari nama atau ucapan</label><input class="input" id="rsvpCari" type="search" placeholder="Cari nama atau ucapan tamu" value="' + esc(rsvpUI.cari) + '" autocomplete="off"></div>' : '';
+    return '<div class="rsvp-filter" role="group" aria-label="Saring jawaban">' + chips + '</div>' + cari + '<div id="rsvpIsiDaftar">' + isiDaftarRsvp(semua) + '</div>';
+  }
+  function segarkanDaftarRsvp() { if (!rsvpData) return; var a = $('rsvpRing'), b = $('rsvpDaftarBox'); if (a) a.innerHTML = htmlRingRsvp(rsvpData); if (b) b.innerHTML = htmlDaftarRsvp(rsvpData); var c = document.querySelector('[data-p="rsvp-csv"]'); if (c) c.disabled = !(rsvpData.daftar || []).length; }
+  /* RSVP-DAFTAR:SELESAI */
   function tampilRsvp(r, o) {
     var rg = r.ringkas, st = { hadir: ['Hadir', 'sage'], tidak: ['Tidak hadir', ''], ragu: ['Belum pasti', 'rose'] };
     var link = o.linkHasil || '';
-    var ring = '<div class="rsvp-ring"><div><b>' + rg.hadir + '</b><span>Hadir (' + rg.orang + ' orang)</span></div><div><b>' + rg.ragu + '</b><span>Belum pasti</span></div><div><b>' + rg.tidak + '</b><span>Tidak hadir</span></div><div><b>' + rg.total + '/' + r.maks + '</b><span>Jawaban masuk</span></div></div>';
-    var daftar = r.daftar.length ? '<ul class="rsvp-list">' + r.daftar.map(function (x) { return '<li><div><strong>' + esc(x.nama) + '</strong> <span class="tag ' + st[x.status][1] + '">' + st[x.status][0] + '</span>' + (x.status === 'hadir' ? ' <span class="small muted">' + x.jumlah + ' orang</span>' : '') + (x.ucapan ? '<p class="small">“' + esc(x.ucapan) + '”</p>' : '') + '<span class="small muted">' + esc(tglJam(x.tgl)) + (x.diubah ? ' · diubah' : '') + '</span></div><button type="button" class="btn btn-quiet btn-sm" data-p="rsvp-hapus" data-id="' + esc(x.id) + '" aria-label="Hapus jawaban ' + esc(x.nama) + '">' + ic('x') + '</button></li>'; }).join('') + '</ul>' : '<p class="small muted">Belum ada jawaban. Bagikan link undangan ke para tamu.</p>';
+    var ring = htmlRingRsvp(r);
+    var daftar = '<div id="rsvpDaftarBox">' + htmlDaftarRsvp(r) + '</div>';
     var alat = '<div class="rsvp-alat"><button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-csv"' + (r.daftar.length ? '' : ' disabled') + '>Unduh daftar (CSV)</button></div>' +
       '<details class="rsvp-tautan" id="rsvpTautan" open><summary>Tautan personal untuk tiap tamu' + ((o.tamu && o.tamu.length) ? ' (' + o.tamu.length + ' tamu)' : '') + '</summary><p class="small muted">Tempel nama tamu, <strong>satu per baris</strong>. Tulis sebutannya di depan nama bila perlu, misalnya <em>Saudari Laiba</em>, <em>Bapak Budi</em>, <em>Ibu Ani</em>, <em>Kak Dewi</em>. Tambahkan <em>keluarga</em> atau <em>pasangan</em> di belakang untuk "beserta Keluarga" atau "& Pasangan". Tamu akan disapa <strong>"Kepada Yth. Saudari Laiba"</strong> di undangannya, dan namanya otomatis terisi di formulir. Daftar ini <strong>disimpan di pesananmu</strong> agar tautan bisa dibuat ulang dari perangkat mana pun; hanya kamu yang bisa melihatnya dan ikut terhapus bersama pesanan.</p>' +
         '<div class="field"><label for="rsvpSeb">Sebutan untuk nama tanpa sebutan</label><select class="input" id="rsvpSeb"><option value="">Tanpa sebutan (nama saja)</option><option value="saudarai">Saudara/i</option><option value="bapakibu">Bapak/Ibu</option><option value="bapak">Bapak</option><option value="ibu">Ibu</option><option value="saudara">Saudara</option><option value="saudari">Saudari</option><option value="kak">Kak</option></select></div>' +
         '<textarea id="rsvpNama" class="input textarea" rows="5" placeholder="Saudari Laiba&#10;Bapak Budi Santoso&#10;Ibu Ani dan keluarga&#10;Kak Dewi">' + esc(window.Tamu ? window.Tamu.teks(o.tamu || []) : '') + '</textarea>' +
         '<div class="field"><label for="rsvpPesan">Pesan pengantar (untuk WhatsApp)</label><textarea id="rsvpPesan" class="input textarea" rows="5">Kepada Yth. {sapa},\n\nDengan hormat, kami mengundang Anda untuk hadir pada acara kami. Silakan buka undangan digital berikut:\n{link}\n\nMohon konfirmasi kehadiran melalui undangan tersebut. Terima kasih.</textarea><p class="hint">{sapa} dan {link} akan diganti otomatis untuk tiap tamu.</p></div>' +
-        '<button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-link" data-url="' + esc(link) + '">Buat tautan</button><div id="rsvpHasilList" aria-live="polite"></div></details>';    return ring + alat + '<h3 class="h3" style="margin-top:1rem">Daftar jawaban</h3>' + daftar;
+        '<button type="button" class="btn btn-secondary btn-sm" data-p="rsvp-link" data-url="' + esc(link) + '">Buat tautan</button><div id="rsvpHasilList" aria-live="polite"></div></details>';    return '<div id="rsvpRing">' + ring + '</div>' + alat + '<h3 class="h3" style="margin-top:1rem">Daftar jawaban</h3>' + daftar;
   }
   var rsvpData = null, ordAktif = null;
   async function muatRsvp(o) {
@@ -331,7 +361,7 @@
         '<p class="small" style="margin-top:.75rem">Chat sudah ditutup karena pesanan selesai dan jatah revisi habis.</p>') + '</div>';
   }
   function isiDetail(o) {
-    ordAktif = o; testiEdit = false; if (o.paketId === 'invitation') setTimeout(function () { muatRsvp(o); }, 0);
+    ordAktif = o; testiEdit = false; rsvpUI = { status: 'semua', cari: '', tampil: RSVP_HALAMAN }; if (o.paketId === 'invitation') setTimeout(function () { muatRsvp(o); }, 0);
     var rev = (o.revisi || []).map(function (x) {
       return '<li><span class="tag lav">' + esc(x.status) + '</span> <span class="small muted">' + esc(tglJam(x.tglMinta)) + '</span><p style="margin-top:.25rem">' + esc(x.catatan) + '</p></li>';
     }).join('');
@@ -364,6 +394,7 @@
     if (!A.ada()) { location.replace('#/masuk'); return; }
     var my = ++run, root = $('detailRoot'), id = (c.query && c.query.o) || '';
     root.addEventListener('click', klikAksi);
+    root.addEventListener('input', function (ev) { if (ev.target.id === 'rsvpCari') { rsvpUI.cari = ev.target.value; rsvpUI.tampil = RSVP_HALAMAN; clearTimeout(rsvpUI._t); rsvpUI._t = setTimeout(function () { var e = $('rsvpIsiDaftar'); if (e && rsvpData) e.innerHTML = isiDaftarRsvp(rsvpData.daftar); }, 200); } });
     root.addEventListener('input', function (ev) { if (ev.target.id === 'tIsi') { var th = $('tHit'); if (th) th.textContent = String(ev.target.value.length); } });
     root.addEventListener('input', function (ev) { if (ev.target.id === 'revCatatan') { var n = ev.target.value.length, k = root.querySelector('[data-counter]'); k.textContent = n + '/1000'; k.classList.toggle('over', n > 1000); } });
     try {
@@ -394,8 +425,10 @@
       b.disabled = false; b.textContent = asli; return;
     }
     if (a === 'rsvp-hapus') {
-      b.disabled = true; try { var rh = await A.panggil('rsvpHapus', { orderId: ordAktif && ordAktif.orderId, id: b.dataset.id }); if (rh.success) { rsvpData = rh.data; $('rsvpIsi').innerHTML = tampilRsvp(rh.data, ordAktif); } else b.disabled = false; } catch (e) { b.disabled = false; } return;
+      b.disabled = true; try { var rh = await A.panggil('rsvpHapus', { orderId: ordAktif && ordAktif.orderId, id: b.dataset.id }); if (rh.success) { rsvpData = rh.data; segarkanDaftarRsvp(); toast('Jawaban dihapus'); } else b.disabled = false; } catch (e) { b.disabled = false; } return;
     }
+    if (a === 'rsvp-filter') { rsvpUI.status = b.dataset.v; rsvpUI.tampil = RSVP_HALAMAN; var bx = $('rsvpDaftarBox'); if (bx && rsvpData) bx.innerHTML = htmlDaftarRsvp(rsvpData); return; }
+    if (a === 'rsvp-lagi') { rsvpUI.tampil += RSVP_HALAMAN; var bi = $('rsvpIsiDaftar'); if (bi && rsvpData) bi.innerHTML = isiDaftarRsvp(rsvpData.daftar); return; }
     if (a === 'testi-ubah') { testiEdit = true; segarkanTesti(); var ti = $('tIsi'); if (ti) ti.focus(); return; }
     if (a === 'testi-batal') { testiEdit = false; segarkanTesti(); return; }
     if (a === 'testi-hapus') {
