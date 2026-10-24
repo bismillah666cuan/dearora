@@ -841,3 +841,20 @@ dialog.modal.demo-desk .demo-frame { position: absolute; top: 1rem; left: 50%; w
 .rsvp-list li > div { min-width: 0; overflow-wrap: anywhere; } .rsvp-list li > div > p { margin: .2rem 0; } .rsvp-uc summary { cursor: pointer; font-size: .875rem; color: var(--ink); list-style: none; margin: .2rem 0; } .rsvp-uc summary::after { content: " lihat"; color: var(--primary); font-weight: 700; } .rsvp-uc[open] summary::after { content: ""; } .rsvp-uc p { margin: .2rem 0; }
 #rsvpIsiDaftar > .btn { margin-top: .75rem; }
 .rsvp-waktu { display: block; }
+
+/* ---- Kartu desain: mockup dua ponsel dengan pratinjau hidup (hanya tampilan) ---- */
+.design-thumb.scene-wrap.ponsel-wrap { aspect-ratio: 1 / 1.08; background: none; }
+.ponsel { position: absolute; inset: 0; overflow: hidden; pointer-events: none; background: radial-gradient(circle at 24% 16%, rgba(255, 255, 255, .6), transparent 56%), linear-gradient(155deg, color-mix(in srgb, var(--a, #D84A6E) 26%, #fff), color-mix(in srgb, var(--a, #D84A6E) 70%, #1d1a26)); }
+.ponsel-kilau { position: absolute; width: 70%; aspect-ratio: 1; right: -22%; bottom: -26%; border-radius: 50%; background: rgba(255, 255, 255, .18); }
+.ponsel .ph { position: absolute; aspect-ratio: 9 / 19.5; border-radius: 15% / 7%; background: #17171d; padding: 2.6%; box-shadow: 0 26px 34px -14px rgba(0, 0, 0, .6), inset 0 0 0 2px #3b3b47, inset 0 0 0 4px #17171d; }
+.ponsel .ph::before { content: ""; position: absolute; z-index: 4; top: 3.1%; left: 50%; width: 27%; height: 2.3%; transform: translateX(-50%); border-radius: 99px; background: #0b0b0f; }
+.ponsel .ph-depan { width: 40%; left: 12%; top: 8%; transform: rotate(-4deg); z-index: 2; }
+.ponsel .ph-belakang { width: 35%; right: 9%; top: 19%; transform: rotate(6deg); z-index: 1; filter: brightness(.88) saturate(.9); }
+.ponsel .layar { position: absolute; inset: 2.6%; border-radius: 12% / 5.5%; overflow: hidden; background: #fff; }
+.ponsel .kanvas { position: absolute; left: 0; top: 0; width: 390px; height: 845px; transform-origin: 0 0; transform: scale(var(--s, .24)); }
+.ponsel .ph-belakang .kanvas { transform: scale(var(--sb, .22)); }
+.ponsel .kanvas .scene, .ponsel .poster { position: absolute; inset: 0; } .ponsel .poster { transition: opacity .6s ease; }
+.ponsel .ph-iframe { position: absolute; inset: 0; width: 390px; height: 845px; border: 0; background: #fff; opacity: 0; transition: opacity .6s ease; pointer-events: none; }
+.ponsel.hidup .ph-iframe { opacity: 1; } .ponsel.hidup .poster { opacity: 0; }
+.design-card:hover .ponsel .ph-depan { transform: rotate(-2deg) translateY(-2%); } .ponsel .ph-depan { transition: transform .5s ease; }
+@media (prefers-reduced-motion: reduce) { .ponsel .ph-depan, .ponsel .poster, .ponsel .ph-iframe { transition: none; } }
