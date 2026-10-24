@@ -26,7 +26,7 @@
     jadwal = 0; var all = daftar(), tinggi = window.innerHeight || 800, tengah = tinggi / 2, M = aktif() ? maks() : 0;
     aktifSet.forEach(function (f, el) { if (!document.body.contains(el)) aktifSet.delete(el); });
     var terlihat = [];
-    all.forEach(function (el) { skala(el); var r = el.getBoundingClientRect(); if (r.height && r.bottom > -40 && r.top < tinggi + 40) terlihat.push({ el: el, d: Math.abs((r.top + r.bottom) / 2 - tengah) }); });
+    all.forEach(function (el) { Array.prototype.forEach.call(el.querySelectorAll('.ph-snap:not(.siap)'), function (im) { if (im.complete && im.naturalWidth) im.classList.add('siap'); }); skala(el); var r = el.getBoundingClientRect(); if (r.height && r.bottom > -40 && r.top < tinggi + 40) terlihat.push({ el: el, d: Math.abs((r.top + r.bottom) / 2 - tengah) }); });
     terlihat.sort(function (a, b) { return a.d - b.d; });
     var pilih = terlihat.slice(0, M).map(function (x) { return x.el; });
     all.forEach(function (el) { if (pilih.indexOf(el) < 0) matikan(el); });
@@ -35,6 +35,7 @@
   function tunda() { if (!jadwal) jadwal = requestAnimationFrame(perbarui); }
   function mulai() {
     window.addEventListener('scroll', tunda, { passive: true }); window.addEventListener('resize', tunda);
+    document.addEventListener('load', function (e) { var t = e.target; if (t && t.classList && t.classList.contains('ph-snap')) t.classList.add('siap'); }, true);          // gambar layar kedua: tampil halus setelah termuat; bila gagal, adegan statis tetap terlihat
     var mo = new MutationObserver(tunda); mo.observe(document.body, { childList: true, subtree: true });
     if (window.ResizeObserver) { var ro = new ResizeObserver(tunda); ro.observe(document.body); }
     tunda();
@@ -43,7 +44,7 @@
   function html(opsi) {
     var s = opsi.adegan || '';
     return '<div class="ponsel" aria-hidden="true" data-src="' + opsi.src + '" data-nama="' + opsi.nama + '" style="--a:' + opsi.aksen + ';--b:' + opsi.latar + '"><i class="ponsel-kilau"></i>' +
-      '<div class="ph ph-belakang"><div class="layar"><div class="kanvas">' + s + '</div></div></div>' +
+      '<div class="ph ph-belakang"><div class="layar"><div class="kanvas">' + s + '</div>' + (opsi.kunci ? '<img class="ph-snap" src="/assets/ponsel/' + opsi.kunci + '.webp" alt="" width="234" height="507" loading="lazy" decoding="async">' : '') + '</div></div>' +
       '<div class="ph ph-depan"><div class="layar"><div class="kanvas"><div class="poster">' + s + '</div></div></div></div></div>';
   }
   window.Ponsel = { aktif: aktif, html: html, perbarui: perbarui };

@@ -858,3 +858,6 @@ dialog.modal.demo-desk .demo-frame { position: absolute; top: 1rem; left: 50%; w
 .ponsel.hidup .ph-iframe { opacity: 1; } .ponsel.hidup .poster { opacity: 0; }
 .design-card:hover .ponsel .ph-depan { transform: rotate(-2deg) translateY(-2%); } .ponsel .ph-depan { transition: transform .5s ease; }
 @media (prefers-reduced-motion: reduce) { .ponsel .ph-depan, .ponsel .poster, .ponsel .ph-iframe { transition: none; } }
+
+.ponsel .ph-snap { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; opacity: 0; transition: opacity .5s ease; display: block; } .ponsel .ph-snap.siap { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .ponsel .ph-snap { transition: none; } }
