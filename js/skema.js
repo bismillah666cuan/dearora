@@ -314,7 +314,7 @@
       galeri, rek, rsvp
     ];
   }
-  function temaAcara(kunci, nama, c) { SKEMA[kunci] = { nama: nama, bagian: acaraBagian() }; SKEMA[kunci].contoh = c; }
+  function temaAcara(kunci, nama, c, tambahan) { var b = acaraBagian(); if (tambahan) { var i = 0; b.forEach(function (x, n) { if (x.k === 'dresscode') i = n + 1; }); b.splice.apply(b, [i, 0].concat(tambahan)); } SKEMA[kunci] = { nama: nama, bagian: b }; SKEMA[kunci].contoh = c; }
   var SUSUN = function (a) { return a.map(function (x) { return { jam: x[0], kegiatan: x[1] }; }); };
   var ACR = function (nama, jam, tempat, alamat) { return [{ nama: nama, tanggal: '2027-03-20', jam: jam, tempat: tempat, alamat: alamat, peta: '' }]; };
   var REK2 = [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Tuan Rumah' }], RSVP2 = { maksTamu: 5, catatan: 'Mohon konfirmasi kehadiran dan jumlah tamu agar kami dapat menyiapkan hidangan.' };
@@ -350,6 +350,27 @@
     kutipan: '', dresscode: '', fotoSampul: '', penutup: 'Terima kasih atas dukungan dan kehadirannya. Sampai jumpa di Kopi Senja!',
     tokoh: { nama: 'Kopi Senja', ortu: 'Kedai kopi dan ruang temu warga', foto: '' }, acara: ACR('Grand Opening Kopi Senja', '10.00 WIB', 'Kopi Senja', 'Jl. Braga No. 15, Bandung'),
     denah: 'Buka setiap hari pukul 08.00 sampai 22.00. Parkir tersedia di halaman depan.', siaran: '', susunan: SUSUN([['10.00 WIB', 'Pemotongan pita'], ['10.30 WIB', 'Open house dan cicip menu'], ['12.00 WIB', 'Musik akustik'], ['15.00 WIB', 'Doorprize dan promo pembukaan']]), galeri: [], rekening: [], rsvp: RSVP2 });
+  temaNikah('usunda', 'Undangan Sunda Modern', { judul: 'Rani & Dimas', sapaan: 'Wilujeng sumping. Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberi doa restu pada hari pernikahan kami.',
+    kutipan: 'Cinta tumbuh pelan seperti padi: makin berisi, makin merunduk.', dresscode: 'Hijau daun, krem, atau batik', fotoSampul: '',
+    penutup: 'Hatur nuhun atas doa dan kehadirannya. Sampai jumpa di hari bahagia kami!',
+    mempelai: { wanita: 'Rani Kusumawati', wanitaOrtu: 'Putri dari Bapak Asep & Ibu Neneng', wanitaFoto: '', pria: 'Dimas Pratama', priaOrtu: 'Putra dari Bapak Dadan & Ibu Euis', priaFoto: '' },
+    acara: ACARA2(['Akad Nikah', '09.00 WIB', 'Aula Lembah Hijau', 'Jl. Dago Atas No. 12, Bandung'], ['Resepsi', '11.30 WIB', 'Aula Lembah Hijau', 'Jl. Dago Atas No. 12, Bandung']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+  temaNikah('ubetawi', 'Undangan Betawi Ceria', { judul: 'Mira & Fajar', sapaan: 'Ayo mampir dan rayakan bersama kami! Kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada pesta pernikahan kami yang meriah.',
+    kutipan: 'Rumah paling hangat adalah tempat dua hati pulang bersama.', dresscode: 'Warna ceria: merah, hijau, kuning', fotoSampul: '',
+    penutup: 'Terima kasih sudah datang dan meramaikan hari bahagia kami!',
+    mempelai: { wanita: 'Mira Salsabila', wanitaOrtu: 'Putri dari Bapak Hasan & Ibu Siti', wanitaFoto: '', pria: 'Fajar Nugraha', priaOrtu: 'Putra dari Bapak Ridwan & Ibu Lina', priaFoto: '' },
+    acara: ACARA2(['Akad Nikah', '08.30 WIB', 'Gedung Serbaguna Mekar', 'Jl. Raya Bekasi No. 25, Bekasi'], ['Resepsi', '11.00 WIB', 'Gedung Serbaguna Mekar', 'Jl. Raya Bekasi No. 25, Bekasi']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+  temaAcara('ubayi', 'Undangan Baby Shower', { judul: 'Baby Shower Laiba', sapaan: 'Sebentar lagi si kecil hadir! Kami mengundang Bapak/Ibu/Saudara/i untuk merayakan penantian ini bersama.',
+    kutipan: 'Kecil di pelukan, besar di doa.', dresscode: 'Warna pastel', aksen: 'netral', fotoSampul: '', penutup: 'Terima kasih atas doa, hadiah, dan kehadirannya.',
+    tokoh: { nama: 'Laiba Zahra', ortu: 'Calon ibu dan keluarga', foto: '' }, acara: ACR('Baby Shower', '15.00 WIB', 'Kediaman Keluarga Laiba', 'Jl. Setiabudi No. 21, Bandung'),
+    denah: 'Parkir tersedia di depan rumah.', siaran: '', susunan: SUSUN([['15.00 WIB', 'Tamu tiba'], ['15.30 WIB', 'Doa dan sambutan'], ['16.00 WIB', 'Games dan buka kado'], ['16.45 WIB', 'Makan bersama']]), galeri: [], rekening: [], rsvp: RSVP2 },
+    [{ k: 'aksen', tipe: 'pilih', label: 'Warna aksen', opsi: [['netral', 'Netral (krem dan sage)'], ['biru', 'Biru lembut'], ['pink', 'Merah muda lembut']], bawaan: 'netral', hint: 'Pilih netral bila jenis kelamin bayi belum ingin diumumkan.' }]);
+  temaAcara('ubukber', 'Undangan Bukber & Halal Bihalal', { judul: 'Buka Puasa Bersama Alumni', sapaan: 'Mari mempererat silaturahmi. Kami mengundang Bapak/Ibu/Saudara/i untuk berbuka puasa bersama dan berbagi cerita.',
+    kutipan: '', dresscode: 'Busana muslim', jenis: 'bukber', basmalah: true, fotoSampul: '', penutup: 'Terima kasih sudah meluangkan waktu. Sampai jumpa dan mohon maaf lahir dan batin.',
+    tokoh: { nama: 'Keluarga Besar Alumni', ortu: 'Penyelenggara', foto: '' }, acara: ACR('Buka Puasa Bersama', '17.30 WIB', 'Aula Serbaguna Cahaya', 'Jl. Merdeka No. 10, Bandung'),
+    denah: 'Parkir tersedia di halaman belakang aula.', siaran: '', susunan: SUSUN([['17.15 WIB', 'Registrasi'], ['17.45 WIB', 'Kultum'], ['18.00 WIB', 'Berbuka dan salat Magrib'], ['18.45 WIB', 'Makan bersama dan ramah tamah']]), galeri: [], rekening: [], rsvp: RSVP2 },
+    [{ k: 'jenis', tipe: 'pilih', label: 'Jenis acara', opsi: [['bukber', 'Buka puasa bersama'], ['halal', 'Halal bihalal'], ['reuni', 'Reuni atau silaturahmi']], bawaan: 'bukber', hint: 'Mengubah judul kecil dan hitung mundur.' }, { k: 'basmalah', tipe: 'cek', label: 'Awali dengan basmalah (opsional)' }]);
+
 
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;

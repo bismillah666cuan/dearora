@@ -226,6 +226,12 @@
   G.upop = sp('Undangan Birthday Pop', '', ['#FFF8D6', '#FF4F8B'], 'Ulang tahun anak yang meriah: balon besar dipecahkan dengan "POP!" lalu konfeti beterbangan.', ['Balon dipecahkan, konfeti beterbangan', 'Gaya ceria dan hitung mundur pesta', 'Konfirmasi hadir dengan jumlah tamu'], ['Judul acara dan anak yang berulang tahun (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Galeri (opsional), konfirmasi hadir'], 'upop');
   G.uresmi = sp('Undangan Grand Opening', '', ['#FFF6E6', '#8E2447'], 'Peresmian usaha: pita digunting, tirai terbuka, dan papan nama pembukaan.', ['Pita digunting, tirai terbuka', 'Jam buka, lokasi, dan rangkaian acara', 'Konfirmasi hadir untuk menyiapkan hidangan'], ['Nama usaha dan keterangan singkat (logo opsional)', 'Acara, rangkaian acara, lokasi dan jam buka', 'Galeri (opsional), konfirmasi hadir'], 'uresmi');
   ['utiket', 'uwisuda', 'upop', 'uresmi'].forEach(function (k) { G[k].undangan = true; });
+  G.usunda = sp('Undangan Sunda Modern', '', ['#F4F8EC', '#2F6B4F'], 'Pernikahan bernuansa Sunda modern: gapura kayu terbuka ke sawah berundak, hiasan padi, dan sapaan "Wilujeng sumping".', ['Gapura kayu terbuka ke sawah berundak', 'Hiasan padi dan daun, nuansa hijau-emas', 'Konfirmasi hadir dan ucapan tamu masuk ke akunmu'], ['Judul acara dan mempelai (foto opsional)', 'Kisah kita, acara, dan peta', 'Galeri (opsional), amplop digital, konfirmasi hadir'], 'usunda');
+  G.ubetawi = sp('Undangan Betawi Ceria', '', ['#FFF8EA', '#C8283B'], 'Pernikahan meriah bernuansa Betawi: pintu rumah dengan hiasan gigi balang dan motif tumpal warna-warni.', ['Pintu rumah terbuka dengan cahaya hangat', 'Hiasan gigi balang dan tumpal warna-warni', 'Konfirmasi hadir dan ucapan tamu masuk ke akunmu'], ['Judul acara dan mempelai (foto opsional)', 'Kisah kita, acara, dan peta', 'Galeri (opsional), amplop digital, konfirmasi hadir'], 'ubetawi');
+  G.ubayi = sp('Undangan Baby Shower', '', ['#FBF6EC', '#8DB59C'], 'Baby shower dan penyambutan bayi: kado dibuka dengan menarik pita, balon dan bintang melayang. Pilih aksen netral, biru, atau merah muda.', ['Pita kado ditarik, balon melayang', 'Tiga pilihan aksen warna, netral bila belum diumumkan', 'Susunan acara dan konfirmasi hadir'], ['Judul acara dan calon ibu (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Galeri (opsional), konfirmasi hadir'], 'ubayi');
+  G.ubukber = sp('Undangan Bukber & Halal Bihalal', '', ['#1B1A3D', '#0F6B54'], 'Buka puasa bersama, halal bihalal, dan reuni: bedug ditabuh, lentera menyala, hitung mundur ke waktu berbuka.', ['Bedug ditabuh, lentera menyala', 'Pilihan jenis acara dan basmalah opsional', 'Konfirmasi hadir untuk menyiapkan hidangan'], ['Judul acara dan penyelenggara (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Galeri (opsional), konfirmasi hadir'], 'ubukber');
+  ['usunda', 'ubetawi', 'ubayi', 'ubukber'].forEach(function (k) { G[k].undangan = true; });
+
 
   G.misi = sp('Lastlove: Misi Cinta', 'Ulang Tahun', ['#0A141C', '#FFB020'], 'Pecinta game strategi: briefing markas, tiga misi, dan kartu hero.',
     ['Briefing markas orisinal', 'Tiga misi + hadiah di tiap misi', 'Kartu hero berisi atribut lucu'],
@@ -276,6 +282,11 @@
     uwisuda: function () { return P('sc-ws-kertas', '') + P('sc-ws-topi', '') + P('sc-ws-nama', 'Selamat Wisuda'); },
     upop: function () { return P('sc-pp-a', '') + P('sc-pp-b', '') + P('sc-pp-c', '') + P('sc-pp-nama', 'Pesta!'); },
     uresmi: function () { return P('sc-gr-papan', '') + P('sc-gr-pita', '') + P('sc-gr-nama', 'Grand Opening'); },
+    usunda: function () { return P('sc-sd-gunung', '') + P('sc-sd-sawah', '') + P('sc-sd-nama', 'Wilujeng Sumping'); },
+    ubetawi: function () { return P('sc-bt-atap', '') + P('sc-bt-pintu', '') + P('sc-bt-nama', 'Pesta Meriah'); },
+    ubayi: function () { return P('sc-by-kotak', '') + P('sc-by-pita', '') + P('sc-by-nama', 'Baby Shower'); },
+    ubukber: function () { return P('sc-bk-bulan', '') + P('sc-bk-bedug', '') + P('sc-bk-nama', 'Bukber'); },
+
 
     urumah: function () { return P('sc-rm-atap', '') + P('sc-rm-dinding', '') + P('sc-rm-pintu', '') + P('sc-rm-nama', 'Rumah Baru'); },
     classic: function () { return P('sc-hati', A.hati('#D84A6E')) + P('sc-doodle d1', A.kilau('#F78DA7')); },

@@ -196,6 +196,10 @@
     uwisuda: function () { nada(523, 0, 0.14, 'triangle', 0.1); nada(659, 0.12, 0.14, 'triangle', 0.1); nada(784, 0.24, 0.34, 'triangle', 0.11); noise(0.3, 0.5, 0.05, 'highpass', 2500, 4500, 0.7, 0.05); },
     upop: function () { noise(0, 0.1, 0.4, 'highpass', 1800, 5200, 0.7, 0.001); nada(240, 0, 0.09, 'square', 0.1, 70); nada(1319, 0.12, 0.1, 'triangle', 0.05); },
     uresmi: function () { desis(0, 0.07, 0.16, 3600, 2200, 3); desis(0.09, 0.07, 0.16, 3600, 2200, 3); lonceng(880, 0.26, 0.07, 1.1); },
+    usunda: function () { ketukKayu(0, 150, 0.2); ketukKayu(0.16, 190, 0.18); nada(659, 0.3, 0.5, 'sine', 0.06); },
+    ubetawi: function () { ketukKayu(0, 210, 0.2); nada(784, 0.05, 0.12, 'triangle', 0.08); nada(1047, 0.17, 0.2, 'triangle', 0.08); },
+    ubayi: function () { nada(1047, 0, 0.18, 'sine', 0.08); nada(1319, 0.12, 0.22, 'sine', 0.08); nada(1568, 0.26, 0.5, 'sine', 0.07); noise(0.05, 0.25, 0.03, 'highpass', 4000, 7000, 0.7, 0.05); },
+    ubukber: function () { nada(110, 0, 0.4, 'sine', 0.3, 60); noise(0, 0.06, 0.2, 'lowpass', 600, 200, 0.7, 0.002); nada(110, 0.42, 0.45, 'sine', 0.28, 60); lonceng(784, 0.9, 0.06, 1); },
     toggle: function () {
       senyap = !senyap; if (senyap) S.berhenti(); try { localStorage.setItem(KEY, senyap ? '0' : '1'); } catch (e) { /* abaikan */ }
       if (!senyap) S.sukses();
