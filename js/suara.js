@@ -192,6 +192,10 @@
     besi: function () { nada(95, 0, 0.35, 'square', 0.1, 55); noise(0, 0.2, 0.14, 'lowpass', 900, 300, 0.7, 0.003); gongBunyi(220, 0.02, 0.08); },
     pena: function () { if (!batas('pena', 55)) return; noise(0, 0.05, 0.08, 'bandpass', acak(2600, 3600), 2000, 1.2, 0.004); },
     segel: function () { nada(210, 0, 0.07, 'square', 0.09, 110); noise(0, 0.1, 0.14, 'bandpass', 2400, 1200, 0.8, 0.002); S.kertas(); },
+    utiket: function () { nada(988, 0, 0.32, 'sine', 0.12); nada(784, 0.26, 0.5, 'sine', 0.12); noise(0.04, 0.2, 0.1, 'highpass', 2500, 6500, 0.8, 0.01); },
+    uwisuda: function () { nada(523, 0, 0.14, 'triangle', 0.1); nada(659, 0.12, 0.14, 'triangle', 0.1); nada(784, 0.24, 0.34, 'triangle', 0.11); noise(0.3, 0.5, 0.05, 'highpass', 2500, 4500, 0.7, 0.05); },
+    upop: function () { noise(0, 0.1, 0.4, 'highpass', 1800, 5200, 0.7, 0.001); nada(240, 0, 0.09, 'square', 0.1, 70); nada(1319, 0.12, 0.1, 'triangle', 0.05); },
+    uresmi: function () { desis(0, 0.07, 0.16, 3600, 2200, 3); desis(0.09, 0.07, 0.16, 3600, 2200, 3); lonceng(880, 0.26, 0.07, 1.1); },
     toggle: function () {
       senyap = !senyap; if (senyap) S.berhenti(); try { localStorage.setItem(KEY, senyap ? '0' : '1'); } catch (e) { /* abaikan */ }
       if (!senyap) S.sukses();

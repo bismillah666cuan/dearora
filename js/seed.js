@@ -80,7 +80,11 @@ window.DEARORA_SEED = {
     { id: 'DSN-036', nama: 'Undangan Sultan Cilik', kategori: '', paket: ['invitation'], thumbnail: 'tema:usultan', urlDemo: '' },
     { id: 'DSN-037', nama: 'Undangan Islami Ceria', kategori: '', paket: ['invitation'], thumbnail: 'tema:ulentera', urlDemo: '' },
     { id: 'DSN-038', nama: 'Undangan Tumpeng & Doa', kategori: '', paket: ['invitation'], thumbnail: 'tema:utumpeng', urlDemo: '' },
-    { id: 'DSN-039', nama: 'Undangan Rumah Baru', kategori: '', paket: ['invitation'], thumbnail: 'tema:urumah', urlDemo: '' }
+    { id: 'DSN-039', nama: 'Undangan Rumah Baru', kategori: '', paket: ['invitation'], thumbnail: 'tema:urumah', urlDemo: '' },
+    { id: 'DSN-040', nama: 'Undangan Boarding Pass', kategori: '', paket: ['invitation'], thumbnail: 'tema:utiket', urlDemo: '' },
+    { id: 'DSN-041', nama: 'Undangan Wisuda', kategori: '', paket: ['invitation'], thumbnail: 'tema:uwisuda', urlDemo: '' },
+    { id: 'DSN-042', nama: 'Undangan Birthday Pop', kategori: '', paket: ['invitation'], thumbnail: 'tema:upop', urlDemo: '' },
+    { id: 'DSN-043', nama: 'Undangan Grand Opening', kategori: '', paket: ['invitation'], thumbnail: 'tema:uresmi', urlDemo: '' },
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }

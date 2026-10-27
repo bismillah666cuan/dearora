@@ -1,0 +1,75 @@
+/* =====================================================================
+   Undangan modern: Boarding Pass · Wisuda · Birthday Pop · Grand Opening
+   Dimuat setelah nikah.css, nikah-tema.css, dan acara-tema.css; memakai kelas yang sama (nk-*, ud-*).
+   ===================================================================== */
+.nk-tiket { --bg: #EAF4FF; --bg2: #BFDDF7; --ink: #123A63; --aks: #1E6FBF; --aks2: #124A85; --kartu: #FFFFFF; --emas: #FFC83D; --skrip: 'Great Vibes', cursive; --s1: #FFE08A; --s2: #FFC83D; --s3: #C99200; }
+.nk-gelar { --bg: #F4F7FF; --bg2: #D5E0FA; --ink: #14224F; --aks: #1E3A8A; --aks2: #122766; --kartu: #FFFFFF; --emas: #D9A82F; --skrip: 'Great Vibes', cursive; --s1: #4A6BD0; --s2: #1E3A8A; --s3: #122766; }
+.nk-pop { --bg: #FFF8D6; --bg2: #FFD9E8; --ink: #3B1F4A; --aks: #FF4F8B; --aks2: #C21F5E; --kartu: #FFFFFF; --emas: #FFC83D; --skrip: 'Fredoka', sans-serif; --s1: #FF8FB5; --s2: #FF4F8B; --s3: #C21F5E; }
+.nk-resmi { --bg: #FFF6E6; --bg2: #F1D9B0; --ink: #3A1020; --aks: #8E2447; --aks2: #5E1230; --kartu: #FFFBF2; --emas: #D4A64A; --skrip: 'Great Vibes', cursive; --s1: #C9577A; --s2: #8E2447; --s3: #5E1230; }
+.nk-tiket.nk { background: linear-gradient(180deg, #CFE8FF 0, var(--bg) 38%, #fff 100%); }
+.nk-gelar.nk { background: radial-gradient(ellipse at 50% -10%, #fff 0, var(--bg) 42%, var(--bg2) 100%); }
+.nk-pop.nk { background: radial-gradient(ellipse at 50% -10%, #fff 0, var(--bg) 40%, var(--bg2) 100%); }
+.nk-resmi.nk { background: radial-gradient(ellipse at 50% -10%, #fff 0, var(--bg) 42%, var(--bg2) 100%); }
+.nk-tiket .nk-kicker { font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: .26em; } .nk-pop .nk-kicker { font-family: 'Fredoka', sans-serif; font-weight: 600; } .nk-resmi .nk-kicker, .nk-gelar .nk-kicker { font-family: 'Cormorant Garamond', serif; font-weight: 700; letter-spacing: .3em; }
+.nk-pop .nk-nama { font-weight: 700; letter-spacing: .01em; } .nk-pop .nk-kartu { border-radius: 26px; border-width: 2px; border-color: rgba(255, 79, 139, .45); } .nk-tiket .nk-kartu { border-radius: 16px; border-style: dashed; border-color: rgba(30, 111, 191, .45); } .nk-gelar .nk-kartu, .nk-resmi .nk-kartu { border-color: rgba(217, 168, 47, .7); border-width: 2px; }
+.nk-tiket .nk-detik div, .nk-pop .nk-detik div { border-radius: 16px; } .nk-gelar .nk-detik div, .nk-resmi .nk-detik div { border-width: 2px; }
+.nk-bg-tk, .nk-bg-gl, .nk-bg-bl, .nk-bg-pt { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+/* ---------------- BOARDING PASS: tiket disobek ---------------- */
+.nk-bg-tk { background: linear-gradient(180deg, #CFE8FF 0, #EAF4FF 55%, #fff 100%); }
+.nk-bg-tk i { position: absolute; border-radius: 99px; background: #fff; opacity: .9; filter: blur(1.2px); width: 36%; height: 6.5%; animation: nkAwan 28s linear infinite; }
+.nk-bg-tk i:nth-child(1) { top: 10%; left: -40%; } .nk-bg-tk i:nth-child(2) { top: 26%; left: -60%; width: 48%; opacity: .7; animation-duration: 36s; } .nk-bg-tk i:nth-child(3) { top: 74%; left: -50%; animation-duration: 32s; }
+@keyframes nkAwan { to { transform: translateX(300vw); } }
+.nk-tk { position: relative; width: min(86vw, 340px); aspect-ratio: 1.8 / 1; margin-top: 1rem; filter: drop-shadow(0 24px 22px rgba(18, 58, 99, .3)); animation: nkAmplopMasuk 1.2s cubic-bezier(.2, .8, .2, 1) .4s both; }
+.nk-tk-tiket { position: absolute; inset: 0; display: flex; }
+.nk-tk-badan { flex: 0 0 72%; position: relative; background: #fff; border-radius: 16px 0 0 16px; overflow: hidden; -webkit-mask: radial-gradient(circle 11px at 100% 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 11px at 100% 100%, #0000 98%, #000) bottom / 100% 51% no-repeat; mask: radial-gradient(circle 11px at 100% 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 11px at 100% 100%, #0000 98%, #000) bottom / 100% 51% no-repeat; font-family: 'Rajdhani', sans-serif; color: var(--ink); transition: transform 1.1s cubic-bezier(.5, 0, .3, 1); }
+.nk-tk-atas { display: flex; justify-content: space-between; align-items: center; padding: 3.4% 6% 3% ; background: linear-gradient(90deg, var(--aks), var(--aks2)); color: #fff; font-weight: 700; font-size: .72rem; letter-spacing: .18em; }
+.nk-tk-rute { display: flex; align-items: center; justify-content: space-between; gap: 3%; padding: 5% 15% 2% 6%; } .nk-tk-rute small, .nk-tk-info small, .nk-tk-sobek small { display: block; font-size: .56rem; letter-spacing: .16em; color: #7C93AD; font-weight: 600; } .nk-tk-rute b { font-size: .95rem; letter-spacing: .03em; line-height: 1.05; color: var(--aks2); white-space: nowrap; }
+.nk-tk-rute > div:last-child { text-align: right; } .nk-tk-pes { width: 15%; flex: none; transform: rotate(90deg); transition: transform 1.1s ease, opacity .8s ease; } .nk-tk-pes svg { display: block; width: 100%; }
+.nk-tk-info { display: grid; grid-template-columns: auto auto 1fr; gap: 5%; padding: 3% 6% 0 6%; } .nk-tk-info > div { min-width: 0; } .nk-tk-info b { display: block; font-size: .7rem; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nk-tk-sobek { flex: 1; position: relative; background: #fff; border-radius: 0 16px 16px 0; border-left: 2px dashed #B7CBE0; -webkit-mask: radial-gradient(circle 11px at 0 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 11px at 0 100%, #0000 98%, #000) bottom / 100% 51% no-repeat; mask: radial-gradient(circle 11px at 0 0, #0000 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 11px at 0 100%, #0000 98%, #000) bottom / 100% 51% no-repeat; padding: 9% 7% 0; text-align: center; font-family: 'Rajdhani', sans-serif; color: var(--ink); transform-origin: 0 0; transition: transform 1.2s cubic-bezier(.5, 0, .3, 1), opacity .9s ease .1s; }
+.nk-tk-sobek b { display: block; font-size: 1.6rem; line-height: 1; color: var(--aks2); } .nk-tk-bar { display: block; margin: 12% auto 0; width: 70%; height: 30%; background: repeating-linear-gradient(90deg, #123A63 0 2px, transparent 2px 4px, #123A63 4px 5px, transparent 5px 8px); border-radius: 2px; }
+.nk-tk .nk-segel { left: 72%; top: 50%; width: 58px; height: 58px; margin: -29px 0 0 -29px; color: #5B4300; } .nk-tk .nk-segel span { font: 700 .74rem/1 'Rajdhani', sans-serif; letter-spacing: .1em; }
+.nk-tk.buka .nk-tk-sobek { transform: translate(20%, 92%) rotate(24deg); opacity: 0; } .nk-tk.buka .nk-tk-badan { transform: translateX(-4%); } .nk-tk.buka .nk-tk-pes { transform: rotate(90deg) translateY(-70px); opacity: 0; }
+
+/* ---------------- WISUDA: gulungan ijazah ---------------- */
+.nk-bg-gl { background: radial-gradient(ellipse at 50% 0, #fff, #EEF3FF 45%, #C9D7F5); }
+.nk-gl { position: relative; width: min(80vw, 310px); height: min(62vw, 240px); margin-top: 3rem; animation: nkAmplopMasuk 1.2s cubic-bezier(.2, .8, .2, 1) .4s both; }
+.nk-gl-toga { position: absolute; left: 50%; top: -22%; width: 46%; margin-left: -23%; z-index: 6; filter: drop-shadow(0 12px 12px rgba(18, 39, 102, .35)); animation: nkApung 3s ease-in-out infinite alternate; transition: transform 1.3s cubic-bezier(.2, 1.2, .4, 1), opacity .9s ease .5s; } .nk-gl-toga svg { display: block; width: 100%; }
+.nk-gl.buka .nk-gl-toga { animation: none; transform: translateY(-130%) rotate(-26deg) scale(1.15); opacity: 0; }
+.nk-gl-kertas { position: absolute; left: 10%; right: 10%; top: 44%; height: 12%; z-index: 2; background: #FFFBEF; border: 1.5px solid #E4D3A0; border-radius: 3px; box-shadow: 0 10px 22px -10px rgba(18, 39, 102, .4); overflow: hidden; transition: top 1.4s cubic-bezier(.3, .9, .3, 1), height 1.4s cubic-bezier(.3, .9, .3, 1); }
+.nk-gl.buka .nk-gl-kertas { top: 16%; height: 68%; }
+.nk-gl-isi { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 5%; text-align: center; opacity: 0; transition: opacity .7s ease .9s; } .nk-gl.buka .nk-gl-isi { opacity: 1; }
+.nk-gl-isi small { font: 700 .62rem/1 'Cormorant Garamond', serif; letter-spacing: .26em; color: #8A6A1A; } .nk-gl-isi b { font: 400 3.1rem/1 var(--skrip); color: var(--aks2); } .nk-gl-garis { display: block; width: 62%; height: 2px; background: #E4D3A0; } .nk-gl-garis.p { width: 40%; }
+.nk-gl-r { position: absolute; left: 4%; right: 4%; height: 13%; z-index: 3; border-radius: 99px; background: linear-gradient(180deg, #F8E7B5, #D7B35E 58%, #B58B2B); box-shadow: 0 8px 14px -6px rgba(90, 60, 10, .5), inset 0 -3px 0 rgba(120, 80, 10, .25); transition: top 1.4s cubic-bezier(.3, .9, .3, 1); }
+.nk-gl-r.a { top: 36%; } .nk-gl-r.b { top: 52%; } .nk-gl.buka .nk-gl-r.a { top: 8%; } .nk-gl.buka .nk-gl-r.b { top: 80%; }
+.nk-gl-pita { position: absolute; left: 45%; width: 10%; top: 24%; height: 52%; z-index: 4; background: linear-gradient(90deg, #A92E3E, #E8606F 50%, #A92E3E); border-radius: 3px; transition: transform .9s ease, opacity .8s ease; transform-origin: 50% 0; } .nk-gl.buka .nk-gl-pita { transform: translateY(70%) scaleY(.15); opacity: 0; }
+.nk-gl .nk-segel { top: 50%; z-index: 7; } .nk-gl .nk-segel span { font-size: 1.7rem; }
+
+/* ---------------- BIRTHDAY POP: balon dipecahkan ---------------- */
+.nk-bg-bl { background: radial-gradient(circle at 20% 18%, rgba(255, 255, 255, .8) 0 8%, transparent 9%), radial-gradient(circle at 82% 34%, rgba(255, 255, 255, .6) 0 6%, transparent 7%), radial-gradient(circle at 60% 82%, rgba(255, 255, 255, .55) 0 7%, transparent 8%), linear-gradient(170deg, #FFF3B8, #FFD9E8 60%, #D8F1FF); }
+.nk-bl { position: relative; width: min(80vw, 300px); aspect-ratio: 1 / 1.08; margin-top: .6rem; animation: nkAmplopMasuk 1.2s cubic-bezier(.2, .8, .2, 1) .4s both; }
+.nk-bl-b { position: absolute; animation: nkApung 3.2s ease-in-out infinite alternate; filter: drop-shadow(0 14px 12px rgba(120, 40, 80, .22)); } .nk-bl-b svg { display: block; width: 100%; height: auto; }
+.nk-bl-b.besar { left: 19%; top: 0; width: 62%; z-index: 3; } .nk-bl-b.kecil.kiri { left: -3%; top: 36%; width: 31%; animation-delay: -1s; z-index: 1; } .nk-bl-b.kecil.kanan { right: -3%; top: 28%; width: 33%; animation-delay: -2s; z-index: 1; }
+.nk-bl-teks { position: absolute; left: 0; right: 0; top: 24%; text-align: center; font: 700 clamp(2.6rem, 17vw, 4.2rem)/1 'Fredoka', sans-serif; color: #fff; text-shadow: 0 3px 0 rgba(160, 20, 70, .3); }
+.nk-bl .nk-segel { left: 50%; top: 31%; width: 56%; height: 58%; margin: -29% 0 0 -28%; border-radius: 50%; background: transparent; box-shadow: none; animation: none; z-index: 6; } .nk-bl .nk-segel span { font-size: 0; }
+.nk-bl.buka .nk-bl-b.besar { animation: nkPop .3s ease-out forwards; } .nk-bl.buka .nk-bl-b.kecil { animation: none; transform: translateY(-170%) rotate(10deg); opacity: 0; transition: transform 1.5s ease-in .15s, opacity 1.2s ease-in .35s; }
+@keyframes nkPop { 0% { transform: scale(1); opacity: 1; } 45% { transform: scale(1.2); opacity: 1; } 100% { transform: scale(1.55); opacity: 0; } }
+.nk-bl-bum { position: absolute; left: 14%; top: -2%; width: 72%; z-index: 4; opacity: 0; transform: scale(.2) rotate(-12deg); pointer-events: none; } .nk-bl-bum svg { display: block; width: 100%; } .nk-bl.buka .nk-bl-bum { animation: nkBum 1.15s ease-out .1s forwards; }
+@keyframes nkBum { 0% { opacity: 0; transform: scale(.2) rotate(-12deg); } 32% { opacity: 1; transform: scale(1.05) rotate(4deg); } 100% { opacity: 0; transform: scale(1.3) rotate(8deg); } }
+.nk-bl-serpih { position: absolute; left: 50%; top: 32%; width: 0; height: 0; z-index: 5; pointer-events: none; } .nk-bl-serpih i { position: absolute; width: 12px; height: 12px; margin: -6px; border-radius: 3px; background: var(--c); opacity: 0; } .nk-bl.buka .nk-bl-serpih i { animation: nkSerpih .95s ease-out .06s forwards; }
+@keyframes nkSerpih { 0% { opacity: 1; transform: translate(0, 0) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(260deg) scale(.5); } }
+
+/* ---------------- GRAND OPENING: pita digunting ---------------- */
+.nk-bg-pt { background: radial-gradient(ellipse at 50% 0, #fff, #FFF6E6 45%, #F1D9B0); }
+.nk-pt { position: relative; width: min(84vw, 330px); aspect-ratio: 1.12 / 1; margin-top: .8rem; overflow: hidden; border-radius: 18px; box-shadow: 0 26px 30px -16px rgba(94, 18, 48, .5), 0 0 0 3px #D4A64A; animation: nkAmplopMasuk 1.2s cubic-bezier(.2, .8, .2, 1) .4s both; background: #3A0F20; }
+.nk-pt-papan { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: .35rem; text-align: center; background: radial-gradient(ellipse at 50% 30%, #FFFBF2, #F6E3BE); } .nk-pt-papan small { font: 700 .72rem/1 'Cormorant Garamond', serif; letter-spacing: .34em; color: #8E2447; } .nk-pt-papan b { font: 400 4.2rem/1 var(--skrip); color: #5E1230; } .nk-pt-papan i { display: block; width: 46%; height: 2px; background: linear-gradient(90deg, transparent, #D4A64A, transparent); }
+.nk-pt-tirai { position: absolute; top: 0; bottom: 0; width: 50.5%; z-index: 3; background: repeating-linear-gradient(90deg, #6E1A38 0 14px, #8E2447 14px 28px, #7A1F3D 28px 42px); box-shadow: inset 0 -14px 0 -4px #D4A64A; transition: transform 1.5s cubic-bezier(.6, 0, .25, 1) .5s; } .nk-pt-tirai.kiri { left: 0; } .nk-pt-tirai.kanan { right: 0; }
+.nk-pt.buka .nk-pt-tirai.kiri { transform: translateX(-104%); } .nk-pt.buka .nk-pt-tirai.kanan { transform: translateX(104%); }
+.nk-pt-pita { position: absolute; top: 46%; height: 9%; width: 52%; z-index: 5; background: linear-gradient(180deg, #E0506C, #B82B49 55%, #A02240); box-shadow: 0 4px 8px rgba(0, 0, 0, .35); transition: transform .8s ease .1s, opacity .7s ease .3s; } .nk-pt-pita.a { left: -1%; transform-origin: 100% 50%; } .nk-pt-pita.b { right: -1%; transform-origin: 0 50%; }
+.nk-pt.buka .nk-pt-pita.a { transform: translate(-6%, 130%) rotate(16deg); opacity: 0; } .nk-pt.buka .nk-pt-pita.b { transform: translate(6%, 130%) rotate(-16deg); opacity: 0; }
+.nk-pt-simpul { position: absolute; left: 50%; top: 50%; width: 30%; margin: -17% 0 0 -15%; z-index: 6; transition: transform .7s ease, opacity .6s ease; } .nk-pt-simpul svg { display: block; width: 100%; filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .4)); } .nk-pt.buka .nk-pt-simpul { transform: scale(.4) translateY(40%); opacity: 0; }
+.nk-pt .nk-segel { top: 82%; z-index: 7; } .nk-pt .nk-segel span { display: block; width: 34px; height: 34px; } .nk-pt .nk-segel svg { display: block; width: 100%; height: 100%; }
+@media (prefers-reduced-motion: reduce) { .nk-bg-tk i, .nk-bl-b, .nk-gl-toga { animation: none !important; } }
+
+.nk-tiket .nk-kicker, .nk-gelar .nk-kicker, .nk-pop .nk-kicker, .nk-resmi .nk-kicker { color: var(--aks2); }

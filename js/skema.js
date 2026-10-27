@@ -333,7 +333,24 @@
   temaAcara('urumah', 'Undangan Rumah Baru', { judul: 'Syukuran Rumah Baru', sapaan: 'Dengan penuh rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk bersilaturahmi dan berdoa bersama di rumah baru kami.',
     kutipan: 'Ya Allah, jadikanlah rumah ini rumah yang penuh berkah, ketenteraman, dan kasih sayang bagi penghuninya. Aamiin.', dresscode: 'Santai dan rapi', fotoSampul: '', penutup: 'Doa dan kehadiran Bapak/Ibu/Saudara/i adalah keberkahan bagi rumah kami. Terima kasih.',
     tokoh: { nama: 'Keluarga Bapak Andi & Ibu Dewi', ortu: 'Perum Griya Asri Blok C No. 5, Bekasi', foto: '' }, acara: ACR('Syukuran dan Doa Bersama', '10.00 WIB', 'Rumah Baru Keluarga Andi', 'Perum Griya Asri Blok C No. 5, Bekasi'),
-    denah: 'Dari gerbang utama perumahan, belok kiri di pos satpam, rumah cat krem di sebelah kanan. Parkir di depan rumah dan sepanjang jalan.', siaran: '', susunan: SUSUN([['09.30 WIB', 'Tamu tiba'], ['10.00 WIB', 'Doa bersama'], ['10.30 WIB', 'Tur rumah'], ['11.00 WIB', 'Makan bersama']]), galeri: [], rekening: REK2, rsvp: RSVP2 });
+    denah: 'Dari gerbang utama perumahan, belok kiri di pos satpam, rumah cat krem di sebelah kanan. Parkir di depan rumah dan sepanjang jalan.', siaran: '', susunan: SUSUN([['09.30 WIB', 'Tamu tiba'], ['10.00 WIB', 'Doa bersama'], ['10.30 WIB', 'Tur rumah'], ['11.00 WIB', 'Makan bersama']]), galeri: [], rekening: REK2, rsvp: RSVP2 });  temaNikah('utiket', 'Undangan Boarding Pass', { judul: 'Nayla & Arga', sapaan: 'Perjalanan kami menuju selamanya akan segera dimulai. Kami mengundang Bapak/Ibu/Saudara/i untuk menjadi bagian dari hari keberangkatan kami.',
+    kutipan: 'Cinta bukan tentang menemukan tujuan, tetapi tentang siapa yang kita ajak berjalan bersama.', dresscode: 'Biru langit dan putih', fotoSampul: '',
+    penutup: 'Terima kasih sudah menyertai perjalanan kami. Sampai jumpa di gerbang keberangkatan!',
+    mempelai: { wanita: 'Nayla Putri Maharani', wanitaOrtu: 'Putri dari Bapak Hendra & Ibu Sari', wanitaFoto: '', pria: 'Arga Wibowo', priaOrtu: 'Putra dari Bapak Budi & Ibu Ani', priaFoto: '' },
+    acara: ACARA2(['Akad Nikah', '09.00 WIB', 'Gedung Cahaya', 'Jl. Merdeka No. 10, Bandung'], ['Resepsi', '11.30 WIB', 'Gedung Cahaya', 'Jl. Merdeka No. 10, Bandung']), kisah: KISAH, galeri: [], rekening: REK, rsvp: RSVP });
+  temaAcara('uwisuda', 'Undangan Wisuda', { judul: 'Syukuran Wisuda Laiba', sapaan: 'Dengan penuh rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk berbagi kebahagiaan atas kelulusan Laiba.',
+    kutipan: 'Setiap langkah kecil hari ini adalah awal dari perjalanan besar esok.', dresscode: 'Rapi, dengan aksen biru', fotoSampul: '', penutup: 'Terima kasih atas doa dan kehadirannya.',
+    tokoh: { nama: 'Laiba Zahra, S.Kom.', ortu: 'Lulusan Teknik Informatika', foto: '' }, acara: ACR('Syukuran Wisuda', '12.00 WIB', 'Kediaman Keluarga Laiba', 'Jl. Dago Asri No. 7, Bandung'),
+    denah: 'Parkir tersedia di depan rumah. Masuk dari gang kedua di sebelah kiri jalan.', siaran: '', susunan: SUSUN([['11.30 WIB', 'Tamu tiba'], ['12.00 WIB', 'Sambutan dan doa'], ['12.30 WIB', 'Makan siang bersama'], ['13.30 WIB', 'Foto bersama']]), galeri: [], rekening: REK2, rsvp: RSVP2 });
+  temaAcara('upop', 'Undangan Birthday Pop', { judul: 'Alya Berusia 5!', sapaan: 'Ayo rayakan hari istimewa Alya bersama balon, kue, dan banyak tawa. Jangan lupa datang, ya!',
+    kutipan: '', dresscode: 'Warna ceria!', fotoSampul: '', penutup: 'Terima kasih sudah membuat hari Alya semakin ceria!',
+    tokoh: { nama: 'Alya Putri', ortu: 'Putri dari Bapak Rizal & Ibu Dina', foto: '' }, acara: ACR('Pesta Ulang Tahun', '15.00 WIB', 'Rumah Alya', 'Jl. Setiabudi No. 21, Bandung'),
+    denah: 'Rumah dengan pagar kuning dan balon di depan.', siaran: '', susunan: SUSUN([['15.00 WIB', 'Tamu tiba dan bermain'], ['15.45 WIB', 'Tiup lilin'], ['16.15 WIB', 'Makan bersama'], ['16.45 WIB', 'Games dan bagi hadiah']]), galeri: [], rekening: [], rsvp: RSVP2 });
+  temaAcara('uresmi', 'Undangan Grand Opening', { judul: 'Kopi Senja', sapaan: 'Dengan gembira kami mengundang Bapak/Ibu/Saudara/i untuk hadir pada pembukaan kedai kami. Mari merayakannya bersama secangkir kopi hangat.',
+    kutipan: '', dresscode: '', fotoSampul: '', penutup: 'Terima kasih atas dukungan dan kehadirannya. Sampai jumpa di Kopi Senja!',
+    tokoh: { nama: 'Kopi Senja', ortu: 'Kedai kopi dan ruang temu warga', foto: '' }, acara: ACR('Grand Opening Kopi Senja', '10.00 WIB', 'Kopi Senja', 'Jl. Braga No. 15, Bandung'),
+    denah: 'Buka setiap hari pukul 08.00 sampai 22.00. Parkir tersedia di halaman depan.', siaran: '', susunan: SUSUN([['10.00 WIB', 'Pemotongan pita'], ['10.30 WIB', 'Open house dan cicip menu'], ['12.00 WIB', 'Musik akustik'], ['15.00 WIB', 'Doorprize dan promo pembukaan']]), galeri: [], rekening: [], rsvp: RSVP2 });
+
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
   if (typeof module !== 'undefined') module.exports = SKEMA;
 })();

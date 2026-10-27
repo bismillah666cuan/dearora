@@ -221,6 +221,12 @@
   G.utumpeng = sp('Undangan Tumpeng & Doa', '', ['#FFF8E4', '#2E7D3C'], 'Syukuran dan tasyakuran: tumpeng beruap di atas daun pisang, bunga marigold, doa bersama.', ['Tumpeng terbuka, uap mengepul', 'Daun pisang dan marigold berguguran', 'Susunan acara dan konfirmasi hadir untuk porsi'], ['Judul acara dan tuan rumah (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Doa, galeri (opsional), konfirmasi hadir'], 'utumpeng');
   G.urumah = sp('Undangan Rumah Baru', '', ['#FFF6EA', '#C8573D'], 'Syukuran rumah baru: pintu rumah terbuka dengan cahaya hangat, lampu hias, tanaman rambat.', ['Pintu terbuka, jendela menyala', 'Petunjuk lokasi dan parkir', 'Konfirmasi hadir dengan jumlah tamu'], ['Judul acara dan tuan rumah (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Doa, galeri (opsional), konfirmasi hadir'], 'urumah');
   ['usultan', 'ulentera', 'utumpeng', 'urumah'].forEach(function (k) { G[k].undangan = true; });
+  G.utiket = sp('Undangan Boarding Pass', '', ['#EAF4FF', '#1E6FBF'], 'Pernikahan dan lamaran bertema perjalanan: tiket pesawat disobek untuk membuka, jadwal "keberangkatan", dan album perjalanan.', ['Tiket disobek untuk membuka undangan', 'Akad dan resepsi menjadi tiket keberangkatan', 'Konfirmasi hadir dan ucapan tamu masuk ke akunmu'], ['Judul acara dan mempelai (foto opsional)', 'Kisah kita, acara, dan peta', 'Galeri (opsional), amplop digital, konfirmasi hadir'], 'utiket');
+  G.uwisuda = sp('Undangan Wisuda', '', ['#F4F7FF', '#1E3A8A'], 'Syukuran wisuda: gulungan ijazah terbentang, toga melayang, dan konfeti emas.', ['Pita gulungan ijazah diurai', 'Toga melayang dan konfeti emas', 'Susunan acara dan konfirmasi hadir'], ['Judul acara dan wisudawan (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Galeri (opsional), konfirmasi hadir'], 'uwisuda');
+  G.upop = sp('Undangan Birthday Pop', '', ['#FFF8D6', '#FF4F8B'], 'Ulang tahun anak yang meriah: balon besar dipecahkan dengan "POP!" lalu konfeti beterbangan.', ['Balon dipecahkan, konfeti beterbangan', 'Gaya ceria dan hitung mundur pesta', 'Konfirmasi hadir dengan jumlah tamu'], ['Judul acara dan anak yang berulang tahun (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Galeri (opsional), konfirmasi hadir'], 'upop');
+  G.uresmi = sp('Undangan Grand Opening', '', ['#FFF6E6', '#8E2447'], 'Peresmian usaha: pita digunting, tirai terbuka, dan papan nama pembukaan.', ['Pita digunting, tirai terbuka', 'Jam buka, lokasi, dan rangkaian acara', 'Konfirmasi hadir untuk menyiapkan hidangan'], ['Nama usaha dan keterangan singkat (logo opsional)', 'Acara, rangkaian acara, lokasi dan jam buka', 'Galeri (opsional), konfirmasi hadir'], 'uresmi');
+  ['utiket', 'uwisuda', 'upop', 'uresmi'].forEach(function (k) { G[k].undangan = true; });
+
   G.misi = sp('Lastlove: Misi Cinta', 'Ulang Tahun', ['#0A141C', '#FFB020'], 'Pecinta game strategi: briefing markas, tiga misi, dan kartu hero.',
     ['Briefing markas orisinal', 'Tiga misi + hadiah di tiap misi', 'Kartu hero berisi atribut lucu'],
     ['Nama komandan dan gelar', 'Foto tersembunyi dan pesannya', 'Tiga pesan penguat dan satu pertanyaan kuis', 'Hadiah final (pesan atau foto)'], 'misi');
@@ -266,6 +272,11 @@
     usultan: function () { return P('sc-sc-bantal', '') + P('sc-sc-mahkota', '') + P('sc-sc-nama', 'Khitanan Fauzan'); },
     ulentera: function () { return P('sc-ln-l a', '') + P('sc-ln-l b', '') + P('sc-ln-l c', '') + P('sc-ln-nama', 'Khitanan Abdullah'); },
     utumpeng: function () { return P('sc-tp-daun', '') + P('sc-tp-kerucut', '') + P('sc-tp-nama', 'Syukuran Keluarga'); },
+    utiket: function () { return P('sc-tk-badan', '') + P('sc-tk-sobek', '') + P('sc-tk-nama', 'Boarding Pass'); },
+    uwisuda: function () { return P('sc-ws-kertas', '') + P('sc-ws-topi', '') + P('sc-ws-nama', 'Selamat Wisuda'); },
+    upop: function () { return P('sc-pp-a', '') + P('sc-pp-b', '') + P('sc-pp-c', '') + P('sc-pp-nama', 'Pesta!'); },
+    uresmi: function () { return P('sc-gr-papan', '') + P('sc-gr-pita', '') + P('sc-gr-nama', 'Grand Opening'); },
+
     urumah: function () { return P('sc-rm-atap', '') + P('sc-rm-dinding', '') + P('sc-rm-pintu', '') + P('sc-rm-nama', 'Rumah Baru'); },
     classic: function () { return P('sc-hati', A.hati('#D84A6E')) + P('sc-doodle d1', A.kilau('#F78DA7')); },
     movie: function () { return P('sc-mv-poster', '<i>Cerita<br>Kita</i>') + P('sc-mv-judul', 'CERITAKITA') + P('sc-mv-eps e1', '1') + P('sc-mv-eps e2', '2') + P('sc-mv-eps e3', '3') + P('sc-mv-play', '▶ Tonton'); },
