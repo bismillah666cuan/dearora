@@ -165,14 +165,20 @@
     $dialog.setAttribute('aria-labelledby', 'demoTitle');
     $dialog.classList.remove('demo-desk'); $dialog._tema = tema; $dialog._kat = kat;
     if (typeof $dialog.showModal === 'function') $dialog.showModal(); else $dialog.setAttribute('open', '');
+    aturDemoDesk(); requestAnimationFrame(aturDemoDesk);
     $dialog._pemicu = pemicu;
   }
-  /** Mode desktop: skala bingkai 1280×720 agar muat di jendela (tanpa terpotong). */
+  /** Mengatur skala bingkai demo agar SELALU muat di jendela, tanpa terpotong:
+   *  mode HP = layar logis 390×780 diskalakan; mode Desktop = layar logis 1280×720 diskalakan. Sisa konten jendela bisa digulir. */
   function aturDemoDesk() {
-    if (!$dialog.classList.contains('demo-desk')) return;
     var st = $dialog.querySelector('.demo-stage'); if (!st) return;
-    var k = Math.min((st.clientWidth - 24) / 1280, (window.innerHeight - 260) / 720, 1);
-    $dialog.style.setProperty('--demo-k', k.toFixed(3)); $dialog.style.setProperty('--demo-h', Math.round(720 * k) + 'px');
+    if ($dialog.classList.contains('demo-desk')) {
+      var k = Math.min((st.clientWidth - 24) / 1280, (window.innerHeight - 260) / 720, 1);
+      $dialog.style.setProperty('--demo-k', k.toFixed(3)); $dialog.style.setProperty('--demo-h', Math.round(720 * k) + 'px');
+    } else {
+      var kh = Math.min((st.clientWidth - 24) / 390, Math.max(300, Math.min(window.innerHeight - 190, 680)) / 780, 1); kh = Math.max(0.3, kh);
+      $dialog.style.setProperty('--hp-k', kh.toFixed(3)); $dialog.style.setProperty('--hp-h', Math.round(780 * kh) + 'px');
+    }
   }
   window.addEventListener('resize', aturDemoDesk);
   function tutupDemo() {
