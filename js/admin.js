@@ -34,11 +34,67 @@
 
   /* ---------------- Sesi & API ---------------- */
   function bacaToken() { try { return sessionStorage.getItem(KEY) || ''; } catch (e) { return ''; } }
-  function simpanToken(t) { token = t; try { if (t) sessionStorage.setItem(KEY, t); else sessionStorage.removeItem(KEY); } catch (e) { /* diblokir */ } }
+  function simpanToken(t) { token = t; if (!t) { cacheA = {}; genA++; } try { if (t) sessionStorage.setItem(KEY, t); else sessionStorage.removeItem(KEY); } catch (e) { /* diblokir */ } }
+  /* ----- Pemuatan cepat: tampilkan data tersimpan di browser SEKETIKA, lalu segarkan di latar belakang -----
+     • Hanya tindakan BACA yang disimpan sementara (dihapus otomatis tiap ada tindakan tulis, keluar, atau sesi habis).
+     • Data hanya ada di memori halaman ini (tidak ditulis ke penyimpanan browser). */
+  var BACA = { adminDashboard: 1, adminOrders: 1, adminOrderDetail: 1, adminPengaturan: 1, adminLaporan: 1, adminTestimoniDaftar: 1 };
+  var cacheA = {}, genA = 0, sibuk = 0, TTL_BASI = 10 * 60 * 1000, TTL_SEGAR = 8 * 1000, MAKS_CACHE = 40, sudahPrefetch = false;
+  var muatBar = document.createElement('div'); muatBar.className = 'muat-bar'; muatBar.setAttribute('aria-hidden', 'true'); document.body.appendChild(muatBar);
+  function bar(d) { sibuk += d; clearTimeout(bar._t); if (sibuk > 0) bar._t = setTimeout(function () { muatBar.classList.add('on'); }, 120); else muatBar.classList.remove('on'); }
+  function kunciCache(aksi, data) { return aksi + '|' + JSON.stringify(data || {}); }
+  function salin(x) { return JSON.parse(JSON.stringify(x)); }                    // salinan terpisah: tampilan yang mengubah datanya tidak merusak data tersimpan
+  function simpanCache(k, r) {
+    cacheA[k] = { r: salin(r), t: Date.now(), sedang: false };
+    var ks = Object.keys(cacheA); if (ks.length > MAKS_CACHE) { ks.sort(function (x, y) { return cacheA[x].t - cacheA[y].t; }); delete cacheA[ks[0]]; }
+  }
+  async function callJaringan(aksi, data, diam) {
+    if (!diam) bar(1);
+    try {
+      var r = await API.post(aksi, data || {}, { token: token, timeout: 40000 });
+      if (!r.success && /Sesi admin berakhir/i.test(r.message || '')) { simpanToken(''); shellAda = false; tampilLogin('Sesi berakhir. Silakan masuk kembali.'); throw new Error('sesi'); }
+      return r;
+    } finally { if (!diam) bar(-1); }
+  }
+  function amanRender() {
+    var ae = document.activeElement, main = document.getElementById('main');
+    if (dlg.open || (typeof dlgEdit !== 'undefined' && dlgEdit.open) || pilihMode) return false;
+    if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && main && main.contains(ae)) return false;
+    return true;
+  }
+  async function segarkanLatar(k, aksi, data) {
+    var e = cacheA[k]; if (!e || e.sedang) return; e.sedang = true;
+    var gen0 = genA, hash0 = location.hash, lama = JSON.stringify(e.r.data);
+    try {
+      var r = await callJaringan(aksi, data);
+      if (!r || !r.success || gen0 !== genA) return;
+      simpanCache(k, r);
+      if (JSON.stringify(r.data) !== lama && location.hash === hash0 && amanRender()) render(true);   // tampilan diperbarui diam-diam bila ada perubahan
+    } catch (err) { /* sesi berakhir atau jaringan: abaikan, tampilan lama tetap ada */ }
+    finally { var e2 = cacheA[k]; if (e2) e2.sedang = false; }
+  }
   async function call(aksi, data) {
-    var r = await API.post(aksi, data || {}, { token: token, timeout: 40000 });
-    if (!r.success && /Sesi admin berakhir/i.test(r.message || '')) { simpanToken(''); shellAda = false; tampilLogin('Sesi berakhir. Silakan masuk kembali.'); throw new Error('sesi'); }
+    if (!BACA[aksi]) { try { return await callJaringan(aksi, data); } finally { cacheA = {}; genA++; } }      // tindakan tulis: semua data tersimpan dianggap usang
+    var k = kunciCache(aksi, data), e = cacheA[k], umur = e ? Date.now() - e.t : 0;
+    if (e && umur < TTL_BASI) { if (umur > TTL_SEGAR && !e.sedang) segarkanLatar(k, aksi, data); return salin(e.r); }
+    var gen0 = genA, r = await callJaringan(aksi, data);
+    if (r && r.success && gen0 === genA) simpanCache(k, r);
     return r;
+  }
+  /** Setelah halaman pertama tampil, muat menu lain diam-diam supaya saat diklik langsung tampil. */
+  async function prefetchLatar() {
+    if (sudahPrefetch || !token) return; sudahPrefetch = true;
+    var daftar = [['adminDashboard'], ['adminOrders', { q: '', status: '', paket: '', halaman: 1 }], ['adminTestimoniDaftar', { status: 'menunggu', cari: '' }], ['adminPengaturan'], ['adminLaporan']];
+    var tunggu = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+    await tunggu(1200);
+    for (var i = 0; i < daftar.length; i++) {
+      while (sibuk > 0) await tunggu(400);                                          // jangan menyaingi permintaan yang sedang ditunggu pengguna
+      if (!token) return;
+      var k = kunciCache(daftar[i][0], daftar[i][1]); if (cacheA[k]) continue;
+      var gen0 = genA;
+      try { var r = await callJaringan(daftar[i][0], daftar[i][1], true); if (r && r.success && gen0 === genA && !cacheA[k]) simpanCache(k, r); } catch (e) { return; }
+      await tunggu(500);
+    }
   }
   function setTema(t) { document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem('dearora:admin:tema', t); } catch (e) { /* abaikan */ } var b = document.querySelectorAll('[data-a="tema"]'); b.forEach(function (x) { x.innerHTML = ic(t === 'dark' ? 'sun' : 'moon') + '<span class="sr">Ganti tema</span>'; }); }
 
@@ -107,7 +163,7 @@
     var aktif = r === 'detail' ? 'pesanan' : r;
     document.querySelectorAll('[data-nav]').forEach(function (a) { if (a.dataset.nav === aktif) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   }
-  function skel() { return '<div class="grid"><div class="skel"></div><div class="skel"></div></div>'; }
+  function skel() { return '<div class="memuat" role="status" aria-live="polite"><p class="small muted" style="margin:.25rem 0 .75rem"><span class="spin" aria-hidden="true"></span> Memuat data…</p><div class="grid"><div class="skel"></div><div class="skel"></div></div><div class="skel tinggi"></div></div>'; }
   function galatBox(m) { return '<div class="card"><p class="err" role="alert">' + esc(m || 'Gagal memuat data.') + '</p><button class="btn sm" data-a="muat-ulang" style="margin-top:.75rem">Coba Lagi</button></div>'; }
 
   /* ---------------- Grafik ---------------- */
@@ -579,10 +635,10 @@
   }
 
   /* ---------------- Router & event ---------------- */
-  async function render() {
+  async function render(tenang) {
     if (!token) { tampilLogin(); return; }
     if (!shellAda) bangunShell();
-    var my = ++run, h = parseHash();
+    var my = ++run, h = parseHash(), y0 = window.scrollY;
     tandaiNav(h.rute);
     var main = document.getElementById('main');
     try {
@@ -594,7 +650,12 @@
       else if (h.rute === 'pengaturan') await viewPengaturan(my, h.q);
       else main.innerHTML = '<div class="card empty">Halaman tidak ditemukan. <a href="#/">Kembali</a></div>';
     } catch (e) { if (e.message !== 'sesi') main.innerHTML = galatBox('Koneksi bermasalah. Coba lagi.'); }
-    if (my === run) { var h1 = document.getElementById('h1'); if (h1 && h.rute !== 'pesanan') h1.focus({ preventScroll: true }); if (h.rute !== 'pesanan') window.scrollTo(0, 0); }
+    if (my === run) {
+      var h1 = document.getElementById('h1');
+      if (tenang) { window.scrollTo(0, y0); setTimeout(function () { window.scrollTo(0, y0); }, 120); }                  // penyegaran latar: posisi gulir dan fokus tidak berubah
+      else { if (h1 && h.rute !== 'pesanan') h1.focus({ preventScroll: true }); if (h.rute !== 'pesanan') window.scrollTo(0, 0); }
+      prefetchLatar();
+    }
   }
 
   document.addEventListener('change', function (ev) {
