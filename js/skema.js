@@ -170,6 +170,42 @@
         T('usia', 'Usia atau tahun', 14, { wajib: true, hint: 'Mis. 1 tahun, 17 tahun, atau 2015' }), T('judul', 'Judul halaman', 40, { wajib: true, hint: 'Mis. Langkah pertama' }), A('cerita', 'Cerita singkat', 200, { wajib: true }), F('foto', 'Foto (disarankan)')] },
       { k: 'kini', tipe: 'objek', label: 'Halaman terakhir: tahun ini dan pesan utama', item: [
         T('usia', 'Usia sekarang', 14, { wajib: true, hint: 'Mis. 25 tahun' }), A('pesan', 'Pesan utama', 600, { wajib: true })] }
+    ] },
+    terbang: { nama: 'Penerbangan Usia', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. \"Pesawatmu sudah menunggu. Siap terbang menuju usia barumu?\". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('maskapai', 'Nama maskapai (lucu-lucuan)', 30, { bawaan: 'Dearora Air', hint: 'Tampil di boarding pass dan pengumuman pilot.' }),
+      T('usia', 'Usia tujuan (angka)', 3, { wajib: true, hint: 'Mis. 25. Tampil sebagai \"Usia ke-25\" di tiket dan papan kedatangan.' }),
+      { k: 'singgah', tipe: 'daftar', label: 'Persinggahan', hint: '3 sampai 5 persinggahan. Tiap persinggahan adalah satu usia atau tahun penting, lengkap dengan cerita dan foto.', min: 3, maks: 5, namaItem: 'Persinggahan', item: [
+        T('usia', 'Usia atau tahun', 14, { wajib: true, hint: 'Mis. 7 tahun' }), T('tempat', 'Nama tempat persinggahan', 40, { wajib: true, hint: 'Mis. Kota Sekolah Dasar' }), A('cerita', 'Cerita singkat', 220, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'pendaratan', tipe: 'objek', label: 'Pendaratan: pengumuman dan pesan utama', item: [
+        A('pengumuman', 'Pengumuman pilot sebelum mendarat (opsional)', 160, { hint: 'Boleh dikosongkan; akan memakai kalimat bawaan.' }), A('pesan', 'Pesan utama di kartu kedatangan', 600, { wajib: true })] }
+    ] },
+    degustasi: { nama: 'Menu Degustasi', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. \"Malam ini aku mereservasi satu meja untukmu\". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('restoran', 'Nama restoran', 36, { bawaan: 'Restoran Kenangan' }),
+      { k: 'hidangan', tipe: 'daftar', label: 'Hidangan', hint: '3 sampai 5 hidangan. Tiap hidangan membuka satu kenangan atau doa.', min: 3, maks: 5, namaItem: 'Hidangan', item: [
+        T('nama', 'Nama hidangan', 40, { wajib: true, hint: 'Mis. Sup tawa masa kecil' }), { k: 'ilus', tipe: 'pilih', label: 'Bentuk hidangan', opsi: [['sup', 'Sup hangat'], ['salad', 'Salad segar'], ['daging', 'Hidangan utama'], ['pasta', 'Pasta'], ['ikan', 'Ikan']], bawaan: 'sup' },
+        A('cerita', 'Kenangan atau doa untuk hidangan ini', 220, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'penutup', tipe: 'objek', label: 'Hidangan penutup, tagihan, dan pesan utama', item: [
+        T('nama', 'Nama kue penutup', 40, { bawaan: 'Kue Ulang Tahun' }), T('tagihan', 'Tulisan di tagihan', 60, { bawaan: 'Sudah dibayar lunas dengan kasih sayang' }), A('pesan', 'Pesan utama (catatan di tagihan)', 600, { wajib: true })] }
+    ] },
+    detektif: { nama: 'Detektif: Kasus Kue yang Hilang', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. \"Ada kasus penting yang hanya bisa dipecahkan olehmu\". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Judul kasus', 40, { bawaan: 'Kasus Kue yang Hilang' }),
+      { k: 'bukti', tipe: 'daftar', label: 'Barang bukti dan kesaksian', hint: '3 sampai 5 bukti. Tiap bukti punya saksi (teman atau keluarga) dan kesaksian berisi ucapan atau kenangan.', min: 3, maks: 5, namaItem: 'Bukti', item: [
+        T('judul', 'Nama barang bukti', 40, { wajib: true, hint: 'Mis. Sebuah topi pesta' }), T('saksi', 'Nama saksi', 30, { wajib: true, hint: 'Mis. Dimas, sahabatmu' }), A('kesaksian', 'Kesaksian (ucapan atau kenangan)', 220, { wajib: true }), F('foto', 'Foto bukti (opsional)')] },
+      { k: 'tersangka', tipe: 'daftar', label: 'Tersangka', hint: '2 sampai 3 tersangka lucu-lucuan. Semuanya punya alibi yang kuat.', min: 2, maks: 3, namaItem: 'Tersangka', item: [
+        T('nama', 'Nama tersangka', 24, { wajib: true, hint: 'Mis. Si Kucing' }), A('alibi', 'Alibi', 120, { wajib: true, hint: 'Mis. Sedang tidur sepanjang sore.' })] },
+      { k: 'penutup', tipe: 'objek', label: 'Pelaku sebenarnya dan laporan akhir', item: [
+        T('pelaku', 'Pelaku sebenarnya', 40, { bawaan: 'Kejutan pesta ulang tahun' }), A('pesan', 'Laporan akhir (pesan utama)', 600, { wajib: true })] }
+    ] },
+    bianglala: { nama: 'Bianglala Pasar Malam', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. \"Pasar malam buka khusus untukmu malam ini\". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Nama pasar malam', 36, { bawaan: 'Pasar Malam Ulang Tahun' }),
+      { k: 'gondola', tipe: 'daftar', label: 'Gondola dan kenangannya', hint: '3 sampai 6 gondola. Tiap gondola membuka satu kenangan atau doa.', min: 3, maks: 6, namaItem: 'Gondola', item: [
+        T('judul', 'Judul kenangan', 30, { wajib: true, hint: 'Mis. Pertama kali kita bertemu' }), A('cerita', 'Cerita singkat', 200, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'puncak', tipe: 'objek', label: 'Gondola emas: banner dan pesan utama', item: [
+        T('judul', 'Tulisan banner', 40, { bawaan: 'Selamat Ulang Tahun!' }), A('pesan', 'Pesan utama', 600, { wajib: true })] }
     ] }
   };
 
@@ -301,6 +337,19 @@
   SKEMA.album.contoh = { transisi: 'Aku menyimpan semua tahunmu di sebuah album. Yuk, kita buka bersama.', judul: 'Album Tahun-Tahunku',
     tahun: [{ usia: '1 tahun', judul: 'Langkah pertama', cerita: 'Kata orang, kamu berjalan lebih dulu daripada yang diperkirakan, dan langsung tertawa bangga.', foto: '' }, { usia: '7 tahun', judul: 'Hari pertama sekolah', cerita: 'Tas barumu hampir lebih besar dari badanmu, tapi senyummu paling lebar di barisan.', foto: '' }, { usia: '17 tahun', judul: 'Mulai berani bermimpi', cerita: 'Tahun ketika kamu mulai tahu apa yang kamu mau, dan tidak takut mengatakannya.', foto: '' }, { usia: '22 tahun', judul: 'Lulus dan melangkah', cerita: 'Toga, bunga, dan air mata bahagia. Satu bab selesai, bab baru dimulai.', foto: '' }],
     kini: { usia: '25 tahun', pesan: 'Setiap tahun membentukmu menjadi pribadi yang kukagumi hari ini. Terima kasih sudah tumbuh dengan hati yang baik. Selamat ulang tahun, semoga album ini terus bertambah halamannya.' } };
+  SKEMA.terbang.contoh = { transisi: 'Pesawatmu sudah menunggu. Siap terbang menuju usia barumu?', maskapai: 'Dearora Air', usia: '25',
+    singgah: [{ usia: '1 tahun', tempat: 'Kota Langkah Pertama', cerita: 'Kamu berjalan lebih cepat dari perkiraan, lalu tertawa bangga seakan sudah menaklukkan dunia.', foto: '' }, { usia: '7 tahun', tempat: 'Pulau Hari Pertama Sekolah', cerita: 'Tas barumu hampir lebih besar dari badanmu, tapi senyummu paling lebar di barisan.', foto: '' }, { usia: '17 tahun', tempat: 'Bandara Mimpi Besar', cerita: 'Tahun ketika kamu mulai tahu apa yang kamu mau, dan berani mengatakannya.', foto: '' }, { usia: '22 tahun', tempat: 'Menara Kelulusan', cerita: 'Toga, bunga, dan air mata bahagia. Satu bab selesai, bab baru dimulai.', foto: '' }],
+    pendaratan: { pengumuman: '', pesan: 'Terima kasih sudah terbang bersamaku melewati semua tahun ini. Semoga usia barumu membawa lebih banyak tawa, lebih banyak petualangan, dan lebih sedikit lelah. Selamat ulang tahun, Rani.' } };
+  SKEMA.degustasi.contoh = { transisi: 'Malam ini aku mereservasi satu meja khusus untukmu. Silakan duduk.', restoran: 'Restoran Kenangan',
+    hidangan: [{ nama: 'Sup tawa masa kecil', ilus: 'sup', cerita: 'Dulu kita bisa tertawa sampai perut sakit hanya karena hal-hal kecil. Aku rindu itu.', foto: '' }, { nama: 'Salad hari-hari sulit', ilus: 'salad', cerita: 'Kamu yang datang membawa teh hangat tanpa diminta. Itu lebih dari cukup.', foto: '' }, { nama: 'Hidangan utama petualangan', ilus: 'daging', cerita: 'Perjalanan yang tidak direncanakan selalu jadi cerita yang paling sering kita ulang.', foto: '' }],
+    penutup: { nama: 'Kue Ulang Tahun Spesial', tagihan: 'Sudah dibayar lunas dengan kasih sayang', pesan: 'Terima kasih sudah menjadi tamu paling istimewa di hidupku. Semoga tahun ini semanis hidangan penutup dan sehangat cahaya lilin ini. Selamat ulang tahun.' } };
+  SKEMA.detektif.contoh = { transisi: 'Ada kasus penting yang hanya bisa dipecahkan olehmu. Siap, Detektif?', judul: 'Kasus Kue yang Hilang',
+    bukti: [{ judul: 'Sebuah topi pesta', saksi: 'Dimas, sahabatmu', kesaksian: 'Aku melihat topi ini di dekat dapur. Sepertinya seseorang sedang menyiapkan sesuatu yang manis.', foto: '' }, { judul: 'Remah kue di lantai', saksi: 'Ibu', kesaksian: 'Ibu mencium aroma vanila sejak pagi. Katanya itu aroma hari spesial.', foto: '' }, { judul: 'Pesan di kertas kusut', saksi: 'Nara, adikmu', kesaksian: 'Kertas ini bertuliskan: semoga hari ini jadi hari terbaikmu. Aku tidak boleh bilang siapa yang menulis.', foto: '' }],
+    tersangka: [{ nama: 'Si Kucing', alibi: 'Sedang tidur sepanjang sore di atas bantal.' }, { nama: 'Tetangga Sebelah', alibi: 'Sedang menyiram tanaman, banyak yang melihatnya.' }],
+    penutup: { pelaku: 'Kejutan pesta ulang tahun', pesan: 'Kasus ditutup. Kuenya tidak pernah hilang, ia hanya menunggu saat yang tepat. Terima kasih sudah menjadi detektif terbaikku. Selamat ulang tahun, semoga semua misterimu berakhir bahagia.' } };
+  SKEMA.bianglala.contoh = { transisi: 'Pasar malam buka khusus untukmu malam ini. Ayo naik bianglalanya.', judul: 'Pasar Malam Ulang Tahun',
+    gondola: [{ judul: 'Pertama kali bertemu', cerita: 'Hari itu kamu datang terlambat sambil tertawa, dan entah kenapa langsung terasa seperti teman lama.', foto: '' }, { judul: 'Tawa yang tak habis', cerita: 'Cerita-cerita konyol kita masih jadi hiburan terbaik di hari yang berat.', foto: '' }, { judul: 'Hari-hari sulit', cerita: 'Kamu selalu ada, bahkan ketika aku tidak minta. Terima kasih untuk itu.', foto: '' }, { judul: 'Mimpi yang kita bagi', cerita: 'Semoga satu per satu mimpimu menyala seperti lampu-lampu bianglala ini.', foto: '' }],
+    puncak: { judul: 'Selamat Ulang Tahun!', pesan: 'Dari gondola emas ini, semua kenangan kita terlihat indah. Terima kasih sudah menjadi bagian dari cerita hidupku. Semoga tahun ini penuh cahaya, tawa, dan kembang api.' } };
   var ACARA2 = function (a, b) { return [{ nama: a[0], tanggal: '2027-03-15', jam: a[1], tempat: a[2], alamat: a[3], peta: '' }, { nama: b[0], tanggal: '2027-03-15', jam: b[1], tempat: b[2], alamat: b[3], peta: '' }]; };
   var KISAH = [{ waktu: '2019', judul: 'Pertama Bertemu', cerita: 'Takdir mempertemukan kami di sebuah acara kampus, dan kami saling melempar senyum untuk pertama kalinya.', foto: '' }, { waktu: '2022', judul: 'Menjadi Kita', cerita: 'Setelah bertahun-tahun bersahabat, kami memutuskan untuk berjalan bersama.', foto: '' }, { waktu: '2026', judul: 'Lamaran', cerita: 'Dengan restu keluarga, kami melangkah ke jenjang yang lebih serius.', foto: '' }];
   var REK = [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Mempelai Wanita' }], RSVP = { maksTamu: 4, catatan: 'Mohon konfirmasi kehadiran sebelum 1 Maret 2027.' };

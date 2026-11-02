@@ -151,7 +151,7 @@
 
   /* ------------ Desain khusus paket Special (aplikasi mini; halaman /s/) ------------ */
   function sp(nama, kat, warna, cocok, fitur, brief, kunci) { return { special: true, dasar: DASAR_PREMIUM[kunci] || 'classic', skin: 'p' + kunci, demoUrl: '/s/?d=' + kunci, nama: nama, kat: kat, warna: warna, cocok: cocok, fitur: fitur, brief: brief, gelap: true }; }
-  var DASAR_PREMIUM = { movie: 'cinematic', mall: 'classic', bestie: 'classic', feed: 'classic', musik: 'classic', misi: 'classic', romantique: 'cinematic', wisuda: 'classic', lebaran: 'classic', imlek: 'classic', mancing: 'classic', awards: 'classic', resep: 'classic', rumah: 'classic', brankas: 'classic', hujan: 'classic', lahir: 'classic', pesta: 'classic', kue: 'classic', album: 'classic' };      // perilaku slide (transisi/dekor) yang dipinjam; tampilan memakai skin Premium sendiri      // tema 5 slide (pembuka→sapaan→surat→kejutan→kenangan) untuk tiap desain Premium
+  var DASAR_PREMIUM = { movie: 'cinematic', mall: 'classic', bestie: 'classic', feed: 'classic', musik: 'classic', misi: 'classic', romantique: 'cinematic', wisuda: 'classic', lebaran: 'classic', imlek: 'classic', mancing: 'classic', awards: 'classic', resep: 'classic', rumah: 'classic', brankas: 'classic', hujan: 'classic', lahir: 'classic', pesta: 'classic', kue: 'classic', album: 'classic', terbang: 'classic', degustasi: 'classic', detektif: 'classic', bianglala: 'classic' };      // perilaku slide (transisi/dekor) yang dipinjam; tampilan memakai skin Premium sendiri      // tema 5 slide (pembuka→sapaan→surat→kejutan→kenangan) untuk tiap desain Premium
   G.movie = sp('Malam Film', 'Anniversary', ['#0B0B10', '#E8336D'], 'Pasangan, anniversary, dan kenangan bersama: penerima menjadi pemeran utama film pendek.',
     ['Beranda episode ala layanan streaming', 'Subtitle & narasi muncul bertahap', 'Bebas memilih episode + adegan penutup'],
     ['Judul film dan nama pemeran', 'Poster (foto)', '3–4 episode: foto atau video, narasi tiap adegan, judul dan deskripsi pendek', 'Pesan penutup (paling panjang)'], 'movie');
@@ -212,6 +212,18 @@
   G.album = sp('Album Tahun-Tahunku', 'Ulang Tahun', ['#FFF7EE', '#D9708C'], 'Ulang tahun yang penuh kenangan: album foto bernuansa pastel, tiap halaman satu usia atau tahun penting, ditutup usia sekarang dan pesan utama.',
     ['Sampul album dan garis waktu usia', 'Polaroid, stiker usia, dan cerita di tiap halaman (bisa digeser)', 'Halaman terakhir: usia sekarang dan pesan utama'],
     ['Judul album', '3–8 halaman: usia, judul, cerita, foto', 'Usia sekarang dan pesan utama'], 'album');
+  G.terbang = sp('Penerbangan Usia', 'Ulang Tahun', ['#0A1230', '#FF9A4A'], 'Ulang tahun yang sinematik: boarding pass disobek, jendela pesawat di senja keemasan, persinggahan di tiap usia, dan pendaratan di bawah kembang api.',
+    ['Boarding pass disobek, pengumuman pilot, jendela berawan senja', 'Peta penerbangan: tiap persinggahan satu usia dengan foto dan cerita', 'Papan kedatangan, kembang api, dan kartu pesan dengan stempel'],
+    ['Maskapai dan usia tujuan', '3–5 persinggahan: usia, tempat, cerita, foto', 'Pengumuman pilot (opsional) dan pesan utama'], 'terbang');
+  G.degustasi = sp('Menu Degustasi', 'Ulang Tahun', ['#1E1109', '#E3C27A'], 'Ulang tahun yang mewah: makan malam bercahaya lilin, hidangan di bawah tudung perak membuka kenangan, penutup kue, dan tagihan yang lunas dengan kasih sayang.',
+    ['Kartu reservasi, menu bertinta emas, meja bercahaya lilin', 'Buka tudung perak: tiap hidangan membuka satu kenangan atau doa', 'Kue penutup, tiup lilin, dan tagihan "lunas" bersama pesan utama'],
+    ['Nama restoran', '3–5 hidangan: nama, bentuk, cerita, foto', 'Kue penutup, tulisan tagihan, dan pesan utama'], 'degustasi');
+  G.detektif = sp('Detektif: Kasus Kue yang Hilang', 'Ulang Tahun', ['#14161A', '#F2C879'], 'Ulang tahun yang penuh misteri: berkas rahasia, papan bukti dengan benang merah, kesaksian para saksi, deretan tersangka, lalu pelaku sebenarnya terungkap.',
+    ['Berkas rahasia di bawah lampu meja bergaya noir', 'Papan bukti: ketuk tiap bukti, benang merah tersambung', 'Tuduh tersangka, lampu menyala, dan kasus ditutup dengan pesan utama'],
+    ['Judul kasus', '3–5 bukti: barang, saksi, kesaksian, foto', '2–3 tersangka dengan alibi, pelaku sebenarnya, dan pesan utama'], 'detektif');
+  G.bianglala = sp('Bianglala Pasar Malam', 'Ulang Tahun', ['#05051C', '#FF2E93'], 'Ulang tahun yang meriah: gerbang neon, bianglala raksasa yang tiap putarannya membuka satu kenangan, lalu gondola emas dan kembang api.',
+    ['Gerbang neon dan tiket pasar malam', 'Putar bianglala: tiap gondola membuka satu kenangan', 'Gondola emas, kembang api, dan pesan utama'],
+    ['Nama pasar malam', '3–6 gondola: judul, cerita, foto', 'Banner dan pesan utama'], 'bianglala');
 
   G.uelegan = sp('Undangan Pernikahan', 'Pernikahan', ['#FFF9F2', '#C9657F'], 'Pernikahan dan lamaran: hiasan bunga, kelopak berguguran, amplop bersegel, mempelai, kisah cinta, dan konfirmasi hadir. Foto opsional.', ['Amplop bunga yang terbuka dengan kelopak berguguran', 'Mempelai, kisah kita, acara, peta, dan hitung mundur', 'Konfirmasi hadir dan ucapan tamu masuk ke akunmu'], ['Nama pasangan dan mempelai (foto opsional)', '1–3 acara, kisah kita, galeri (opsional)', 'Amplop digital dan pengaturan konfirmasi hadir'], 'uelegan');
   G.uceria = sp('Undangan Ceria', 'Ulang Tahun', ['#FFE45E', '#FF6FA5'], 'Ulang tahun dan reuni: warna-warni ceria, nuansa pesta.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dengan jumlah tamu'], ['Judul, sambutan, 1–3 acara', 'Galeri dan dress code', 'Pengaturan form konfirmasi hadir'], 'uceria');
@@ -271,6 +283,10 @@
     imlek: function () { return P('sc-im-lampion i1', '') + P('sc-im-lampion i2', '') + P('sc-im-koin c1', '') + P('sc-im-koin c2', '') + P('sc-im-teks', '福'); },
     mancing: function () { return P('sc-mc-ombak o1', '') + P('sc-mc-ombak o2', '') + P('sc-mc-perahu', '') + P('sc-mc-pelampung', ''); },
     awards: function () { return P('sc-aw-sorot s1', '') + P('sc-aw-sorot s2', '') + P('sc-aw-piala', '<i></i>') + P('sc-aw-teks', 'AWARDS'); },
+    terbang: function () { return P('sc-tb-jendela', '') + P('sc-tb-pesawat', '') + P('sc-tb-nama', '<i>Penerbangan<br>Usia</i>'); },
+    degustasi: function () { return P('sc-dg-piring', '') + P('sc-dg-tudung', '') + P('sc-dg-nama', '<i>Menu<br>Degustasi</i>'); },
+    detektif: function () { return P('sc-dt-lampu', '') + P('sc-dt-map', '<i>Kasus<br>Kue yang<br>Hilang</i>') + P('sc-dt-cap', 'RAHASIA'); },
+    bianglala: function () { return P('sc-bl-roda', '') + P('sc-bl-nama', '<i>Bianglala<br>Pasar Malam</i>'); },
     pesta: function () { return P('sc-pt-lampu', '') + P('sc-pt-spanduk', '<i>Pesta<br>Kejutan</i>') + P('sc-pt-kado a', '') + P('sc-pt-kado b', '') + P('sc-pt-kado c', ''); },
     kue: function () { return P('sc-ku-l1', '') + P('sc-ku-l2', '') + P('sc-ku-l3', '') + P('sc-ku-lilin', '') + P('sc-ku-nama', '<i>Kue<br>Untukmu</i>'); },
     album: function () { return P('sc-ab-sampul', '<i>Album<br>Tahun-Tahunku</i>') + P('sc-ab-foto a', '') + P('sc-ab-foto b', ''); },

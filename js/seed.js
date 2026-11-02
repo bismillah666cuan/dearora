@@ -92,6 +92,10 @@ window.DEARORA_SEED = {
     { id: 'DSN-048', nama: 'Pesta Kejutan', kategori: '', paket: ['premium'], thumbnail: 'tema:pesta', urlDemo: '' },
     { id: 'DSN-049', nama: 'Kue Bertingkat', kategori: '', paket: ['premium'], thumbnail: 'tema:kue', urlDemo: '' },
     { id: 'DSN-050', nama: 'Album Tahun-Tahunku', kategori: '', paket: ['premium'], thumbnail: 'tema:album', urlDemo: '' },
+    { id: 'DSN-051', nama: 'Penerbangan Usia', kategori: '', paket: ['premium'], thumbnail: 'tema:terbang', urlDemo: '' },
+    { id: 'DSN-052', nama: 'Menu Degustasi', kategori: '', paket: ['premium'], thumbnail: 'tema:degustasi', urlDemo: '' },
+    { id: 'DSN-053', nama: 'Detektif: Kasus Kue yang Hilang', kategori: '', paket: ['premium'], thumbnail: 'tema:detektif', urlDemo: '' },
+    { id: 'DSN-054', nama: 'Bianglala Pasar Malam', kategori: '', paket: ['premium'], thumbnail: 'tema:bianglala', urlDemo: '' },
   ],
   musik: [],
   config: { BRAND_NAME: 'Dearora', TAGLINE: 'Kirimkan rasa & cerita lewat website ucapan spesial', KONTAK_EMAIL: '', BATAS_BAYAR_JAM: 24, MASA_TENGGANG_HARI: 7, MODE_BAYAR: 'simulasi', MAKS_VIDEO_MB: 25 }
