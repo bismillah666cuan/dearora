@@ -145,6 +145,31 @@
       T('tanggal', 'Perkiraan hari lahir (opsional)', 10, { pola: '^\\d{4}-\\d{2}-\\d{2}$', hint: 'Format tahun-bulan-tanggal, mis. 2027-03-15. Dipakai untuk hitung mundur.' }),
       { k: 'fakta', tipe: 'daftar', label: 'Balon kejutan: fakta tentang si kecil', hint: '3 sampai 5 balon. Tiap balon yang dipecahkan membuka satu fakta.', min: 3, maks: 5, namaItem: 'Balon', item: [T('judul', 'Judul fakta', 30, { wajib: true, hint: 'Mis. Nama, Jenis kelamin, Perkiraan lahir' }), T('isi', 'Isinya', 80, { wajib: true })] },
       A('penutup', 'Pesan penutup', 400, { wajib: true })
+    ] },
+    pesta: { nama: 'Pesta Kejutan', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. \"Ada pesta kecil yang menunggumu. Masuk dan nyalakan lampunya\". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Judul pesta', 40, { bawaan: 'Pesta Kejutan', hint: 'Tampil besar saat penerima masuk ke ruang pesta.' }),
+      T('usia', 'Usia untuk hiasan angka (opsional)', 3, { hint: 'Mis. 25. Tampil sebagai angka besar di akhir pesta. Boleh dikosongkan.' }),
+      { k: 'hadiah', tipe: 'daftar', label: 'Kotak hadiah', hint: '3 sampai 5 kotak. Tiap kotak berisi satu ucapan, doa, atau kenangan.', min: 3, maks: 5, namaItem: 'Hadiah', item: [
+        T('judul', 'Judul hadiah', 40, { wajib: true, hint: 'Mis. Hadiah pertama: doaku untukmu' }), A('isi', 'Isi hadiah (ucapan atau kenangan)', 240, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'puncak', tipe: 'objek', label: 'Puncak pesta: spanduk dan pesan utama', item: [
+        T('judul', 'Tulisan di spanduk', 40, { bawaan: 'Selamat Ulang Tahun!' }), A('pesan', 'Pesan utama', 600, { wajib: true })] }
+    ] },
+    kue: { nama: 'Kue Bertingkat', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. \"Aku membuatkan kue yang lapisannya adalah kenangan kita\". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Judul kue', 40, { bawaan: 'Kue Untukmu' }),
+      { k: 'lapis', tipe: 'daftar', label: 'Lapisan kue dan kenangannya', hint: '3 sampai 5 lapis. Tiap lapis menyimpan satu kenangan, doa, atau alasan kamu menyayanginya.', min: 3, maks: 5, namaItem: 'Lapis', item: [
+        T('nama', 'Nama lapis', 30, { wajib: true, hint: 'Mis. Lapis tawa masa kecil' }), A('cerita', 'Kenangan atau doa untuk lapis ini', 220, { wajib: true }), F('foto', 'Foto (opsional)')] },
+      { k: 'harapan', tipe: 'objek', label: 'Harapan di lilin dan pesan utama', item: [
+        T('harapan', 'Harapan singkat saat lilin ditiup', 80, { bawaan: 'Semoga semua doamu terkabul.' }), A('pesan', 'Pesan utama', 600, { wajib: true })] }
+    ] },
+    album: { nama: 'Album Tahun-Tahunku', bagian: [
+      A('transisi', 'Kalimat pengantar sebelum desain dimulai', 160, { wajib: true, hint: 'Mis. \"Aku menyimpan semua tahunmu di sebuah album\". Ini tampil di layar penyambung sebelum masuk ke desain.' }),
+      T('judul', 'Judul album', 40, { bawaan: 'Album Tahun-Tahunku' }),
+      { k: 'tahun', tipe: 'daftar', label: 'Halaman per tahun', hint: '3 sampai 8 halaman. Tiap halaman satu usia atau tahun penting, lengkap dengan foto dan cerita.', min: 3, maks: 8, namaItem: 'Halaman', item: [
+        T('usia', 'Usia atau tahun', 14, { wajib: true, hint: 'Mis. 1 tahun, 17 tahun, atau 2015' }), T('judul', 'Judul halaman', 40, { wajib: true, hint: 'Mis. Langkah pertama' }), A('cerita', 'Cerita singkat', 200, { wajib: true }), F('foto', 'Foto (disarankan)')] },
+      { k: 'kini', tipe: 'objek', label: 'Halaman terakhir: tahun ini dan pesan utama', item: [
+        T('usia', 'Usia sekarang', 14, { wajib: true, hint: 'Mis. 25 tahun' }), A('pesan', 'Pesan utama', 600, { wajib: true })] }
     ] }
   };
 
@@ -267,6 +292,15 @@
 
   /* ===== Lima tema pernikahan tambahan (skema sama dengan Undangan Pernikahan; contoh isian bernuansa tema) ===== */
   function temaNikah(kunci, nama, c) { SKEMA[kunci] = { nama: nama, bagian: nikahBagian() }; SKEMA[kunci].contoh = c; }
+  SKEMA.pesta.contoh = { transisi: 'Ada pesta kecil yang menunggumu. Masuk dan nyalakan lampunya, ya.', judul: 'Pesta Kejutan', usia: '25',
+    hadiah: [{ judul: 'Hadiah pertama: doaku', isi: 'Semoga tahun ini membawa lebih banyak tawa, lebih sedikit lelah, dan lebih banyak hari yang kamu syukuri.', foto: '' }, { judul: 'Hadiah kedua: kenangan lucu', isi: 'Ingat waktu kita tersesat di Bandung dan malah menemukan warung bakso terenak? Itu hari favoritku.', foto: '' }, { judul: 'Hadiah ketiga: terima kasih', isi: 'Terima kasih sudah menjadi teman yang selalu hadir, bahkan di hari-hari paling biasa.', foto: '' }],
+    puncak: { judul: 'Selamat Ulang Tahun!', pesan: 'Hari ini aku ingin kamu merasa dirayakan. Kamu pantas mendapatkan semua hal baik, dan aku bersyukur bisa jadi bagian dari ceritamu. Selamat ulang tahun, semoga segala doamu terkabul.' } };
+  SKEMA.kue.contoh = { transisi: 'Aku membuatkan kue yang lapisannya adalah kenangan kita. Susun satu per satu, ya.', judul: 'Kue Untukmu',
+    lapis: [{ nama: 'Lapis tawa masa kecil', cerita: 'Dulu kita bisa tertawa sampai perut sakit hanya karena hal-hal kecil. Aku rindu itu.', foto: '' }, { nama: 'Lapis hari-hari sulit', cerita: 'Kamu yang datang membawa teh hangat tanpa diminta. Itu lebih dari cukup.', foto: '' }, { nama: 'Lapis petualangan', cerita: 'Perjalanan yang tidak direncanakan selalu jadi cerita yang paling sering kita ulang.', foto: '' }, { nama: 'Lapis doa terbaik', cerita: 'Semoga kamu selalu dikelilingi orang-orang yang tulus dan hari-hari yang tenang.', foto: '' }],
+    harapan: { harapan: 'Semoga semua doamu terkabul.', pesan: 'Kue ini tidak akan pernah semanis kenangan yang kita punya. Terima kasih sudah ada, dan selamat ulang tahun. Semoga tahun ini selembut krim dan sehangat lilin ini.' } };
+  SKEMA.album.contoh = { transisi: 'Aku menyimpan semua tahunmu di sebuah album. Yuk, kita buka bersama.', judul: 'Album Tahun-Tahunku',
+    tahun: [{ usia: '1 tahun', judul: 'Langkah pertama', cerita: 'Kata orang, kamu berjalan lebih dulu daripada yang diperkirakan, dan langsung tertawa bangga.', foto: '' }, { usia: '7 tahun', judul: 'Hari pertama sekolah', cerita: 'Tas barumu hampir lebih besar dari badanmu, tapi senyummu paling lebar di barisan.', foto: '' }, { usia: '17 tahun', judul: 'Mulai berani bermimpi', cerita: 'Tahun ketika kamu mulai tahu apa yang kamu mau, dan tidak takut mengatakannya.', foto: '' }, { usia: '22 tahun', judul: 'Lulus dan melangkah', cerita: 'Toga, bunga, dan air mata bahagia. Satu bab selesai, bab baru dimulai.', foto: '' }],
+    kini: { usia: '25 tahun', pesan: 'Setiap tahun membentukmu menjadi pribadi yang kukagumi hari ini. Terima kasih sudah tumbuh dengan hati yang baik. Selamat ulang tahun, semoga album ini terus bertambah halamannya.' } };
   var ACARA2 = function (a, b) { return [{ nama: a[0], tanggal: '2027-03-15', jam: a[1], tempat: a[2], alamat: a[3], peta: '' }, { nama: b[0], tanggal: '2027-03-15', jam: b[1], tempat: b[2], alamat: b[3], peta: '' }]; };
   var KISAH = [{ waktu: '2019', judul: 'Pertama Bertemu', cerita: 'Takdir mempertemukan kami di sebuah acara kampus, dan kami saling melempar senyum untuk pertama kalinya.', foto: '' }, { waktu: '2022', judul: 'Menjadi Kita', cerita: 'Setelah bertahun-tahun bersahabat, kami memutuskan untuk berjalan bersama.', foto: '' }, { waktu: '2026', judul: 'Lamaran', cerita: 'Dengan restu keluarga, kami melangkah ke jenjang yang lebih serius.', foto: '' }];
   var REK = [{ bank: 'BCA', nomor: '1234567890', atasNama: 'Mempelai Wanita' }], RSVP = { maksTamu: 4, catatan: 'Mohon konfirmasi kehadiran sebelum 1 Maret 2027.' };

@@ -151,7 +151,7 @@
 
   /* ------------ Desain khusus paket Special (aplikasi mini; halaman /s/) ------------ */
   function sp(nama, kat, warna, cocok, fitur, brief, kunci) { return { special: true, dasar: DASAR_PREMIUM[kunci] || 'classic', skin: 'p' + kunci, demoUrl: '/s/?d=' + kunci, nama: nama, kat: kat, warna: warna, cocok: cocok, fitur: fitur, brief: brief, gelap: true }; }
-  var DASAR_PREMIUM = { movie: 'cinematic', mall: 'classic', bestie: 'classic', feed: 'classic', musik: 'classic', misi: 'classic', romantique: 'cinematic', wisuda: 'classic', lebaran: 'classic', imlek: 'classic', mancing: 'classic', awards: 'classic', resep: 'classic', rumah: 'classic', brankas: 'classic', hujan: 'classic', lahir: 'classic' };      // perilaku slide (transisi/dekor) yang dipinjam; tampilan memakai skin Premium sendiri      // tema 5 slide (pembuka→sapaan→surat→kejutan→kenangan) untuk tiap desain Premium
+  var DASAR_PREMIUM = { movie: 'cinematic', mall: 'classic', bestie: 'classic', feed: 'classic', musik: 'classic', misi: 'classic', romantique: 'cinematic', wisuda: 'classic', lebaran: 'classic', imlek: 'classic', mancing: 'classic', awards: 'classic', resep: 'classic', rumah: 'classic', brankas: 'classic', hujan: 'classic', lahir: 'classic', pesta: 'classic', kue: 'classic', album: 'classic' };      // perilaku slide (transisi/dekor) yang dipinjam; tampilan memakai skin Premium sendiri      // tema 5 slide (pembuka→sapaan→surat→kejutan→kenangan) untuk tiap desain Premium
   G.movie = sp('Malam Film', 'Anniversary', ['#0B0B10', '#E8336D'], 'Pasangan, anniversary, dan kenangan bersama: penerima menjadi pemeran utama film pendek.',
     ['Beranda episode ala layanan streaming', 'Subtitle & narasi muncul bertahap', 'Bebas memilih episode + adegan penutup'],
     ['Judul film dan nama pemeran', 'Poster (foto)', '3–4 episode: foto atau video, narasi tiap adegan, judul dan deskripsi pendek', 'Pesan penutup (paling panjang)'], 'movie');
@@ -203,6 +203,15 @@
   G.lahir = sp('Pengumuman Kelahiran', 'Kelahiran', ['#FFF6E6', '#BFD8C6'], 'Pengumuman kehamilan atau kelahiran: kartu gosok, balon kejutan, dan hitung mundur menuju hari bahagia (palet netral, tidak terpaku warna tertentu).',
     ['Kartu gosok berisi kabar bahagia', 'Pecahkan balon untuk membuka fakta tentang si kecil', 'Hitung mundur menuju hari lahir'],
     ['Kabar bahagia + foto', '3–5 balon fakta', 'Perkiraan hari lahir (opsional) dan pesan penutup'], 'lahir');
+  G.pesta = sp('Pesta Kejutan', 'Ulang Tahun', ['#FFE6F0', '#F07EA6'], 'Ulang tahun yang manis: ruang pesta pastel yang dinyalakan lampunya, kotak hadiah berisi ucapan, balon dipecahkan, lalu spanduk dan pesan utama.',
+    ['Nyalakan lampu pesta, bendera dan lampu hias menyala', 'Buka 3–5 kotak hadiah, tiap kotak berisi ucapan atau kenangan', 'Pecahkan balon, lalu spanduk, angka usia, dan pesan utama'],
+    ['Judul pesta dan usia (opsional)', '3–5 hadiah: judul, isi, foto (opsional)', 'Tulisan spanduk dan pesan utama'], 'pesta');
+  G.kue = sp('Kue Bertingkat', 'Ulang Tahun', ['#FFF1E6', '#F08AA8'], 'Ulang tahun yang hangat: kue disusun lapis demi lapis, tiap lapis membuka satu kenangan atau doa, lalu lilin ditiup.',
+    ['Susun kue lapis demi lapis dengan krim pastel', 'Tiap lapis membuka kenangan, doa, dan foto', 'Pasang lilin, buat permohonan, lalu tiup lilin'],
+    ['Judul kue', '3–5 lapis: nama, cerita, foto (opsional)', 'Harapan di lilin dan pesan utama'], 'kue');
+  G.album = sp('Album Tahun-Tahunku', 'Ulang Tahun', ['#FFF7EE', '#D9708C'], 'Ulang tahun yang penuh kenangan: album foto bernuansa pastel, tiap halaman satu usia atau tahun penting, ditutup usia sekarang dan pesan utama.',
+    ['Sampul album dan garis waktu usia', 'Polaroid, stiker usia, dan cerita di tiap halaman (bisa digeser)', 'Halaman terakhir: usia sekarang dan pesan utama'],
+    ['Judul album', '3–8 halaman: usia, judul, cerita, foto', 'Usia sekarang dan pesan utama'], 'album');
 
   G.uelegan = sp('Undangan Pernikahan', 'Pernikahan', ['#FFF9F2', '#C9657F'], 'Pernikahan dan lamaran: hiasan bunga, kelopak berguguran, amplop bersegel, mempelai, kisah cinta, dan konfirmasi hadir. Foto opsional.', ['Amplop bunga yang terbuka dengan kelopak berguguran', 'Mempelai, kisah kita, acara, peta, dan hitung mundur', 'Konfirmasi hadir dan ucapan tamu masuk ke akunmu'], ['Nama pasangan dan mempelai (foto opsional)', '1–3 acara, kisah kita, galeri (opsional)', 'Amplop digital dan pengaturan konfirmasi hadir'], 'uelegan');
   G.uceria = sp('Undangan Ceria', 'Ulang Tahun', ['#FFE45E', '#FF6FA5'], 'Ulang tahun dan reuni: warna-warni ceria, nuansa pesta.', ['Amplop bersegel yang dipecahkan tamu', 'Detail acara, peta, tambah ke kalender, hitung mundur', 'Konfirmasi hadir (RSVP) dengan jumlah tamu'], ['Judul, sambutan, 1–3 acara', 'Galeri dan dress code', 'Pengaturan form konfirmasi hadir'], 'uceria');
@@ -262,6 +271,9 @@
     imlek: function () { return P('sc-im-lampion i1', '') + P('sc-im-lampion i2', '') + P('sc-im-koin c1', '') + P('sc-im-koin c2', '') + P('sc-im-teks', '福'); },
     mancing: function () { return P('sc-mc-ombak o1', '') + P('sc-mc-ombak o2', '') + P('sc-mc-perahu', '') + P('sc-mc-pelampung', ''); },
     awards: function () { return P('sc-aw-sorot s1', '') + P('sc-aw-sorot s2', '') + P('sc-aw-piala', '<i></i>') + P('sc-aw-teks', 'AWARDS'); },
+    pesta: function () { return P('sc-pt-lampu', '') + P('sc-pt-spanduk', '<i>Pesta<br>Kejutan</i>') + P('sc-pt-kado a', '') + P('sc-pt-kado b', '') + P('sc-pt-kado c', ''); },
+    kue: function () { return P('sc-ku-l1', '') + P('sc-ku-l2', '') + P('sc-ku-l3', '') + P('sc-ku-lilin', '') + P('sc-ku-nama', '<i>Kue<br>Untukmu</i>'); },
+    album: function () { return P('sc-ab-sampul', '<i>Album<br>Tahun-Tahunku</i>') + P('sc-ab-foto a', '') + P('sc-ab-foto b', ''); },
     resep: function () { return P('sc-rs-kartu', '<i>Resep<br>Kasih Sayang</i>') + P('sc-rs-panci', '') + P('sc-rs-uap u1', '') + P('sc-rs-uap u2', ''); },
     rumah: function () { return P('sc-rh-atap', '') + P('sc-rh-rumah', '') + P('sc-rh-pintu', '') + P('sc-rh-jendela w1', '') + P('sc-rh-jendela w2', ''); },
     brankas: function () { return P('sc-bk-pintu', '') + P('sc-bk-roda', '') + P('sc-bk-gembok', ''); },
