@@ -455,7 +455,12 @@
   };
 
   var VIEW_untuk0 = VIEW.untuk, VIEW_kejutan0 = VIEW.kejutan;
-  VIEW.kejutan = function () { return acaraChips() + VIEW_kejutan0(); };
+  /* Di langkah Cara Menyampaikan: bila jenis ucapan sudah dijawab di langkah Desain, cukup tampilkan ringkasannya (tanpa menanyakan ulang). */
+  VIEW.kejutan = function () {
+    var ac = acaraAktif();
+    var atas = ac ? '<p class="paket-info">' + ic('check') + ' Jenis ucapan: <strong>' + esc(ac.nama) + '</strong>. Cara menyampaikan yang paling pas ditandai hijau, tapi kamu bebas memilih yang lain. <button type="button" class="link-ubah" data-f="ubah-acara">Ubah</button></p>' : acaraPilih();
+    return atas + VIEW_kejutan0();
+  };
 
   /* ======= Isian per desain (Premium): dibuat otomatis dari js/skema.js ======= */
   var RESERVED_SLUG = ['www', 'api', 'admin', 'app', 'mail', 'vercel', 'dearora', 'status', 'login', 'dashboard', 'cdn', 'static', 'assets', 'docs', 'blog', 'test', 'dev', 'staging', 'prod', 'null', 'undefined', 'home', 'u', 's'];
@@ -1312,6 +1317,7 @@
     else if (a === 'soal+') { if (ST.kejutan.soal.length < 3) { ST.kejutan.soal.push(soalBaru()); paint(); simpanDraf(); } }
     else if (a === 'soal-') { if (ST.kejutan.soal.length > 1) { ST.kejutan.soal.pop(); paint(); simpanDraf(); } }
     else if (a === 'bunga+') { if (ST.kejutan.bunga.length < 5) { ST.kejutan.bunga.push(''); paint(); simpanDraf(); } }
+    else if (a === 'ubah-acara') { ST.acara = ''; paint(); simpanDraf(); var sa2 = document.getElementById('acaraSel'); if (sa2) sa2.focus({ preventScroll: true }); }
     else if (a === 'gaya') { ST.gayaFilter = b.dataset.v || ''; paint(); simpanDraf(); }
     else if (a === 'acak-desain') {
       var kandidat = [].slice.call($root.querySelectorAll('.opt-grid.rek input[name="desainId"]')); if (!kandidat.length) kandidat = [].slice.call($root.querySelectorAll('.opt-grid input[name="desainId"]'));

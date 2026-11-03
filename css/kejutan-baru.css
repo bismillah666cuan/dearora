@@ -67,4 +67,6 @@
 
 .acara-ringkas { margin: .2rem 0 .7rem; } .acara-ringkas label { display: block; margin-bottom: .3rem; font-weight: 700; } .acara-ringkas select { width: 100%; max-width: 24rem; }
 
-.paket-info { display: flex; align-items: center; gap: .4rem; margin: 0 0 .8rem; padding: .5rem .75rem; border-radius: 12px; background: #E6F6EC; color: #1E5F3A; font-size: .86rem; line-height: 1.4; } .paket-info .icon { flex: none; width: 1em; height: 1em; }
+.paket-info { display: block; margin: 0 0 .8rem; padding: .5rem .75rem; border-radius: 12px; background: #E6F6EC; color: #1E5F3A; font-size: .86rem; line-height: 1.4; } .paket-info .icon { display: inline-block; width: 1em; height: 1em; margin-right: .35rem; vertical-align: -.14em; }
+
+.link-ubah { margin-left: .25rem; padding: 0; border: 0; background: none; color: var(--primary-deep, var(--primary)); font: inherit; font-weight: 800; text-decoration: underline; cursor: pointer; }
