@@ -346,15 +346,22 @@
     return '<div class="actions">' + b.join('') + '</div>';
   }
 
-  var NAMA_KEJUTAN = { kado: 'Kotak kado', kuis: 'Kuis kecil', gosok: 'Gosok untuk melihat', pilihan: 'Pilih ceritamu', kode: 'Kode rahasia', harapan: 'Tiup lilin', taman: 'Taman bunga', cinta: 'Seberapa besar cintaku' };
+  var NAMA_KEJUTAN = { kado: 'Kotak kado', kuis: 'Kuis kecil', gosok: 'Gosok untuk melihat', pilihan: 'Pilih ceritamu', kode: 'Kode rahasia', harapan: 'Buat permohonan', taman: 'Taman bunga', cinta: 'Ukur rasa', amplop: 'Buka amplop', balon: 'Pecahkan balon', lampion: 'Lampion terbang', hitung: 'Hitung mundur' };
+  var NAMA_ACARA = { ultah: 'Ulang tahun', anniv: 'Anniversary / pasangan', lamaran: 'Lamaran', ortu: 'Hari Ibu / Ayah', terimakasih: 'Terima kasih / Hari Guru', wisuda: 'Wisuda / prestasi', kabar: 'Kabar bahagia', hariraya: 'Lebaran / Natal / Imlek', tahunbaru: 'Tahun Baru / harapan', semangat: 'Penyemangat / sembuh', maaf: 'Maaf', duka: 'Duka cita / doa', lainnya: 'Lainnya' };
   function kejutanAdmin(k, o) {
     if (!k) return '';
     var h = '<strong>' + esc(NAMA_KEJUTAN[k.jenis] || k.jenis) + '</strong>';
     if (k.jenis === 'kode') h += '<br>Petunjuk: ' + esc(k.petunjuk || '-') + '<br>Ucapan terkunci: ' + esc(o.PesanRahasia) + '<br><span class="small muted">Kode tidak disimpan (hanya hash). Jika pembeli lupa kodenya, tanyakan langsung kepada pembeli.</span>';
     else h += '<br>Ucapan: ' + esc(k.ucapan);
-    if (k.jenis === 'kado' && k.judul) h += '<br>Judul: ' + esc(k.judul);
+    if (k.judul) h += '<br>Judul: ' + esc(k.judul);
+    if (k.sub) h += '<br>Petunjuk: ' + esc(k.sub);
+    if (k.acara) h += '<br>Jenis ucapan: ' + esc(NAMA_ACARA[k.acara] || k.acara);
     if (k.jenis === 'gosok') h += '<br>Petunjuk: ' + esc(k.petunjuk || '-');
-    if (k.jenis === 'harapan') h += '<br>Jumlah lilin: ' + esc(k.lilin);
+    if (k.jenis === 'harapan') h += '<br>Jumlah lilin: ' + esc(k.lilin) + ' (' + (k.mode === 'nyala' ? 'dinyalakan' : 'ditiup') + ')';
+    if (k.jenis === 'amplop') h += '<br>Warna amplop: ' + esc(k.warna || 'krem');
+    if (k.jenis === 'balon') h += '<br>Balon: ' + esc((k.balon || []).join(' · '));
+    if (k.jenis === 'lampion') h += '<br>Lampion: ' + esc((k.lampion || []).join(' · '));
+    if (k.jenis === 'hitung') h += '<br>' + (k.mode === 'jam' ? 'Terbuka pada: ' + esc(new Date(Number(k.waktuMs)).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', dateStyle: 'full', timeStyle: 'short' })) + ' WIB' : 'Hitungan: ' + esc(k.detik) + ' detik');
     if (k.jenis === 'cinta') h += '<br>Target ketukan: ' + esc(k.target) + '<br>Kalimat: ' + esc((k.kalimat || []).join(' · '));
     if (k.jenis === 'taman') h += '<br>Bunga: ' + esc((k.bunga || []).join(' · '));
     if (k.jenis === 'pilihan') h += '<br>' + (k.pilihan || []).map(function (x) { return esc(x.label) + ' → ' + esc(x.teks); }).join('<br>');

@@ -34,7 +34,7 @@
       { q: 'Seperti apa ucapan yang diterima penerima?',
         a: '<p>Penerima membuka link di HP-nya dan menikmati sebuah perjalanan kecil: layar pembuka, sapaan dengan nama mereka, <strong>surat</strong> yang dibuka dengan animasi, lalu satu <strong>kejutan</strong> yang dimainkan, dan terakhir album foto kenangan.</p>' },
       { q: 'Apa saja pilihan kejutannya?',
-        a: '<p>Delapan jenis: <strong>kotak kado</strong>, <strong>kuis kecil</strong> (pertanyaanmu sendiri), <strong>gosok untuk melihat</strong>, <strong>pilih ceritamu</strong>, <strong>kode rahasia</strong>, <strong>tiup lilin</strong>, <strong>taman bunga</strong>, dan <strong>seberapa besar cintaku</strong>. Di form pemesanan ada tombol "Lihat contoh" untuk mencobanya dulu.</p>' },
+        a: '<p>Ada <strong>12 cara menyampaikan</strong>, bisa dipakai untuk ucapan apa pun: <strong>kotak kado</strong>, <strong>kuis kecil</strong>, <strong>gosok untuk melihat</strong>, <strong>pilih ceritamu</strong>, <strong>kode rahasia</strong>, <strong>buat permohonan</strong> (tiup atau nyalakan lilin), <strong>taman bunga</strong>, <strong>ukur rasa</strong>, <strong>buka amplop</strong>, <strong>pecahkan balon</strong>, <strong>lampion terbang</strong>, dan <strong>hitung mundur</strong>. Di form pemesanan kamu memilih jenis ucapan (ulang tahun, anniversary, Hari Ibu, wisuda, Lebaran, dan lainnya), lalu yang paling cocok ditandai. Ada tombol "Lihat contoh" untuk mencobanya dulu.</p>' },
       { q: 'Apa itu "Link Random"?',
         a: '<p>Alamat link dibuat acak dan unik sehingga tidak bisa ditebak. Hanya orang yang kamu beri link yang bisa membuka ucapanmu.</p>' },
       { q: 'Apakah foto dan pesan saya aman?',
@@ -108,7 +108,7 @@
     var items = [
       { i: 'link', t: 'Link Privat & Terlindungi', tone: '', p: 'Alamat link dibuat acak sehingga tidak bisa ditebak. Hanya yang kamu beri link yang bisa membuka.' },
       { i: 'sparkles', t: 'Pengalaman Interaktif', tone: 'lav', p: 'Bukan teks biasa: ada sapaan, surat yang dibuka dengan animasi, lalu kejutan yang dimainkan penerima.' },
-      { i: 'gift', t: '8 Jenis Kejutan', tone: '', p: 'Kado, kuis, gosok, kode rahasia, tiup lilin, taman bunga, dan lainnya. Kamu yang memilih.' },
+      { i: 'gift', t: '12 Cara Menyampaikan', tone: '', p: 'Kado, kuis, gosok, kode rahasia, amplop, balon, lampion, hitung mundur, dan lainnya. Cocok untuk ulang tahun sampai Lebaran. Kamu yang memilih.' },
       { i: 'zap', t: 'Tanpa Ribet & Otomatis', tone: 'sage', p: 'Pesan dari HP tanpa tatap muka. Pembayaran terkonfirmasi otomatis dan link aktif beberapa menit.' }
     ];
     return '<section class="section section-alt" aria-labelledby="unggul-title"><div class="container">' +

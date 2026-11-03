@@ -97,7 +97,11 @@
     kode: ['Ada pesan terkunci', ''],
     harapan: ['Buat permohonan', 'Pejamkan mata, buat harapan, lalu ketuk lilinnya untuk meniupnya.'],
     taman: ['Taman kecilmu', 'Ketuk tiap benih untuk menumbuhkannya.'],
-    cinta: ['Seberapa besar cintaku?', 'Ketuk hatinya berkali-kali.']
+    cinta: ['Seberapa besar cintaku?', 'Ketuk hatinya berkali-kali.'],
+    amplop: ['Ada surat untukmu', 'Ketuk segel amplopnya.'],
+    balon: ['Pecahkan balonnya', 'Ketuk tiap balon untuk memecahkannya.'],
+    lampion: ['Terbangkan lampionnya', 'Ketuk tiap lampion untuk menyalakan dan melepasnya.'],
+    hitung: ['Hitung mundur', 'Pesannya terbuka tepat pada waktunya.']
   };
 
   /* ---------------- Data demo ---------------- */
@@ -112,7 +116,11 @@
     kode: { jenis: 'kode', petunjuk: 'Untuk mencoba, ketik: cinta' },
     harapan: { jenis: 'harapan', lilin: 3, ucapan: UCAPAN_DEMO },
     taman: { jenis: 'taman', bunga: ['Kamu kuat', 'Kamu hebat', 'Kamu dicintai'], ucapan: UCAPAN_DEMO },
-    cinta: { jenis: 'cinta', target: 10, kalimat: ['Terus ketuk…', 'Cintaku makin besar!', 'Sedikit lagi…'], ucapan: UCAPAN_DEMO }
+    cinta: { jenis: 'cinta', target: 10, kalimat: ['Terus ketuk…', 'Cintaku makin besar!', 'Sedikit lagi…'], ucapan: UCAPAN_DEMO },
+    amplop: { jenis: 'amplop', warna: 'merah', ucapan: UCAPAN_DEMO },
+    balon: { jenis: 'balon', balon: ['Kamu hebat', 'Kamu kuat', 'Kamu dicintai', 'Kamu berharga'], ucapan: UCAPAN_DEMO },
+    lampion: { jenis: 'lampion', lampion: ['Semoga sehat selalu', 'Semoga bahagia', 'Semoga semua lancar'], ucapan: UCAPAN_DEMO },
+    hitung: { jenis: 'hitung', mode: 'detik', detik: 5, ucapan: UCAPAN_DEMO }
   };
   function dataDemo(qs) {
     var gkd = Gaya.kunci(qs.get('tema') || 'classic'), g0 = Gaya.G[gkd], dm = g0.demo || Gaya.G.classic.demo, j = KEJ_DEMO[qs.get('j')] ? qs.get('j') : 'kado';
@@ -195,8 +203,9 @@
   }
   function tKejutan(d) {
     var k = kejutanAktif(d), j = JUDUL_KEJUTAN[k.jenis] || JUDUL_KEJUTAN.kado;
-    var sub = k.jenis === 'gosok' ? k.petunjuk : k.jenis === 'kode' ? (k.petunjuk || 'Masukkan kode dari pengirim.') : j[1];
-    return '<section class="stage kejutan" data-s="kejutan" aria-label="Kejutan"><div class="inner wide"><p class="kpd">' + esc(gy.kpdKejutan || 'Kejutan') + '</p><h1 class="judul-kej" tabindex="-1">' + esc(k.jenis === 'kado' && k.judul ? k.judul : j[0]) + '</h1>' +
+    var nyala = k.jenis === 'harapan' && k.mode === 'nyala', judulDef = nyala ? 'Nyalakan lilin' : j[0];
+    var sub = k.jenis === 'gosok' ? k.petunjuk : k.jenis === 'kode' ? (k.petunjuk || 'Masukkan kode dari pengirim.') : (k.sub || (nyala ? 'Ketuk tiap lilin untuk menyalakannya.' : j[1]));
+    return '<section class="stage kejutan" data-s="kejutan" aria-label="Kejutan"><div class="inner wide"><p class="kpd">' + esc(gy.kpdKejutan || 'Kejutan') + '</p><h1 class="judul-kej" tabindex="-1">' + esc(k.judul || judulDef) + '</h1>' +
       '<p class="sub-kej" id="subKej">' + esc(sub) + '</p><div class="arena" id="arena"></div>' +
       '<div class="finale" id="finale" hidden aria-live="polite"></div></div></section>';
   }
@@ -306,11 +315,15 @@
 
   /* --- Tiup lilin --- */
   KEJ.harapan = { siap: function (ar, k) {
-    var n = k.lilin || 3, padam = 0, c = '';
-    for (var i = 0; i < n; i++) c += '<button type="button" class="candle" aria-label="Tiup lilin ke-' + (i + 1) + '"><i class="flame"></i><i class="stick"></i></button>';
+    var n = k.lilin || 3, padam = 0, nyala = k.mode === 'nyala', c = '';
+    for (var i = 0; i < n; i++) c += '<button type="button" class="candle' + (nyala ? ' mati' : '') + '" aria-label="' + (nyala ? 'Nyalakan' : 'Tiup') + ' lilin ke-' + (i + 1) + '"><i class="flame"></i><i class="stick"></i></button>';
     ar.innerHTML = '<div class="cake"><div class="candles">' + c + '</div><div class="tier t2"><i class="drip"></i></div><div class="tier t1"><i class="drip"></i></div><div class="plate"></div></div>';
     ar.querySelectorAll('.candle').forEach(function (b) {
       b.addEventListener('click', function () {
+        if (nyala) {                                                       // mode "nyalakan lilin": doa, resolusi, duka cita
+          if (!b.classList.contains('mati')) return; snd('ding'); b.classList.remove('mati'); b.classList.add('menyala'); padam++; dariElemen(b, 8, { kuat: 3 });
+          if (padam === n) jeda(function () { selesaiKejutan(k.ucapan); }, 900); return;
+        }
         if (b.classList.contains('padam')) return; snd('tiup'); b.classList.add('padam'); padam++; dariElemen(b, 10, { kuat: 4 });
         if (padam === n) jeda(function () { selesaiKejutan(k.ucapan); }, 700);
       });
@@ -353,6 +366,79 @@
       kal.textContent = t >= T ? 'Penuh sekali!' : k.kalimat[(t - 1) % k.kalimat.length]; h.classList.remove('denyut'); void h.offsetWidth; h.classList.add('denyut');
       var r = h.getBoundingClientRect(); confetti(ev.clientX || r.left + r.width / 2, ev.clientY || r.top + r.height / 2, 8, { kuat: 5, naik: 3 });
       if (t >= T) { selesai = true; h.disabled = true; jeda(function () { selesaiKejutan(k.ucapan); }, 600); }
+    });
+  } };
+
+  /* --- Buka Amplop --- */
+  KEJ.amplop = { siap: function (ar, k) {
+    ar.innerHTML = '<div class="amp amp-' + esc(k.warna || 'krem') + '"><button type="button" class="amp-btn" id="amp" aria-label="Ketuk segel untuk membuka amplop"><span class="amp-surat" aria-hidden="true"><i></i><i></i><i></i></span><span class="amp-depan" aria-hidden="true"></span><span class="amp-tutup" aria-hidden="true"></span><span class="amp-segel" aria-hidden="true"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="currentColor"/><path d="M20 28s-9-5.4-9-11c0-3 2-5 4.5-5 2 0 3.5 1 4.5 3 1-2 2.5-3 4.5-3 2.5 0 4.5 2 4.5 5 0 5.6-9 11-9 11z" fill="#ffffff66"/></svg></span></button></div>';
+    var b = q('#amp'); b.addEventListener('click', function () {
+      if (b.classList.contains('buka')) return; snd('kertas'); b.classList.add('buka'); dariElemen(b, 16, { kuat: 6 });
+      jeda(function () { snd('buka'); }, 600); jeda(function () { selesaiKejutan(k.ucapan); }, 1900);
+    });
+  } };
+
+  /* --- Pecahkan Balon --- */
+  KEJ.balon = { siap: function (ar, k) {
+    var sisa = k.balon.length, nb = k.balon.length, kiri = k.balon.map(function (x, i) { return nb > 1 ? i * (78 / (nb - 1)) : 39; }), WR = ['#FF8FA3', '#FFD166', '#B79CFF', '#7BDFF2', '#FF9F6B'];
+    ar.innerHTML = '<div class="bln" role="group" aria-label="Balon-balon">' + k.balon.map(function (t, i) { return '<button type="button" class="bln-b" style="left:' + kiri[i].toFixed(1) + '%;color:' + WR[i % 5] + ';--w:' + (3 + i * 0.5).toFixed(1) + 's" aria-label="Balon ' + (i + 1) + '"><svg viewBox="0 0 60 90" aria-hidden="true"><path d="M30 4C14 4 6 18 6 33c0 19 14 31 24 36 10-5 24-17 24-36C54 18 46 4 30 4z" fill="currentColor"/><ellipse cx="20" cy="22" rx="5" ry="9" fill="#fff" opacity=".45" transform="rotate(22 20 22)"/><path d="M26 70l4-5 4 5z" fill="currentColor"/><path d="M30 70c-6 8 6 12 0 19" fill="none" stroke="#9A9AAA" stroke-width="1.4"/></svg></button>'; }).join('') + '</div>';
+    var box = ar.querySelector('.bln');
+    ar.querySelectorAll('.bln-b').forEach(function (b, i) {
+      b.addEventListener('click', function () {
+        if (b.classList.contains('pecah')) return; b.classList.add('pecah'); sisa--; snd('pop'); dariElemen(b, 16, { kuat: 7 });
+        var u = document.createElement('span'); u.className = 'bln-ucap'; u.textContent = k.balon[i]; u.style.left = Math.min(80, Math.max(20, kiri[i] + 11)) + '%'; box.appendChild(u); jeda(function () { u.remove(); }, 2500);
+        if (!sisa) jeda(function () { selesaiKejutan(k.ucapan); }, 1100);
+      });
+    });
+  } };
+
+  /* --- Lampion Terbang --- */
+  KEJ.lampion = { siap: function (ar, k) {
+    var sisa = k.lampion.length, kiri = k.lampion.map(function (x, i) { return (i + 0.5) / k.lampion.length * 100; });
+    ar.innerHTML = '<div class="lmp"><i class="lmp-bintang" aria-hidden="true"></i>' + k.lampion.map(function (t, i) { return '<button type="button" class="lmp-l" style="left:' + kiri[i].toFixed(1) + '%;--d:' + (i * 0.45).toFixed(2) + 's" aria-label="Lampion ' + (i + 1) + '"><i class="lmp-api" aria-hidden="true"></i><span class="lmp-badan" aria-hidden="true"></span><em>' + esc(t) + '</em></button>'; }).join('') + '</div>';
+    ar.querySelectorAll('.lmp-l').forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (b.classList.contains('nyala')) return; b.classList.add('nyala'); snd('ding'); dariElemen(b, 10, { kuat: 4 }); jeda(function () { b.classList.add('terbang'); snd('whoosh'); }, 1300);
+        sisa--; if (!sisa) jeda(function () { selesaiKejutan(k.ucapan); }, 4200);
+      });
+    });
+  } };
+
+  /* --- Hitung Mundur --- */
+  function tulisWaktu(ms) { try { return new Date(ms).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB'; } catch (e) { return new Date(ms).toISOString(); } }
+  function p2(n) { return n < 10 ? '0' + n : String(n); }
+  function hitungJam(ar, k) {
+    var target = Number(k.waktuMs), hasil = k.ucapan || '';
+    ar.innerHTML = '<div class="hit"><div class="hit-jam" role="timer" aria-live="off" id="hitJ"></div><p class="hit-target">Terbuka pada ' + esc(tulisWaktu(target)) + '</p><p class="hit-status" id="hitS" role="status" aria-live="polite"></p></div>';
+    var jam = q('#hitJ'), st = q('#hitS'), selesai = false;
+    function tampil(sel) { var d = Math.max(0, Math.floor(sel / 1000)), hh = Math.floor(d / 86400), jj = Math.floor(d % 86400 / 3600), mm = Math.floor(d % 3600 / 60), ss = d % 60; jam.innerHTML = [[hh, 'HARI'], [p2(jj), 'JAM'], [p2(mm), 'MENIT'], [p2(ss), 'DETIK']].map(function (x) { return '<div><b>' + x[0] + '</b><small>' + x[1] + '</small></div>'; }).join(''); }
+    function buka(teks) { if (selesai) return; selesai = true; tampil(0); snd('sukses'); selesaiKejutan(teks); }
+    function ambilPesan(coba) {
+      if (selesai) return; st.textContent = 'Waktunya tiba! Membuka pesan…';
+      API.get('getCard', { k: slug, t: Date.now() }, { coba: 1, timeout: 20000 }).then(function (r) {
+        var kj = r && r.success && r.data && r.data.kejutan;
+        if (kj && kj.ucapan) buka(kj.ucapan); else if (coba < 20) timers.push(setTimeout(function () { ambilPesan(coba + 1); }, 3000)); else st.textContent = 'Muat ulang halaman ini untuk membuka pesannya.';
+      }).catch(function () { if (coba < 20) timers.push(setTimeout(function () { ambilPesan(coba + 1); }, 3000)); });
+    }
+    function tik() {
+      if (selesai) return; var sel = target - Date.now();
+      if (sel <= 0) { tampil(0); if (hasil) { buka(hasil); } else { ambilPesan(0); } return; }
+      tampil(sel); timers.push(setTimeout(tik, 1000));
+    }
+    if (hasil && Date.now() >= target) { tampil(0); st.textContent = 'Waktunya tiba!'; jeda(function () { buka(hasil); }, 900); } else tik();
+  }
+  KEJ.hitung = { siap: function (ar, k) {
+    if (k.mode === 'jam') return hitungJam(ar, k);
+    var T = k.detik || 10;
+    ar.innerHTML = '<div class="hit"><div class="hit-angka" id="hitA" role="timer" aria-live="polite">' + T + '</div><button type="button" class="cbtn" id="hitMulai">Mulai hitung mundur</button></div>';
+    var btn = q('#hitMulai'), a = q('#hitA');
+    btn.addEventListener('click', function () {
+      btn.hidden = true; var s = T;
+      (function tik() {
+        a.textContent = s > 0 ? s : '🎉'; a.classList.remove('denyut'); void a.offsetWidth; a.classList.add('denyut'); snd(s > 0 ? 'klik' : 'sukses');
+        if (s <= 0) { dariElemen(a, 60, { kuat: 11 }); timers.push(setTimeout(function () { selesaiKejutan(k.ucapan); }, 900)); return; }
+        s--; timers.push(setTimeout(tik, 1000));
+      })();
     });
   } };
 
