@@ -140,7 +140,7 @@
   function tutupDrawer() { $drawer.classList.remove('open'); $menuBtn.setAttribute('aria-expanded', 'false'); $menuBtn.setAttribute('aria-label', 'Buka menu'); document.body.style.overflow = ''; }
 
   /* ---------------- Modal demo ---------------- */
-  var DEMO_JENIS = [['kado', 'Kado'], ['kuis', 'Kuis'], ['gosok', 'Gosok'], ['pilihan', 'Pilihan'], ['kode', 'Kode'], ['harapan', 'Tiup lilin'], ['taman', 'Taman'], ['cinta', 'Cinta']];
+  var DEMO_JENIS = [['kado', 'Kado'], ['kuis', 'Kuis'], ['gosok', 'Gosok'], ['pilihan', 'Pilihan'], ['kode', 'Kode'], ['harapan', 'Permohonan'], ['taman', 'Taman'], ['cinta', 'Ukur rasa'], ['amplop', 'Amplop'], ['balon', 'Balon'], ['lampion', 'Lampion'], ['hitung', 'Hitung mundur']];
   function urlDemo(tema, kat, j) { return '/u/?demo=1&tema=' + encodeURIComponent(tema) + '&kat=' + encodeURIComponent(kat) + '&j=' + encodeURIComponent(j); }
   function bukaDemo(id, pemicu) {
     if (!state.data) return;
