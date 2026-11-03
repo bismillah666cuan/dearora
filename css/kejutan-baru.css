@@ -66,3 +66,5 @@
 .lekat-info { flex-basis: 100%; margin: 0 0 .1rem; font-size: .88rem; color: var(--muted, #6B5B66); } .lekat-info strong { color: var(--text, #261C24); }
 
 .acara-ringkas { margin: .2rem 0 .7rem; } .acara-ringkas label { display: block; margin-bottom: .3rem; font-weight: 700; } .acara-ringkas select { width: 100%; max-width: 24rem; }
+
+.paket-info { display: flex; align-items: center; gap: .4rem; margin: 0 0 .8rem; padding: .5rem .75rem; border-radius: 12px; background: #E6F6EC; color: #1E5F3A; font-size: .86rem; line-height: 1.4; } .paket-info .icon { flex: none; width: 1em; height: 1em; }

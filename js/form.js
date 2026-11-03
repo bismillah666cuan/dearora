@@ -772,6 +772,7 @@
   }
   VIEW.desain = function () {
     var d = data(), semua = d.desain.filter(function (x) { return (x.paket || []).indexOf(ST.paket) >= 0; });
+    var pk = ((d.paket || []).filter(function (p) { return p.id === ST.paket; })[0]) || {};
     var acara = acaraAktif(), katOk = acara ? (ACARA_KAT[acara.id] || []) : [], punyaAcara = ST.paket === 'basic' || ST.paket === 'premium';
     var tags = {}; semua.forEach(function (x) { var t = gayaTag(x); tags[t] = (tags[t] || 0) + 1; });
     var urut = GAYA_URUT.filter(function (t) { return tags[t]; }), f = tags[ST.gayaFilter] ? ST.gayaFilter : '';
@@ -785,10 +786,11 @@
         U.thumbHTML(x, d.paket, 'statis') + '<span class="oc-name">' + esc(x.nama) + '</span>' + (lencana && acara ? '<span class="kc-rek">Cocok untuk ' + esc(acara.nama.toLowerCase()) + '</span>' : '') + '</label>' +
         '<button type="button" class="btn btn-quiet btn-sm btn-block" data-action="demo" data-id="' + esc(x.id) + '">' + ic('play') + ' Demo</button></div>';
     }
-    var bar = urut.length > 1 ? '<div class="gaya-bar" role="group" aria-label="Saring menurut gaya"><button type="button" class="chip' + (!f ? ' on' : '') + '" data-f="gaya" data-v="" aria-pressed="' + (!f) + '">Semua (' + semua.length + ')</button>' + urut.map(function (t) { return '<button type="button" class="chip' + (f === t ? ' on' : '') + '" data-f="gaya" data-v="' + esc(t) + '" aria-pressed="' + (f === t) + '">' + esc(t) + ' (' + tags[t] + ')</button>'; }).join('') + '</div>' : '';
+    var bar = urut.length > 1 ? '<div class="gaya-bar" role="group" aria-label="Saring menurut gaya"><button type="button" class="chip' + (!f ? ' on' : '') + '" data-f="gaya" data-v="" aria-pressed="' + (!f) + '">Semua ' + esc(pk.nama || '') + ' (' + semua.length + ')</button>' + urut.map(function (t) { return '<button type="button" class="chip' + (f === t ? ' on' : '') + '" data-f="gaya" data-v="' + esc(t) + '" aria-pressed="' + (f === t) + '">' + esc(t) + ' (' + tags[t] + ')</button>'; }).join('') + '</div>' : '';
     var daftar = semua.length ? (rek.length ? '<h2 class="rek-judul">Rekomendasi untukmu</h2><div class="opt-grid ringkas rek">' + rek.map(function (x) { return kartu(x, true); }).join('') + '</div><h2 class="rek-judul">Semua desain</h2>' : '') + '<div class="opt-grid ringkas">' + sisa.map(function (x) { return kartu(x, false); }).join('') + '</div>' : '<p class="state-box">Belum ada desain untuk paket ini.</p>';
+    var infoPaket = pk.nama ? '<p class="paket-info">' + ic('check') + ' Menampilkan <strong>' + semua.length + ' desain paket ' + esc(pk.nama) + '</strong> (Rp ' + esc(U.rupiah(pk.harga)) + '). Harga mengikuti paket yang kamu pilih.</p>' : '';
     return '<p class="lead small" style="margin-bottom:1rem">' + (ST.paket === 'premium' ? 'Pilih satu desain eksklusif. Di langkah berikutnya kamu mengisi bahan-bahannya sendiri, dan link langsung jadi setelah pembayaran.' : 'Pilih satu desain. Coba demonya dulu sebelum memilih.') + '</p>' +
-      (punyaAcara ? acaraPilih() : '') + (semua.length > 1 ? '<div class="desain-alat"><button type="button" class="btn btn-secondary btn-sm" data-f="acak-desain">' + ic('sparkles') + ' Pilihkan untukku</button></div>' : '') + bar + daftar + opsiDesainHTML() + (errors.desain ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.desain) + '</p>' : '');
+      infoPaket + (punyaAcara ? acaraPilih() : '') + (semua.length > 1 ? '<div class="desain-alat"><button type="button" class="btn btn-secondary btn-sm" data-f="acak-desain">' + ic('sparkles') + ' Pilihkan untukku</button></div>' : '') + bar + daftar + opsiDesainHTML() + (errors.desain ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.desain) + '</p>' : '');
   };
   VIEW.ekstra = function () {
     var d = data(), html = '';
