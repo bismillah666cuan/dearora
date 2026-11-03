@@ -252,6 +252,8 @@
   G.ubayi = sp('Undangan Baby Shower', '', ['#FBF6EC', '#8DB59C'], 'Baby shower dan penyambutan bayi: kado dibuka dengan menarik pita, balon dan bintang melayang. Pilih aksen netral, biru, atau merah muda.', ['Pita kado ditarik, balon melayang', 'Tiga pilihan aksen warna, netral bila belum diumumkan', 'Susunan acara dan konfirmasi hadir'], ['Judul acara dan calon ibu (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Galeri (opsional), konfirmasi hadir'], 'ubayi');
   G.ubukber = sp('Undangan Bukber & Halal Bihalal', '', ['#1B1A3D', '#0F6B54'], 'Buka puasa bersama, halal bihalal, dan reuni: bedug ditabuh, lentera menyala, hitung mundur ke waktu berbuka.', ['Bedug ditabuh, lentera menyala', 'Pilihan jenis acara dan basmalah opsional', 'Konfirmasi hadir untuk menyiapkan hidangan'], ['Judul acara dan penyelenggara (foto opsional)', 'Acara, susunan acara, petunjuk lokasi', 'Galeri (opsional), konfirmasi hadir'], 'ubukber');
   ['usunda', 'ubetawi', 'ubayi', 'ubukber'].forEach(function (k) { G[k].undangan = true; });
+  G.upengantin = sp('Undangan Rumah Pengantin', '', ['#FBF3E6', '#C97B5A'], 'Undangan yang dijelajahi seperti rumah: bunyikan bel, masuk, lalu buka tiap ruangan untuk menemukan acara, kisah, lokasi, konfirmasi hadir, dan amplop digital.', ['Bel pintu, saklar lampu, kalender, album, gerbang taman, kenop brankas', 'Lima ruangan: acara, kisah dan foto, lokasi, konfirmasi hadir, amplop digital', 'Tombol "Langsung lihat detail acara" selalu tersedia'], ['Judul acara dan mempelai (foto opsional)', 'Kisah kita, acara, peta, dan dress code', 'Galeri (opsional), amplop digital, konfirmasi hadir'], 'upengantin');
+  G.upengantin.undangan = true;
 
 
   G.misi = sp('Lastlove: Misi Cinta', 'Ulang Tahun', ['#0A141C', '#FFB020'], 'Pecinta game strategi: briefing markas, tiga misi, dan kartu hero.',
@@ -310,6 +312,7 @@
     uwisuda: function () { return P('sc-ws-kertas', '') + P('sc-ws-topi', '') + P('sc-ws-nama', 'Selamat Wisuda'); },
     upop: function () { return P('sc-pp-a', '') + P('sc-pp-b', '') + P('sc-pp-c', '') + P('sc-pp-nama', 'Pesta!'); },
     uresmi: function () { return P('sc-gr-papan', '') + P('sc-gr-pita', '') + P('sc-gr-nama', 'Grand Opening'); },
+    upengantin: function () { return P('sc-rp-atap', '') + P('sc-rp-rumah', '') + P('sc-rp-pintu', '') + P('sc-rp-nama', 'Rumah<br>Pengantin'); },
     usunda: function () { return P('sc-sd-gunung', '') + P('sc-sd-sawah', '') + P('sc-sd-nama', 'Wilujeng Sumping'); },
     ubetawi: function () { return P('sc-bt-atap', '') + P('sc-bt-pintu', '') + P('sc-bt-nama', 'Pesta Meriah'); },
     ubayi: function () { return P('sc-by-kotak', '') + P('sc-by-pita', '') + P('sc-by-nama', 'Baby Shower'); },

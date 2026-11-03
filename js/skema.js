@@ -453,6 +453,8 @@
     tokoh: { nama: 'Keluarga Besar Alumni', ortu: 'Penyelenggara', foto: '' }, acara: ACR('Buka Puasa Bersama', '17.30 WIB', 'Aula Serbaguna Cahaya', 'Jl. Merdeka No. 10, Bandung'),
     denah: 'Parkir tersedia di halaman belakang aula.', siaran: '', susunan: SUSUN([['17.15 WIB', 'Registrasi'], ['17.45 WIB', 'Kultum'], ['18.00 WIB', 'Berbuka dan salat Magrib'], ['18.45 WIB', 'Makan bersama dan ramah tamah']]), galeri: [], rekening: [], rsvp: RSVP2 },
     [{ k: 'jenis', tipe: 'pilih', label: 'Jenis acara', opsi: [['bukber', 'Buka puasa bersama'], ['halal', 'Halal bihalal'], ['reuni', 'Reuni atau silaturahmi']], bawaan: 'bukber', hint: 'Mengubah judul kecil dan hitung mundur.' }, { k: 'basmalah', tipe: 'cek', label: 'Awali dengan basmalah (opsional)' }]);
+  SKEMA.upengantin = { nama: 'Undangan Rumah Pengantin', bagian: nikahBagian() };
+  SKEMA.upengantin.contoh = JSON.parse(JSON.stringify(SKEMA.uelegan.contoh));
 
 
   if (typeof window !== 'undefined') window.SKEMA = SKEMA;
