@@ -65,6 +65,30 @@
     var g = window.Gaya && window.Gaya.G && window.Gaya.G[k], w = g && g.warna && g.warna[0];
     if (w && /^#[0-9a-f]{3,8}$/i.test(w)) el.style.background = w;
   }
+  /* Memusatkan isi layar secara vertikal bila lebih pendek dari layar. Banyak desain menempel di atas dan menyisakan ruang kosong di bawah.
+     Hanya menambah padding atas sesuai sisa ruang; bila isi lebih tinggi dari layar, tidak ada yang berubah (tetap bisa digulir). */
+  function pusatkan(root) {
+    if (!root || root._pusat) return; root._pusat = true;
+    var antri = 0;
+    function ukur() {
+      antri = 0; var l = root.querySelector('.sp-layar'); if (!l || l.classList.contains('ud') || l.dataset.tengah === 'tidak') return;
+      l.style.paddingTop = '';
+      var lr = l.getBoundingClientRect(), tinggi = l.clientHeight, atas = Infinity, bawah = -Infinity, n = 0;
+      [].forEach.call(l.children, function (c) {
+        var cs = getComputedStyle(c); if (cs.position === 'absolute' || cs.position === 'fixed' || cs.display === 'none') return;
+        var r = c.getBoundingClientRect(); if (r.height < 1) return; n++; atas = Math.min(atas, r.top); bawah = Math.max(bawah, r.bottom);
+      });
+      if (!n || !lr.height) return;
+      var isi = bawah - atas, sekarang = atas - lr.top + l.scrollTop, tambah = (tinggi - isi) / 2 - sekarang;
+      if (tambah > 8 && isi < tinggi) l.style.paddingTop = ((parseFloat(getComputedStyle(l).paddingTop) || 0) + tambah) + 'px';
+    }
+    function jadwal() { if (!antri) antri = requestAnimationFrame(ukur); }
+    try { new MutationObserver(jadwal).observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'hidden'] }); } catch (e) { /* abaikan */ }
+    if (window.ResizeObserver) { try { new ResizeObserver(jadwal).observe(root); } catch (e) { /* abaikan */ } }
+    window.addEventListener('resize', jadwal); root.addEventListener('load', jadwal, true);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(jadwal);
+    [0, 250, 800, 1800].forEach(function (ms) { setTimeout(jadwal, ms); });
+  }
   var Special = {
     reg: function (k, def) { reg[k] = def; }, ada: function (k) { return !!reg[k]; }, daftar: function () { return Object.keys(reg); },
     esc: esc, ic: ic, reduce: reduce, rnd: rnd, pilih: pilih, confetti: confetti, dariEl: dariEl, jeda: jeda, foto: foto, src: src, toast: toast, kata: kata,
@@ -80,7 +104,7 @@
       if (window.Suara && window.Suara.tema) window.Suara.tema(k);                // bunyi klik dan latar mengikuti tema desain
       host.className = 'konsep-host sp-root sp-' + k; host.innerHTML = ''; latarDasar(host, k);
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
-      var mulaiDesain = function () { host.innerHTML = ''; def.mulai(host, def.adapt(f || {}, c), Special); if (c.musik && k !== 'musik') Special.pasangMusik(c.musik); };
+      var mulaiDesain = function () { host.innerHTML = ''; def.mulai(host, def.adapt(f || {}, c), Special); pusatkan(host); if (c.musik && k !== 'musik') Special.pasangMusik(c.musik); };
       var kata = String((f && f.transisi) || '').trim();
       if (kata) Special.jembatan(host, k, kata, mulaiDesain); else mulaiDesain();
     },
@@ -111,7 +135,7 @@
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       $root.className = 'sp-root sp-' + k; $root.innerHTML = '';
       document.title = (def.nama || 'Ucapan') + ' — Dearora';
-      def.mulai($root, data, Special);
+      def.mulai($root, data, Special); pusatkan($root);
     },
     /** Mode nyata: data dari server. c = {penerima, pengirim, foto:[idDrive], slug}; f = isian pembeli (skema). */
     mountData: function (k, c, f) {
@@ -121,7 +145,7 @@
       if (window.Suara) { window.Suara.pasangTombol(); if (!Special._sa) { Special._sa = true; window.Suara.otomatis(document); } }
       $root.className = 'sp-root sp-' + k; $root.innerHTML = ''; latarDasar($root, k);
       document.title = 'Ucapan untukmu';
-      def.mulai($root, def.adapt(f || {}, c), Special);
+      def.mulai($root, def.adapt(f || {}, c), Special); pusatkan($root);
       if (c.musik && k !== 'musik') Special.pasangMusik(c.musik);
     },
     /** Musik latar pilihan pembeli: mulai setelah sentuhan pertama, ada tombol putar/jeda. */
