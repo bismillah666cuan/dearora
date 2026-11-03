@@ -49,3 +49,20 @@
 .hit-jam { display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem; } .hit-jam div { min-width: 4.2rem; padding: .8rem .45rem; border-radius: 16px; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .3); backdrop-filter: blur(3px); } .hit-jam b { display: block; font: 800 1.9rem/1 'Fredoka', 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums; } .hit-jam small { display: block; margin-top: .3rem; font-size: .6rem; letter-spacing: .16em; font-weight: 700; opacity: .8; }
 .hit-target { margin: 1rem 0 0; font-size: .95rem; opacity: .92; } .hit-status { min-height: 1.4rem; margin: .6rem 0 0; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .amp-btn, .bln-b, .lmp-l { animation: none !important; } .amp-tutup, .amp-surat, .amp-segel, .lmp-l, .lmp-badan { transition-duration: .01s !important; transition-delay: 0s !important; } .bln-ucap { animation-duration: 1.6s; } }
+
+/* ---------- langkah Desain: kartu ringkas, rekomendasi, saringan gaya, tombol lanjut menempel ---------- */
+.opt-grid.ringkas { gap: .6rem; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 560px) { .opt-grid.ringkas { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 900px) { .opt-grid.ringkas { grid-template-columns: repeat(4, 1fr); } }
+.opt-grid.ringkas .opt-card { padding: .4rem; gap: .35rem; } .opt-grid.ringkas .opt-card label { gap: .35rem; }
+.opt-grid.ringkas .opt-card .design-thumb.scene-wrap.ponsel-wrap { aspect-ratio: 1 / .86; } .opt-grid.ringkas .opt-card .design-thumb { aspect-ratio: 1 / .8; }
+.opt-grid.ringkas .badge-anim, .opt-grid.ringkas .tombol-main { display: none; }
+.opt-grid.ringkas .oc-name { font-size: .84rem; line-height: 1.25; padding: 0 .15rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.opt-grid.ringkas .btn-sm { min-height: 34px; padding: 0 .5rem; font-size: .78rem; } .opt-grid.ringkas .kc-rek { margin: 0 .15rem; font-size: .62rem; }
+.rek-judul { margin: 1.1rem 0 .5rem; font-size: 1.02rem; color: var(--primary-deep, var(--primary)); } .opt-grid.rek { margin-bottom: .4rem; }
+.gaya-bar { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 .9rem; } .gaya-bar .chip { min-height: 36px; padding: 0 .8rem; font-size: .8rem; } .gaya-bar .chip.on { background: var(--badge); border-color: var(--primary); color: var(--primary-deep, var(--primary)); }
+.desain-alat { margin: .2rem 0 .4rem; }
+.form-nav.lekat { position: sticky; bottom: 0; z-index: 20; flex-wrap: wrap; margin: 1rem -.6rem 0; padding: .6rem .6rem calc(.6rem + env(safe-area-inset-bottom)); background: rgba(255, 255, 255, .95); backdrop-filter: blur(8px); border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; box-shadow: 0 -10px 24px -16px rgba(0, 0, 0, .35); }
+.lekat-info { flex-basis: 100%; margin: 0 0 .1rem; font-size: .88rem; color: var(--muted, #6B5B66); } .lekat-info strong { color: var(--text, #261C24); }
+
+.acara-ringkas { margin: .2rem 0 .7rem; } .acara-ringkas label { display: block; margin-bottom: .3rem; font-weight: 700; } .acara-ringkas select { width: 100%; max-width: 24rem; }

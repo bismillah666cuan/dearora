@@ -66,10 +66,30 @@
     { id: 'lainnya', nama: 'Lainnya', cocok: [], contoh: '' }
   ];
   var JUDUL_BAWAAN = { kado: ['Hadiah untukmu', 'Ketuk kotak kadonya untuk membukanya.'], kuis: ['Kuis kecil untukmu', 'Jawab dulu ya, ada kejutan di ujungnya.'], gosok: ['Gosok untuk melihat', ''], pilihan: ['Pilih ceritamu', 'Buka semuanya, satu per satu.'], kode: ['Ada pesan terkunci', ''], harapan: ['Buat permohonan', 'Pejamkan mata, buat harapan, lalu ketuk lilinnya untuk meniupnya.'], taman: ['Taman kecilmu', 'Ketuk tiap benih untuk menumbuhkannya.'], cinta: ['Seberapa besar cintaku?', 'Ketuk hatinya berkali-kali.'], amplop: ['Ada surat untukmu', 'Ketuk segel amplopnya.'], balon: ['Pecahkan balonnya', 'Ketuk tiap balon untuk memecahkannya.'], lampion: ['Terbangkan lampionnya', 'Ketuk tiap lampion untuk menyalakan dan melepasnya.'], hitung: ['Hitung mundur', 'Pesannya terbuka tepat pada waktunya.'] };
+  var ACARA_KAT = { ultah: ['Ulang Tahun'], anniv: ['Anniversary'], lamaran: ['Anniversary', 'Hari Spesial'], ortu: ['Terima Kasih', 'Hari Spesial'], terimakasih: ['Terima Kasih'], wisuda: ['Wisuda'], kabar: ['Kelahiran', 'Hari Spesial'], hariraya: ['Hari Spesial'], tahunbaru: ['Hari Spesial'], semangat: ['Maaf & Rindu', 'Terima Kasih'], maaf: ['Maaf & Rindu'], duka: ['Maaf & Rindu'], lainnya: [] };
+  var GAYA_URUT = ['Manis & romantis', 'Ceria & hangat', 'Alam & segar', 'Elegan & tenang', 'Gelap & sinematik'];
+  function rgbHex(h) { var m = /^#([0-9a-f]{6})$/i.exec(String(h || '')); if (!m) return [255, 241, 244]; var v = parseInt(m[1], 16); return [(v >> 16) & 255, (v >> 8) & 255, v & 255]; }
+  function infoGaya(x) { var g = (window.Gaya && window.Gaya.ambil(window.Gaya.dari(x.thumbnail))) || {}; return { kat: g.kat || '', warna: g.warna || ['#FFF1F4', '#D84A6E'] }; }
+  /* Gaya tampilan diturunkan dari palet desain (gelap/terang dan warna aksen), jadi desain baru otomatis masuk kelompok yang pas. */
+  function gayaTag(x) {
+    var w = infoGaya(x).warna, bg = rgbHex(w[0]), ac = rgbHex(w[1]), luma = (0.2126 * bg[0] + 0.7152 * bg[1] + 0.0722 * bg[2]) / 255;
+    if (luma < 0.28) return 'Gelap & sinematik';
+    var r = ac[0] / 255, g = ac[1] / 255, b = ac[2] / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn, h = 0;
+    if (d > 0.08) { if (mx === r) h = ((g - b) / d) % 6; else if (mx === g) h = (b - r) / d + 2; else h = (r - g) / d + 4; h = Math.round(h * 60); if (h < 0) h += 360; } else return 'Elegan & tenang';
+    if (h >= 320 || h < 15) return 'Manis & romantis';
+    if (h < 70) return 'Ceria & hangat';
+    if (h < 175) return 'Alam & segar';
+    return 'Elegan & tenang';
+  }
   function acaraAktif() { return ACARA.filter(function (a) { return a.id === ST.acara; })[0] || null; }
   function rekom(id) { var a = acaraAktif(); return a && a.cocok.indexOf(id) >= 0 ? '<span class="kc-rek">Cocok untuk ' + esc(a.nama.toLowerCase()) + '</span>' : ''; }
   function bawaanAcara(jenis) { var a = acaraAktif(); return (a && a.bawaan && a.bawaan[jenis]) || ['', '']; }
   function waktuMs(v) { return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(String(v || '')) ? Date.parse(v + ':00+07:00') : NaN; }
+  /* Versi ringkas (satu baris) untuk langkah Desain supaya daftar desain tetap di layar pertama. */
+  function acaraPilih() {
+    return '<div class="field acara-pilih acara-ringkas"><label for="acaraSel">Ini untuk ucapan apa? <span class="muted small">(opsional)</span></label><select class="input" id="acaraSel" data-k="acara"><option value="">Pilih jenis ucapan</option>' +
+      ACARA.map(function (a) { return '<option value="' + a.id + '"' + (ST.acara === a.id ? ' selected' : '') + '>' + esc(a.nama) + '</option>'; }).join('') + '</select></div>';
+  }
   function acaraChips() {
     return '<fieldset class="field acara-pilih"><legend>Ini untuk ucapan apa?</legend><div class="acara-grid">' + ACARA.map(function (a) {
       var id = 'acara-' + a.id; return '<label class="acara-chip' + (ST.acara === a.id ? ' on' : '') + '" for="' + id + '"><input type="radio" id="' + id + '" name="acara" data-k="acara" value="' + a.id + '"' + (ST.acara === a.id ? ' checked' : '') + '><span>' + esc(a.nama) + '</span></label>'; }).join('') +
@@ -87,7 +107,7 @@
   function musikPaket() { return ST.paket === 'premium'; }
 
   function baru() {
-    return isiDariIngatan({ acara: '', kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
+    return isiDariIngatan({ acara: '', gayaFilter: '', kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
       mode: 'pilih', desainId: '', ideSendiri: '', musikId: '', jenisSurprise: '', pesanRahasia: '', passwordRahasia: '', pembuka: 'judul',
       tamuTeks: '', tamuSeb: 'saudarai', ketentuanOk: false, brief: { tema: '', warna: '', referensi: '', interaksi: '' }, naskah: [{ halaman: 1, isi: '' }], musikMode: 'tanpa', musikTautan: '',
       catatan: '', setuju: false, _langkah: 0, _id: '', _berkas: [] });
@@ -435,7 +455,6 @@
   };
 
   var VIEW_untuk0 = VIEW.untuk, VIEW_kejutan0 = VIEW.kejutan;
-  VIEW.untuk = function () { return ((ST.paket === 'basic' || ST.paket === 'premium') ? acaraChips() : '') + VIEW_untuk0(); };
   VIEW.kejutan = function () { return acaraChips() + VIEW_kejutan0(); };
 
   /* ======= Isian per desain (Premium): dibuat otomatis dari js/skema.js ======= */
@@ -752,17 +771,24 @@
     return h + '</div>';
   }
   VIEW.desain = function () {
-    var d = data(), semuaBisa = d.desain.filter(function (x) { return (x.paket || []).indexOf(ST.paket) >= 0; });
-    var bisa = semuaBisa, filterUI = '';                          // desain hanya dikelompokkan per paket (tanpa kategori ucapan)
-    var pilih = bisa.length ? '<div class="opt-grid">' + bisa.map(function (x) {
+    var d = data(), semua = d.desain.filter(function (x) { return (x.paket || []).indexOf(ST.paket) >= 0; });
+    var acara = acaraAktif(), katOk = acara ? (ACARA_KAT[acara.id] || []) : [], punyaAcara = ST.paket === 'basic' || ST.paket === 'premium';
+    var tags = {}; semua.forEach(function (x) { var t = gayaTag(x); tags[t] = (tags[t] || 0) + 1; });
+    var urut = GAYA_URUT.filter(function (t) { return tags[t]; }), f = tags[ST.gayaFilter] ? ST.gayaFilter : '';
+    var tampil = f ? semua.filter(function (x) { return gayaTag(x) === f; }) : semua;
+    var rek = (!f && punyaAcara && katOk.length) ? tampil.filter(function (x) { return katOk.indexOf(infoGaya(x).kat) >= 0; }).slice(0, 6) : [];
+    var sisa = rek.length ? tampil.filter(function (x) { return rek.indexOf(x) < 0; }) : tampil;
+    function kartu(x, lencana) {
       var on = ST.desainId === x.id;
       return '<div class="opt-card' + (on ? ' on' : '') + '"><label for="ds-' + esc(x.id) + '">' +
         '<input type="radio" id="ds-' + esc(x.id) + '" name="desainId" data-k="desainId" value="' + esc(x.id) + '"' + (on ? ' checked' : '') + '>' +
-        U.thumbHTML(x, d.paket, 'statis') + '<span class="oc-name">' + esc(x.nama) + '</span></label>' +
-        '<button type="button" class="btn btn-quiet btn-sm btn-block" data-action="demo" data-id="' + esc(x.id) + '">' + ic('play') + ' Lihat Demo</button></div>';
-    }).join('') + '</div>' : '<p class="state-box">Belum ada desain untuk paket ini.</p>';
+        U.thumbHTML(x, d.paket, 'statis') + '<span class="oc-name">' + esc(x.nama) + '</span>' + (lencana && acara ? '<span class="kc-rek">Cocok untuk ' + esc(acara.nama.toLowerCase()) + '</span>' : '') + '</label>' +
+        '<button type="button" class="btn btn-quiet btn-sm btn-block" data-action="demo" data-id="' + esc(x.id) + '">' + ic('play') + ' Demo</button></div>';
+    }
+    var bar = urut.length > 1 ? '<div class="gaya-bar" role="group" aria-label="Saring menurut gaya"><button type="button" class="chip' + (!f ? ' on' : '') + '" data-f="gaya" data-v="" aria-pressed="' + (!f) + '">Semua (' + semua.length + ')</button>' + urut.map(function (t) { return '<button type="button" class="chip' + (f === t ? ' on' : '') + '" data-f="gaya" data-v="' + esc(t) + '" aria-pressed="' + (f === t) + '">' + esc(t) + ' (' + tags[t] + ')</button>'; }).join('') + '</div>' : '';
+    var daftar = semua.length ? (rek.length ? '<h2 class="rek-judul">Rekomendasi untukmu</h2><div class="opt-grid ringkas rek">' + rek.map(function (x) { return kartu(x, true); }).join('') + '</div><h2 class="rek-judul">Semua desain</h2>' : '') + '<div class="opt-grid ringkas">' + sisa.map(function (x) { return kartu(x, false); }).join('') + '</div>' : '<p class="state-box">Belum ada desain untuk paket ini.</p>';
     return '<p class="lead small" style="margin-bottom:1rem">' + (ST.paket === 'premium' ? 'Pilih satu desain eksklusif. Di langkah berikutnya kamu mengisi bahan-bahannya sendiri, dan link langsung jadi setelah pembayaran.' : 'Pilih satu desain. Coba demonya dulu sebelum memilih.') + '</p>' +
-      filterUI + pilih + opsiDesainHTML() + (errors.desain ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.desain) + '</p>' : '');
+      (punyaAcara ? acaraPilih() : '') + (semua.length > 1 ? '<div class="desain-alat"><button type="button" class="btn btn-secondary btn-sm" data-f="acak-desain">' + ic('sparkles') + ' Pilihkan untukku</button></div>' : '') + bar + daftar + opsiDesainHTML() + (errors.desain ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.desain) + '</p>' : '');
   };
   VIEW.ekstra = function () {
     var d = data(), html = '';
@@ -959,6 +985,7 @@
   var terakhirPing = 0;
   /** Membangunkan backend (Apps Script) selagi pembeli mengisi form, supaya saat menekan Bayar tidak menunggu "start dingin". */
   function hangatkan() { var t = Date.now(); if (t - terakhirPing < 60000 || !API.siap()) return; terakhirPing = t; try { API.get('ping', {}, { coba: 0, timeout: 20000 }).catch(function () { /* abaikan */ }); } catch (e) { /* abaikan */ } }
+  function infoPilihan() { var x = ST.desainId && data().desain.filter(function (y) { return y.id === ST.desainId; })[0]; return '<p class="lekat-info" aria-live="polite">' + (x ? 'Dipilih: <strong>' + esc(x.nama) + '</strong>' : 'Belum ada desain yang dipilih') + '</p>'; }
   function paint() {
     hangatkan();
     var id = langkahId(), l = daftarLangkah(), akhir = langkah === l.length - 1;
@@ -967,7 +994,7 @@
       '<h1 class="h2" id="stepTitle" tabindex="-1">' + esc(judulLangkah(id)) + '</h1>' +
       '<input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">' +
       VIEW[id]() + '</div>' +
-      '<div class="form-nav">' +
+      '<div class="form-nav' + (id === 'desain' ? ' lekat' : '') + '">' + (id === 'desain' ? infoPilihan() : '') +
       (langkah > 0 ? '<button type="button" class="btn btn-secondary" data-f="back"' + (ui.sibuk ? ' disabled' : '') + '>Kembali</button><button type="button" class="btn btn-quiet btn-sm" data-f="draf-baru" title="Simpan ucapan ini sebagai draf, lalu mulai ucapan lain">Simpan &amp; buat ucapan lain</button>' : '<span></span>') +
       (akhir ? '<button type="button" class="btn btn-primary" data-f="pay"' + (ui.sibuk ? ' disabled' : '') + '>' + ic('lock') + ' Bayar Sekarang</button>'
         : '<button type="button" class="btn btn-primary" data-f="next">Lanjut ' + ic('arrow') + '</button>') +
@@ -1246,6 +1273,7 @@
       return;
     }
     var k = el.dataset && el.dataset.k; if (!k) return;
+    if (k === 'acara' && el.tagName === 'SELECT') { ST.acara = el.value; paint(); var sa = document.getElementById('acaraSel'); if (sa) sa.focus({ preventScroll: true }); simpanDraf(); return; }
     if (k === 'musikId' && el.tagName === 'SELECT') { ST.musikId = el.value; paint(); var sm = document.getElementById('musikId'); if (sm) sm.focus({ preventScroll: true }); simpanDraf(); return; }
     if (k === 'desainId' && el.checked && window.Gaya) { var dd = data().desain.filter(function (x) { return x.id === el.value; })[0]; ST.opsiDesain = dd ? Gaya.opsiBawaan(Gaya.dari(dd.thumbnail)) : {}; ST.desainId = el.value; ST.dataDesain = {}; ST._skKunci = ''; }
     if (el.type === 'checkbox') { ST[k] = el.checked; if (errors[k]) { delete errors[k]; paint(); document.getElementById(k).focus(); } return; }
@@ -1282,6 +1310,11 @@
     else if (a === 'soal+') { if (ST.kejutan.soal.length < 3) { ST.kejutan.soal.push(soalBaru()); paint(); simpanDraf(); } }
     else if (a === 'soal-') { if (ST.kejutan.soal.length > 1) { ST.kejutan.soal.pop(); paint(); simpanDraf(); } }
     else if (a === 'bunga+') { if (ST.kejutan.bunga.length < 5) { ST.kejutan.bunga.push(''); paint(); simpanDraf(); } }
+    else if (a === 'gaya') { ST.gayaFilter = b.dataset.v || ''; paint(); simpanDraf(); }
+    else if (a === 'acak-desain') {
+      var kandidat = [].slice.call($root.querySelectorAll('.opt-grid.rek input[name="desainId"]')); if (!kandidat.length) kandidat = [].slice.call($root.querySelectorAll('.opt-grid input[name="desainId"]'));
+      if (kandidat.length) { var pilih = kandidat[Math.floor(Math.random() * kandidat.length)]; pilih.checked = true; pilih.dispatchEvent(new Event('change', { bubbles: true })); var el2 = document.getElementById(pilih.id); if (el2) { var kartu2 = el2.closest('.opt-card'); if (kartu2 && kartu2.scrollIntoView) kartu2.scrollIntoView({ block: 'center', behavior: (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth' }); } }
+    }
     else if (a === 'balon+') { if (ST.kejutan.balon.length < 5) { ST.kejutan.balon.push(''); paint(); simpanDraf(); } }
     else if (a === 'balon-') { if (ST.kejutan.balon.length > 3) { ST.kejutan.balon.pop(); paint(); simpanDraf(); } }
     else if (a === 'lampion+') { if (ST.kejutan.lampion.length < 5) { ST.kejutan.lampion.push(''); paint(); simpanDraf(); } }
