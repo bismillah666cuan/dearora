@@ -14,12 +14,12 @@
   var KEY_ORDER = 'dearora:order:v1';
   var LIM = {
     pesan: { basic: 300, premium: 600, special: 1200 }, personal: 600, ide: 1000, ideSpecial: 2500, rahasia: 1000, catatan: 500,
-    fotoKB: 1400, bagian: 1572864, videoMB: 25, videoMaks: 3, audioMB: 10, pdfKB: 1500, refMaks: 5, naskahMaks: 12, halamanMaks: 30, briefTema: 120, briefRef: 600, briefInter: 800, naskahIsi: 600
+    fotoKB: 1400, bagian: 1572864, videoMB: 25, videoMaks: 3, audioMB: 10, pdfKB: 1500, refMaks: 5, naskahMaks: 12, halamanMaks: 30, sbJudul: 60, sbIsi: 600, sbEfek: 160, sbFoto: 3, briefTema: 120, briefRef: 600, briefInter: 800, naskahIsi: 600
   };
   var ID_LANGKAH = { namaPembeli: 'pemesan', whatsapp: 'pemesan', email: 'pemesan', penerima: 'untuk', tipeDari: 'untuk', nilaiDari: 'untuk',
     pesan: 'pesan', pesanPersonal: 'pesan', desain: 'desain', musikId: 'ekstra', jenisSurprise: 'ekstra', pesanRahasia: 'ekstra',
-    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket', kejutanJenis: 'kejutan', kejutanUcapan: 'kejutan', kejutanDetail: 'kejutan', dataDesain: 'isi', tamu: 'tamu', tamuTeks: 'tamu', ideSendiri: 'brief', urlDiminta: 'url', tema: 'brief', warna: 'brief', referensi: 'brief', interaksi: 'brief', naskah: 'naskah', musik: 'musik', ketentuan: 'ketentuan' };
-  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Surat', kejutan: 'Cara Menyampaikan', foto: 'Foto', desain: 'Desain', isi: 'Isi Desain', ide: 'Ide Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan', ketentuan: 'Ketentuan Paket Special', tamu: 'Daftar Tamu', brief: 'Brief Desain', naskah: 'Isi Ucapan', url: 'Alamat Ucapan', musik: 'Musik' };
+    passwordRahasia: 'ekstra', pembuka: 'ekstra', catatan: 'catatan', setuju: 'ringkasan', paketId: 'paket', kejutanJenis: 'kejutan', kejutanUcapan: 'kejutan', kejutanDetail: 'kejutan', dataDesain: 'isi', tamu: 'tamu', tamuTeks: 'tamu', ideSendiri: 'brief', urlDiminta: 'url', tema: 'brief', warna: 'brief', referensi: 'brief', interaksi: 'brief', naskah: 'naskah', storyboard: 'storyboard', musik: 'musik', ketentuan: 'ketentuan' };
+  var JUDUL = { paket: 'Paket', pemesan: 'Data Pemesan', untuk: 'Untuk Siapa', pesan: 'Surat', kejutan: 'Cara Menyampaikan', foto: 'Foto', desain: 'Desain', isi: 'Isi Desain', ide: 'Ide Desain', ekstra: 'Musik', catatan: 'Catatan', ringkasan: 'Ringkasan', ketentuan: 'Ketentuan Paket Special', tamu: 'Daftar Tamu', brief: 'Brief Desain', naskah: 'Isi Ucapan', storyboard: 'Storyboard', url: 'Alamat Ucapan', musik: 'Musik' };
 
   var ST = null;            // isian
   var langkah = 0;          // indeks langkah aktif
@@ -109,7 +109,7 @@
   function baru() {
     return isiDariIngatan({ acara: '', gayaFilter: '', kejutan: kejutanBaru(), opsiDesain: {}, dataDesain: {}, _skKunci: '', urlDiminta: '', paket: '', namaPembeli: '', whatsapp: '', email: '', penerima: '', tipeDari: 'nama', nilaiDari: '', pesan: '', pesanPersonal: '',
       mode: 'pilih', desainId: '', ideSendiri: '', musikId: '', jenisSurprise: '', pesanRahasia: '', passwordRahasia: '', pembuka: 'judul',
-      tamuTeks: '', tamuSeb: 'saudarai', ketentuanOk: false, brief: { tema: '', warna: '', referensi: '', interaksi: '' }, naskah: [{ halaman: 1, isi: '' }], musikMode: 'tanpa', musikTautan: '',
+      tamuTeks: '', tamuSeb: 'saudarai', ketentuanOk: false, brief: { tema: '', warna: '', referensi: '', interaksi: '' }, naskah: [{ halaman: 1, isi: '' }], storyboard: [slideBaru(), slideBaru(), slideBaru(), slideBaru(), slideBaru()], musikMode: 'tanpa', musikTautan: '',
       catatan: '', setuju: false, _langkah: 0, _id: '', _berkas: [] });
   }
   /* ---------------- Draf: bisa banyak (riwayat ucapan yang sedang disusun) ---------------- */
@@ -281,7 +281,7 @@
   // Urutan: pilih paket → pilih DESAIN dulu (agar pembeli langsung terbayang) → isi ucapan → data pemesan di akhir.
   function daftarLangkah() {
     if (ST.paket === 'premium') return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'isi', 'catatan', 'pemesan', 'ringkasan'];
-    if (ST.paket === 'special') return ['paket', 'ketentuan', 'brief', 'untuk', 'naskah', 'foto', 'url', 'musik', 'catatan', 'pemesan', 'ringkasan'];
+    if (ST.paket === 'special') return ['paket', 'ketentuan', 'brief', 'untuk', 'foto', 'storyboard', 'url', 'musik', 'catatan', 'pemesan', 'ringkasan'];
     if (ST.paket === 'invitation') return ['paket', 'desain', 'untuk', 'foto', 'isi', 'tamu', 'catatan', 'pemesan', 'ringkasan'];
     return ['paket', 'desain', 'untuk', 'pesan', 'kejutan', 'foto', 'catatan', 'pemesan', 'ringkasan'];
   }
@@ -679,6 +679,49 @@
       '<input class="sr-only" type="file" id="refInput" multiple accept="image/jpeg,image/png,image/webp,application/pdf"><label for="refInput" class="btn btn-secondary btn-sm' + (ui.kompres ? ' disabled' : '') + '">' + (ui.kompres ? 'Memproses…' : 'Pilih Berkas') + '</label>' +
       '<p class="small" style="margin-top:.75rem" role="status">' + refs.length + ' dari ' + LIM.refMaks + ' berkas' + (ui.pesanRef ? ' · ' + esc(ui.pesanRef) : '') + '</p></div>' + (li ? '<ul class="file-list">' + li + '</ul>' : '');
   };
+  /* ---------- Storyboard (paket Special): menggantikan "naskah per halaman" ---------- */
+  function slideBaru() { return { judul: '', isi: '', efek: '', foto: [] }; }
+  function fotoUnggah() { return files.filter(function (x) { return x.jenis === 'foto'; }); }
+  function slideTerisi(s) { return !!(String(s.isi || '').trim() || String(s.judul || '').trim()); }
+  /** Draf lama (naskah + nomor halaman) dipindah ke storyboard satu kali, supaya isi yang sudah ditulis tidak hilang. */
+  function migrasiNaskah() {
+    if (ST.sbMigrasi) return; ST.sbMigrasi = true;
+    if (ST.storyboard.some(slideTerisi)) return;
+    var lama = (ST.naskah || []).filter(function (x) { return String(x.isi || '').trim(); }); if (!lama.length) return;
+    lama.sort(function (a, b) { return Number(a.halaman) - Number(b.halaman); });
+    ST.storyboard = lama.slice(0, LIM.halamanMaks).map(function (x) { var s = slideBaru(); s.isi = String(x.isi).trim(); return s; }); while (ST.storyboard.length < 5) ST.storyboard.push(slideBaru());
+  }
+  var PH_S1 = 'Contoh: Layar gelap seperti langit malam. Pelan-pelan lampion naik satu per satu, lalu muncul tulisan \"Untuk Rani\". Penerima mengetuk lampion pertama untuk memulai.';
+  function contohStoryboard() {
+    var ph = fotoUnggah(), f = function (i) { return ph[i] ? [ph[i].id] : []; };
+    return [
+      { judul: 'Taman malam yang sunyi', isi: 'Layar gelap seperti langit malam. Pelan-pelan lampion naik satu per satu, lalu muncul tulisan \"Untuk Rani\". Penerima mengetuk lampion pertama untuk memulai.', efek: 'Ketuk lampion untuk memulai', foto: [] },
+      { judul: 'Kenangan pertama', isi: 'Foto kita di pantai, dengan keterangan: \"Hari pertama kita tertawa sampai lupa waktu.\"', efek: 'Foto muncul perlahan seperti polaroid', foto: f(0) },
+      { judul: 'Hal yang kusyukuri', isi: 'Tiga kalimat pendek muncul bergantian: Kamu sabar. Kamu kuat. Kamu rumahku.', efek: 'Kalimat berganti saat layar diketuk', foto: f(1) },
+      { judul: 'Janji kecil', isi: 'Gulungan surat terbuka berisi tiga janji kecil untuk tahun yang baru.', efek: 'Geser gulungan untuk membaca', foto: [] },
+      { judul: 'Kue dan permohonan', isi: 'Kue dengan lilin menyala. Penerima membuat harapan, lalu meniup lilinnya.', efek: 'Ketuk lilin untuk meniup', foto: f(2) },
+      { judul: 'Penutup', isi: 'Ucapan utama: \"Selamat ulang tahun, Rani. Terima kasih sudah ada.\" disertai kembang api.', efek: 'Kembang api saat ucapan muncul', foto: [] }
+    ];
+  }
+  VIEW.storyboard = function () {
+    migrasiNaskah();
+    var sb = ST.storyboard, n = sb.length, terisi = sb.filter(slideTerisi).length, ph = fotoUnggah();
+    var h = '<p class="lead small" style="margin-bottom:.8rem">Susun alur ucapanmu <strong>slide demi slide</strong>. <strong>Slide 1</strong> adalah pembukaan: ceritakan konsep yang kamu bayangkan. Slide yang dikosongkan akan kami kreasikan sendiri. Maksimal ' + LIM.halamanMaks + ' slide.</p>' +
+      '<div class="sb-bar"><p class="sb-hitung" aria-live="polite"><strong>' + n + '</strong> slide · ' + terisi + ' terisi</p><button type="button" class="btn btn-secondary btn-sm" data-f="sbx">Isi dengan contoh</button></div><ol class="sb-list">';
+    sb.forEach(function (s, i) {
+      var label = i === 0 ? 'Pembukaan dan konsep' : (i === n - 1 && n > 1 ? 'Penutup' : ''), idJ = 'sb-j-' + i, idI = 'sb-i-' + i, idE = 'sb-e-' + i;
+      var thumbs = ph.length ? '<div class="sb-foto" role="group" aria-label="Foto untuk slide ' + (i + 1) + '">' + ph.map(function (x, k) { var on = (s.foto || []).indexOf(x.id) >= 0; return '<button type="button" class="sb-thumb' + (on ? ' sb-on' : '') + '" data-f="sbf" data-i="' + i + '" data-id="' + esc(x.id) + '" aria-pressed="' + on + '" aria-label="Foto ' + (k + 1) + (on ? ', dipilih' : '') + '"><img alt="" src="' + esc(x.url) + '"><b>' + (k + 1) + '</b></button>'; }).join('') + '</div>' : '<p class="small muted">Belum ada foto. Foto yang kamu unggah di langkah sebelumnya akan muncul di sini untuk dipilih.</p>';
+      h += '<li class="sb-slide card" id="sb-s-' + i + '"><div class="sb-kepala"><span class="sb-no">Slide ' + (i + 1) + '</span>' + (label ? '<em class="sb-label">' + label + '</em>' : '') + '<span class="sb-alat">' +
+        '<button type="button" class="sb-alatbtn" data-f="sb^" data-i="' + i + '" aria-label="Pindahkan slide ' + (i + 1) + ' ke atas"' + (i === 0 ? ' disabled' : '') + '>↑</button><button type="button" class="sb-alatbtn" data-f="sbv" data-i="' + i + '" aria-label="Pindahkan slide ' + (i + 1) + ' ke bawah"' + (i === n - 1 ? ' disabled' : '') + '>↓</button>' +
+        (n < LIM.halamanMaks ? '<button type="button" class="sb-alatbtn" data-f="sbd" data-i="' + i + '" aria-label="Gandakan slide ' + (i + 1) + '">⧉</button>' : '') + (n > 1 ? '<button type="button" class="sb-alatbtn" data-f="sb-" data-i="' + i + '" aria-label="Hapus slide ' + (i + 1) + '">✕</button>' : '') + '</span></div>' +
+        '<label for="' + idJ + '">Judul adegan <span class="muted small">(opsional)</span></label>' + inpP(idJ, s.judul, 'storyboard.' + i + '.judul', LIM.sbJudul, i === 0 ? 'Mis. Taman malam yang sunyi' : 'Mis. Kenangan pertama kita') +
+        '<label for="' + idI + '">Isi slide' + (i === 0 ? ' dan konsep pembukaan' : '') + '</label>' + taP(idI, s.isi, 'storyboard.' + i + '.isi', LIM.sbIsi, i === 0 ? 5 : 3, i === 0 ? PH_S1 : 'Teks, ucapan, atau kejadian di slide ini. Kosongkan bila ingin kami yang mengkreasikan.') +
+        '<label for="' + idE + '">Interaksi atau efek <span class="muted small">(opsional)</span></label>' + inpP(idE, s.efek, 'storyboard.' + i + '.efek', LIM.sbEfek, 'Mis. ketuk lilin untuk meniup, geser untuk membuka tirai') +
+        '<p class="sb-judulfoto">Foto di slide ini <span class="muted small">(maksimal ' + LIM.sbFoto + ')</span></p>' + thumbs + (ui.pesanSb && ui.pesanSbI === i ? '<p class="small err" role="status">' + esc(ui.pesanSb) + '</p>' : '') + '</li>';
+    });
+    return h + '</ol>' + (errors.storyboard ? '<p class="err" role="alert">' + ic('info') + ' ' + esc(errors.storyboard) + '</p>' : '') +
+      (n < LIM.halamanMaks ? '<button type="button" class="btn btn-secondary btn-sm" data-f="sb+">+ Tambah slide</button>' : '<p class="small muted">Sudah mencapai maksimal ' + LIM.halamanMaks + ' slide.</p>');
+  };
   VIEW.naskah = function () {
     var n = ST.naskah.length, h = '<p class="lead small" style="margin-bottom:1rem">Tulis kata-kata yang ingin tampil di ucapanmu, lalu tentukan <strong>di halaman berapa</strong> tiap bagian ditempatkan. Alur ucapan maksimal ' + LIM.halamanMaks + ' halaman, dan urutannya mengikuti nomor halaman.</p><ol class="naskah-list">';
     ST.naskah.forEach(function (x, i) {
@@ -851,7 +894,7 @@
       ringkasBaris('Untuk / Dari', esc(ST.penerima) + ' / ' + dari, 'untuk') +
       (templatPaket() ? ringkasBaris('Surat', '<span class="clip">' + esc(ST.pesan) + '</span>', 'pesan') : '') +
       (ST.paket === 'special' ? ringkasBaris('Brief', '<strong>' + esc(ST.brief.tema) + '</strong><br><span class="muted small">Warna: ' + esc(ST.brief.warna) + '</span><br><span class="clip muted small">' + esc(ST.brief.interaksi) + '</span>' + (daftarReferensi().length ? '<br><span class="muted small">' + daftarReferensi().length + ' berkas referensi</span>' : ''), 'brief') +
-        ringkasBaris('Isi ucapan', ST.naskah.length + ' bagian · halaman ' + ST.naskah.map(function (x) { return x.halaman; }).sort(function (a, b) { return a - b; }).join(', '), 'naskah') +
+        ringkasBaris('Storyboard', '<strong>' + ST.storyboard.length + ' slide</strong>, ' + ST.storyboard.filter(slideTerisi).length + ' terisi<br><span class="clip muted small">' + esc(String((ST.storyboard[0] || {}).isi || '').slice(0, 80)) + '</span>', 'storyboard') +
         ringkasBaris('Alamat', ST.urlDiminta ? esc(normSlug(ST.urlDiminta)) + '.' + esc(domainSpecial()) : '<span class="muted">Ditentukan kami</span>', 'url') +
         ringkasBaris('Musik', ST.musikMode === 'tanpa' ? 'Tanpa musik' : (ST.musikMode === 'dearora' ? esc(((d.musik || []).filter(function (m) { return m.id === ST.musikId; })[0] || {}).judul || 'Lagu pilihan Dearora') : 'Lagu sendiri' + (files.some(function (x) { return x.jenis === 'audio'; }) ? ' (berkas)' : '') + (ST.musikTautan ? ' (tautan)' : '')), 'musik') : '') +
       (ST.paket === 'invitation' ? ringkasBaris('Daftar tamu', (function () { var n = window.Tamu ? window.Tamu.daftar(ST.tamuTeks, ST.tamuSeb).length : 0; return n ? n + ' tamu <span class="muted small">(tautan personal dibuat otomatis di Portal)</span>' : '<span class="muted">Satu tautan umum ("Kepada Yth. Bapak/Ibu/Saudara/i")</span>'; })(), 'tamu') : '') +
@@ -942,6 +985,16 @@
       if (bw.length < 3) e.warna = 'Tulis warna yang diinginkan (minimal 3 karakter).'; else if (bw.length > LIM.briefTema) e.warna = 'Maksimal ' + LIM.briefTema + ' karakter.';
       if (String(ST.brief.referensi || '').trim().length > LIM.briefRef) e.referensi = 'Maksimal ' + LIM.briefRef + ' karakter.';
       if (bi.length < 20) e.interaksi = 'Ceritakan interaksi yang diinginkan dengan lebih lengkap (minimal 20 karakter).'; else if (bi.length > LIM.briefInter) e.interaksi = 'Maksimal ' + LIM.briefInter + ' karakter.';
+    }
+    if (id === 'storyboard') {
+      var sbv = ST.storyboard, s1 = String((sbv[0] || {}).isi || '').trim();
+      if (sbv.length < 1 || sbv.length > LIM.halamanMaks) e.storyboard = 'Jumlah slide 1–' + LIM.halamanMaks + '.';
+      else if (s1.length < 10) e.storyboard = 'Slide 1: ceritakan konsep pembukaan (minimal 10 karakter).';
+      else for (var si = 0; si < sbv.length; si++) {
+        var sis = String(sbv[si].isi || '').trim();
+        if (sis.length > 0 && sis.length < 5) { e.storyboard = 'Isi slide ' + (si + 1) + ' minimal 5 karakter (atau kosongkan).'; break; }
+        if (sis.length > LIM.sbIsi || String(sbv[si].judul || '').length > LIM.sbJudul || String(sbv[si].efek || '').length > LIM.sbEfek) { e.storyboard = 'Slide ' + (si + 1) + ' terlalu panjang.'; break; }
+      }
     }
     if (id === 'naskah') {
       for (var ni = 0; ni < ST.naskah.length; ni++) {
@@ -1166,7 +1219,8 @@
     if (ST.paket === 'special') {
       p.ideSendiri = ''; p.pesan = ''; p.ketentuan = ST.ketentuanOk === true;
       p.brief = { tema: String(ST.brief.tema).trim(), warna: String(ST.brief.warna).trim(), referensi: String(ST.brief.referensi).trim(), interaksi: String(ST.brief.interaksi).trim() };
-      p.naskah = ST.naskah.map(function (x) { return { halaman: Number(x.halaman), isi: String(x.isi).trim() }; });
+      var fpl = fotoUnggah();
+      p.storyboard = ST.storyboard.map(function (s) { return { judul: String(s.judul || '').trim(), isi: String(s.isi || '').trim(), efek: String(s.efek || '').trim(), foto: (s.foto || []).map(function (fid) { return fpl.findIndex(function (x) { return x.id === fid; }) + 1; }).filter(function (k) { return k > 0; }) }; });
       p.musik = { mode: ST.musikMode, musikId: ST.musikMode === 'dearora' ? (ST.musikId || '') : '', tautan: ST.musikMode === 'sendiri' ? String(ST.musikTautan || '').trim() : '', berkas: ST.musikMode === 'sendiri' && files.some(function (x) { return x.jenis === 'audio'; }) };
     }
     var pf = window.Auth && window.Auth.ada() ? window.Auth.profil() : null;
@@ -1254,6 +1308,7 @@
     if ((el.id === 'tamuTeks' || el.id === 'tamuSeb') && window.Tamu) { var pt = document.getElementById('tamuPreview'); if (pt) pt.innerHTML = pratinjauTamu(); }
     if (errors[cid]) { delete errors[cid]; el.removeAttribute('aria-invalid'); var er = document.getElementById(cid + '-e'); if (er) er.remove(); }
     if (el.id === 'urlDiminta') { var pv = document.getElementById('urlPreview'), nn = normSlug(el.value), host2 = location.host || 'dearora.id'; if (pv) pv.innerHTML = nn ? (slugSah(nn) ? 'Alamat yang kamu minta: <strong>' + esc(nn) + '.' + esc(domainSpecial()) + '</strong>' : 'Nama belum bisa dipakai: 3–40 huruf/angka dan bukan kata yang dicadangkan.') : 'Kosongkan jika tidak ingin memilih nama.'; }
+    if (p && p.indexOf('storyboard.') === 0) { var hs = $root.querySelector('.sb-hitung'); if (hs) hs.innerHTML = '<strong>' + ST.storyboard.length + '</strong> slide · ' + ST.storyboard.filter(slideTerisi).length + ' terisi'; if (errors.storyboard) { delete errors.storyboard; var es = $root.querySelector('.sb-list + .err'); if (es) es.remove(); } }
     if (p && errors.kejutanDetail) { delete errors.kejutanDetail; var kd = $root.querySelector('.kej-detail > .err'); if (kd) kd.remove(); }
     simpanDraf();
   }
@@ -1311,6 +1366,13 @@
     else if (a === 'up') geser(b.dataset.id, -1);
     else if (a === 'down') geser(b.dataset.id, 1);
     else if (a === 'rm') hapus(b.dataset.id);
+    else if (a === 'sb+') { if (ST.storyboard.length < LIM.halamanMaks) { ST.storyboard.push(slideBaru()); ui.pesanSb = ''; paint(); simpanDraf(); var ej = document.getElementById('sb-j-' + (ST.storyboard.length - 1)); if (ej) ej.focus(); } }
+    else if (a === 'sb-') { var ih = Number(b.dataset.i); ST.storyboard.splice(ih, 1); if (!ST.storyboard.length) ST.storyboard.push(slideBaru()); ui.pesanSb = ''; paint(); simpanDraf(); }
+    else if (a === 'sb^' || a === 'sbv') { var ix = Number(b.dataset.i), jx = a === 'sb^' ? ix - 1 : ix + 1; if (jx >= 0 && jx < ST.storyboard.length) { var tmp = ST.storyboard[ix]; ST.storyboard[ix] = ST.storyboard[jx]; ST.storyboard[jx] = tmp; ui.pesanSb = ''; paint(); simpanDraf(); var kb = document.querySelector('#sb-s-' + jx + ' [data-f="' + a + '"]'); if (kb && !kb.disabled) kb.focus(); } }
+    else if (a === 'sbd') { var id2 = Number(b.dataset.i); if (ST.storyboard.length < LIM.halamanMaks) { var asli = ST.storyboard[id2]; ST.storyboard.splice(id2 + 1, 0, { judul: asli.judul, isi: asli.isi, efek: asli.efek, foto: (asli.foto || []).slice() }); ui.pesanSb = ''; paint(); simpanDraf(); } }
+    else if (a === 'sbf') { var si2 = Number(b.dataset.i), fid = b.dataset.id, sl = ST.storyboard[si2]; sl.foto = sl.foto || []; var pos = sl.foto.indexOf(fid);
+      if (pos >= 0) { sl.foto.splice(pos, 1); ui.pesanSb = ''; } else if (sl.foto.length >= LIM.sbFoto) { ui.pesanSb = 'Maksimal ' + LIM.sbFoto + ' foto per slide.'; ui.pesanSbI = si2; } else { sl.foto.push(fid); ui.pesanSb = ''; } paint(); simpanDraf(); }
+    else if (a === 'sbx') { var adaIsi = ST.storyboard.some(slideTerisi); if (!adaIsi || window.confirm('Ganti isi storyboard dengan contoh? Isi yang sudah kamu tulis akan hilang.')) { ST.storyboard = contohStoryboard(); ui.pesanSb = ''; paint(); simpanDraf(); } }
     else if (a === 'nk+') { if (ST.naskah.length < LIM.naskahMaks) { var akhir = ST.naskah[ST.naskah.length - 1]; ST.naskah.push({ halaman: Math.min(LIM.halamanMaks, (Number(akhir && akhir.halaman) || 0) + 1), isi: '' }); paint(); simpanDraf(); var ti = document.getElementById('nk-i-' + (ST.naskah.length - 1)); if (ti) ti.focus(); } }
     else if (a === 'nk-') { ST.naskah.splice(Number(b.dataset.i), 1); if (!ST.naskah.length) ST.naskah.push({ halaman: 1, isi: '' }); paint(); simpanDraf(); }
     else if (a === 'pay') bayar();
